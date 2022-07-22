@@ -1,0 +1,36 @@
+.title-slide {
+  background-image: url("shiny.png"), url("tidyverse.png"), url("htmltools.png"), url("background2.png");
+  background-size:  10%, 10%, 10%, cover;
+  background-position: 80% 0%, 91% 0%, 85.5% 23%, 10% 0;
+  background-repeat: no-repeat;
+}
+
+.title       > h1, 
+.subtitle    > h2,
+.author      > h3,
+.title-slide > h1,
+.title-slide > h2,
+.title-slide > h3 {
+  color: #fff;
+}
+
+p, ul > li {
+    font-size: 1.0em;
+}
+
+li {
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+}
+
+pre > b {
+    color: #112940; /* https://www.colorhexa.com/dba675 */
+}
+
+.inverse {
+    background-color: #75aadb;
+}
+
+.remark-slide-content {
+    border-top: 80px solid #75aadb;
+}
