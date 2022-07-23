@@ -254,7 +254,7 @@ ggplotly(p)
 
 ---
 
-`r flipbookr::chunk_reveal("highcharter", title = "# highcharter️", widths = c(2,3), chunk_options = "warnings = FALSE, message=FALSE")`)
+`r flipbookr::chunk_reveal("highcharter", title = "# highcharter️", widths = c(2,3), chunk_options = "warnings = FALSE, message=FALSE")`
 
 ```{r highcharter, include = FALSE}
 library(highcharter)
@@ -273,7 +273,7 @@ hchart(modelo) |>
 
 ---
 
-`r flipbookr::chunk_reveal("sismos", title = "# Antes de seguir, descarguemos datos!", widths =c(1,3), chunk_options = "warnings = FALSE, message=FALSE")`)
+`r flipbookr::chunk_reveal("sismos", title = "# Antes de seguir, descarguemos datos!", widths =c(1,3), chunk_options = "warnings = FALSE, message=FALSE")`
 
 ```{r sismos, include = FALSE}
 library(rvest)   # descargar datos de paginas web
@@ -303,7 +303,7 @@ datos <- read_html(url) |>
 
 ---
 
-`r flipbookr::chunk_reveal("dt", title = "# DT", widths = c(2, 3), chunk_options = "warnings = FALSE, message=FALSE")`)
+`r flipbookr::chunk_reveal("dt", title = "# DT", widths = c(2, 3), chunk_options = "warnings = FALSE, message=FALSE")`
 
 ```{r dt, include = FALSE}
 library(DT)
@@ -313,7 +313,7 @@ datatable(datos)
 
 ---
 
-`r flipbookr::chunk_reveal("leaflet", title = "# Leaflet", widths = c(2, 3), chunk_options = "warnings = FALSE, message=FALSE")`)
+`r flipbookr::chunk_reveal("leaflet", title = "# Leaflet", widths = c(2, 3), chunk_options = "warnings = FALSE, message=FALSE")`
 
 ```{r leaflet, include = FALSE}
 library(leaflet)
