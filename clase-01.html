@@ -62,18 +62,18 @@ Mie 27/7 - Mie 02/8 - Mie 10/8 - Mie 17/8
 
 # Programa
 
-- Clase 1
+- [Clase 1](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-01.html)
   - Aplicación (web), ejemplos.
   - Introducción a shiny: Interfaz usuario y servidor
   - Reactividad
-- Clase 2
+- [Clase 2](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-02.html)
   - Layouts  
   - Integración HTMLWidgets
   - Templates y diseño  
-- Clase 3
+- [Clase 3](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-03.html)
   - Ejercicios
   - Compartir una app
-- Clase 4
+- [Clase 4](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-04.html)
   - Expresiones reactivas
   - Extensiones shiny
 
@@ -88,7 +88,7 @@ class: center, middle, inverse
 
 # Antes de Partir
 
-La prestación podrá acceder desde https://datosuc.github.io/Visualizacion-de-datos-con-R/#1 y el código fuente, apps, ejemplos en https://github.com/datosuc/Visualizacion-de-datos-con-R/tree/master/apps
+La prestación podrá acceder desde https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-01.html y el código fuente, apps, ejemplos en https://github.com/jbkunst/shiny-visualizacion-de-datos-con-R
 
 &lt;br&gt;
 
@@ -116,13 +116,21 @@ No olvidar que una buena forma de aprender es con la documentación oficial:
 - https://mastering-shiny.org/ (proceso de traducción al español https://github.com/cienciadedatos/mastering-shiny)
 - https://shiny.rstudio.com/tutorial/
 - https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/
-- https://github.com/rstudio/cheatsheets/raw/master/shiny.pdf
-- https://github.com/rstudio/cheatsheets/raw/master/translations/spanish/shiny_Spanish.pdf
+- https://shiny.rstudio.com/images/shiny-cheatsheet.pdf
+- https://raw.githubusercontent.com/rstudio/cheatsheets/main/translations/spanish/shiny_es.pdf
 
 
-La infaltable _ayuda memoria_: 
+---
 
-https://content.cdntwrk.com/files/aT0xMTI0NDEzJnY9MSZpc3N1ZU5hbWU9c2hpbnktc3BhbmlzaCZjbWQ9ZCZzaWc9ZTdhMThkY2VjYzM1YjkyNmI1NTVlNWM3ZWViNjE4MmU%253D
+# Por que shiny?
+
+&lt;br/&gt;
+
+&lt;br/&gt;
+
+.center[
+&lt;img src="imgs/data-science-communicate.png" width="800px" /&gt;
+]
 
 
 ---
@@ -170,6 +178,7 @@ Algunos simples.
 
 Otros con más detalle en la parte visual.
 
+* https://jbkunst.shinyapps.io/trd-sttstcs/ (https://github.com/jbkunst/trd-sttstcs)
 * https://jorgehcas1998.shinyapps.io/Dataton-app/ (https://github.com/socapal/dataton-tudinero)
 * https://nz-stefan.shinyapps.io/commute-explorer-2
 
@@ -754,8 +763,7 @@ dos.
 Hints importantes:
 
 - No tema a escribir, ni preguntar!
-- Está totalmente permitido equivocarse, de hecho se pondrán puntos extras
-- Posible solución estará en https://github.com/datosuc/Visualizacion-de-datos-con-R/blob/master/apps/02-ejercicio-2/app.R
+- Está totalmente permitido equivocarse, de hecho se pondrán puntos extras.
 
 
 ---
@@ -843,6 +851,17 @@ server &lt;- function(input, output) {
 
 # Reactividad: Como funciona shiny
 
+Consideremos la aplicación del ejemplo anterior. 
+
+Al cambiar un input -como lo es `input$numerouno` o `input$numerodos`- shiny
+reconoce que expresiones (renders, como `renderText` en este caso) dependen
+dichos elementos y vuelve a calcularlos a penas suceda el cambio.
+
+.center[
+&lt;img src="imgs/reactivity-ejemplo.png" width="800px" /&gt;
+]
+
+En este sentido, shiny funciona similar a excel.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

@@ -16,17 +16,17 @@ Mie 27/7 - Mie 02/8 - Mie 10/8 - Mie 17/8
 
 # Programa
 
-- Clase 1
+- [Clase 1](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-01.html)
   - Aplicación (web), ejemplos.
   - Introducción a shiny: Interfaz usuario y servidor
   - Reactividad
-- Clase 2
+- [Clase 2](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-02.html)
   - Layouts  
   - Integración HTMLWidgets
   - Templates y diseño  
-- Clase 3
+- [Clase 3](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-03.html)
   - Ejercicios
   - Compartir una app
-- Clase 4
+- [Clase 4](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-04.html)
   - Expresiones reactivas
   - Extensiones shiny

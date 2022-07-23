@@ -40,7 +40,7 @@ class: center, middle, inverse
 
 # Antes de Partir
 
-La prestación podrá acceder desde https://datosuc.github.io/Visualizacion-de-datos-con-R/#1 y el código fuente, apps, ejemplos en https://github.com/datosuc/Visualizacion-de-datos-con-R/tree/master/apps
+La prestación podrá acceder desde https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-01.html y el código fuente, apps, ejemplos en https://github.com/jbkunst/shiny-visualizacion-de-datos-con-R
 
 <br>
 
@@ -67,13 +67,23 @@ No olvidar que una buena forma de aprender es con la documentación oficial:
 - https://mastering-shiny.org/ (proceso de traducción al español https://github.com/cienciadedatos/mastering-shiny)
 - https://shiny.rstudio.com/tutorial/
 - https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/
-- https://github.com/rstudio/cheatsheets/raw/master/shiny.pdf
-- https://github.com/rstudio/cheatsheets/raw/master/translations/spanish/shiny_Spanish.pdf
+- https://shiny.rstudio.com/images/shiny-cheatsheet.pdf
+- https://raw.githubusercontent.com/rstudio/cheatsheets/main/translations/spanish/shiny_es.pdf
 
 
-La infaltable _ayuda memoria_: 
+---
 
-https://content.cdntwrk.com/files/aT0xMTI0NDEzJnY9MSZpc3N1ZU5hbWU9c2hpbnktc3BhbmlzaCZjbWQ9ZCZzaWc9ZTdhMThkY2VjYzM1YjkyNmI1NTVlNWM3ZWViNjE4MmU%253D
+# Por que shiny?
+
+<br/>
+
+<br/>
+
+.center[
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics("imgs/data-science-communicate.png")
+```
+]
 
 
 ---
@@ -123,6 +133,7 @@ Algunos simples.
 
 Otros con más detalle en la parte visual.
 
+* https://jbkunst.shinyapps.io/trd-sttstcs/ (https://github.com/jbkunst/trd-sttstcs)
 * https://jorgehcas1998.shinyapps.io/Dataton-app/ (https://github.com/socapal/dataton-tudinero)
 * https://nz-stefan.shinyapps.io/commute-explorer-2
 
@@ -782,3 +793,16 @@ server <- function(input, output) {
 
 # Reactividad: Como funciona shiny
 
+Consideremos la aplicación del ejemplo anterior. 
+
+Al cambiar un input -como lo es `input$numerouno` o `input$numerodos`- shiny
+reconoce que expresiones (renders, como `renderText` en este caso) dependen
+dichos elementos y vuelve a calcularlos a penas suceda el cambio.
+
+.center[
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics("imgs/reactivity-ejemplo.png")
+```
+]
+
+En este sentido, shiny funciona similar a excel.
