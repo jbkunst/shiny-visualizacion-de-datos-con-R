@@ -1,0 +1,303 @@
+---
+title: "Shiny: Visualizacion de datos con R"
+subtitle: "Diplomado en Data Science 22, MatPUC"
+author: "Joshua Kunst Fuentes jbkunst@gmail.com"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ["default", "metropolis", "metropolis-fonts", "assets/custom.css"]
+    nature:
+      ratio: "16:9"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(flipbookr)
+options(htmltools.dir.version = FALSE)
+xaringanExtra::use_scribble(pen_color = "#B7410E")  # press S
+xaringanExtra::use_tile_view()                      # press O
+xaringanExtra::use_webcam()                         # press W
+xaringanExtra::use_animate_all("fade")
+xaringanExtra::use_freezeframe() # for GIFs!
+xaringanExtra::use_progress_bar(color = "red", location = "bottom", height = "10px")
+```
+
+
+```{r, child="readme.md"}
+```
+
+---
+
+class: center, middle, inverse
+
+# Repaso resumido
+
+---
+
+# Repaso resumido
+
+- Una shiny app consta de dos partes:
+  - `ui` (**u**ser **i**nterface) donde definiremos el lugar de los los `input`s que 
+  el usuario podrá controlar, como también el lugar de donte estarán los `output`s que retornemos.
+  - `server` (**server** XD), donde definiremos que retornaremos en cada output dependiendo de los inputs.
+
+<hr>
+
+- Los inputs de forma general son de la forma `tipoInput("nombreinput", parametros_del_input)`, por ejemplo
+`sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1)`.
+- En el server accedo al valor del input como `input$nombreinput`. 
+
+
+<hr>
+
+- Un output se define en la interfaz (gráfico, tabla, mapa, texto) con la forma `tipoOutput("nombreoutput")`, por ejemplo si quiero una salida/output tipo gráfico se usa `plotOutput("grafico")`
+- Para enviar un grafico en el server se usa: `output$nombreoutput <- renderTipo({ codigo })`, por ejemplo:
+
+`output$grafico <- renderPlot({ plot(rnorm(input$valor), type = "l") })`
+
+---
+
+# Repaso resumido
+
+<br>
+
+Así nuestra app de repaso quedaría:
+
+```r
+library(shiny)
+
+# Antes del ui y server podemos cargar paquetes
+# o datos que nuestra app usará. No tiene por que ser todo
+# tan simple
+
+ui <- fluidPage(
+  sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1),
+  plotOutput("grafico")
+  )
+
+server <- function(input, output) {
+  output$grafico <- renderPlot({ 
+    plot(rnorm(input$valor), type = "l")
+  })
+}
+
+shinyApp(ui, server)
+```
+
+---
+
+# Ejercicio grupal: Juntando inputs y htmlwidgets
+
+<br> 
+
+Generar una aplicación que considere los datos
+de los últimos sismos y que contenga:
+
+- Un widget de tabla con DT.
+- Un mapa con leaflet graficando el lugar de los 
+sismos.
+- Un slider con el fin de filtrar información.
+
+<br> 
+
+Hint: Leer documentación!
+
+<br> 
+
+Posible Solución en https://github.com/datosuc/Visualizacion-de-datos-con-R/blob/master/apps/htmlwidgets/app.R
+
+
+---
+
+# Solución
+
+
+---
+
+# Ejercicio: Transformando script R en una App
+
+<br>
+
+Muy común es que dado un código o proceso que hemos programado, lo necesitaremos
+migrar a una shiny app o documento rmarkdown. 
+
+
+Entonces:
+
+<br>
+
+- Inspeccionar, ejecutar y modificar el script https://github.com/datosuc/Visualizacion-de-datos-con-R/blob/master/R/script-exportaciones.R (la siguiente slide tambien lo tiene).
+- Generar una app que tenga como input una lista de países y
+muestre el forecast de las exportaciones de dicho país.
+- Luego utilizar algn HTMLWidget para complementar la aplicación.
+
+Posible solución en https://github.com/jbkunst/shiny-visualizacion-de-datos-con-R/blob/main/apps/exportaciones/app.R
+
+---
+
+# Código
+
+.code60[
+```{r, eval=FALSE}
+if(!require(forecast)) install.packages("forecast")
+if(!require(xts))      install.packages("xts")
+if(!require(ggplot2))  install.packages("ggplot2")
+if(!require(dplyr))    install.packages("dplyr")
+if(!require(remotes))  install.packages("remotes")
+if(!require(tradestatistics))  remotes::install_github("ropensci/tradestatistics")
+
+library(forecast) # forecast autoplot
+library(xts) # xts
+library(tradestatistics) # ots_create_tidy_data 
+library(ggplot2) # autoplot
+library(dplyr) # glimpse |> group_by summarise
+
+pais <- "can"  # seteo pais, usa, can
+
+data <- ots_create_tidy_data(years = 2002:2019, reporters = pais, table = "yrp")
+
+glimpse(data)
+
+data <- data |> 
+  group_by(year, reporter_iso) |> 
+  summarise(exportaciones = sum(trade_value_usd_exp))
+
+valores <- data$exportaciones
+
+fechas <- as.Date(paste0(data$year, "0101"), format = "%Y%m%d")
+
+serie <- xts(valores, order.by = fechas) # creo la serie de tiempo para la fucion forecast
+
+prediccion <- forecast(serie, h = 5) # realizo automágicamente una predicción
+
+autoplot(prediccion)
+```
+]
+
+
+---
+
+# Solución
+
+---
+
+class: center, middle, inverse
+
+# Temas & Estilos
+
+---
+
+# Temas & Estilos
+
+- Al principio todas nuestras app son similares.
+- Existen extensiones/paquetes que permiten cambiar el estilo/look de la aplicación.
+
+![](imgs/shinyapps.gif)
+
+
+
+---
+
+# shinythemes
+
+Los más fácil de implementar, sin tan alto impacto en código ni imagen. Opciones en http://bootswatch.com/
+
+https://rstudio.github.io/shinythemes/
+
+![](imgs/shinythemes.png)
+
+---
+
+# shinythemes
+
+Antes:
+
+```r
+library(shiny)
+
+ui <- fluidPage(
+   sidebarLayout(...
+```
+
+Ahora:
+
+```r
+library(shiny)
+library(shinythemes)
+
+ui <- fluidPage(
+   theme = shinytheme("superhero"),
+   sidebarLayout(...
+```
+
+**NOTAR** que este cambio es solo en la parte ui. La parte del server no cambia.
+
+---
+
+# shinydashboard
+
+Orientados a __dashboards__<span class="fragment"> agrega más funcionalidades</span>
+
+![](https://rstudio.github.io/shinydashboard/images/crandash.png)
+
+---
+
+# shinydashboard
+
+```r
+library(shinydashboard)
+
+ui <- dashboardPage(
+  dashboardHeader(),
+  dashboardSidebar(
+     sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1)
+  ),
+  dashboardBody(
+    fluidRow(box(width = 12, plotOutput("grafico")))
+  )
+)
+```
+
+---
+
+# Más y más templates y diseños
+
+<br/>
+
+Existen muchos paquetes para cambiar estilos/css.
+
+- shinydashboardPlus: https://rinterface.com/shiny/shinydashboardPlus/
+- bs4Dash: https://rinterface.com/shiny/bs4Dash/classic/
+- miniUI2Demo: https://dgranjon.shinyapps.io/miniUI2Demo
+- tablerDash: https://rinterface.com/shiny/tablerDash/
+
+Notar que estos paquetes cambian solos el diseño de la interfaz, como textos,
+colores, o botones, pero los gráficos quedan intactos. Existe  https://rstudio.github.io/thematic/index.html. 
+
+---
+
+# Ejercicio: Aplicar temas
+
+- Tomar la última app de y probar por al menos 2 temas (recomiendo *paper*) de `shinythemes`:
+- Modifcar el ui utilizando el ejemplo de `shinydashboard` (copy+paste).
+
+```r
+library(shiny)
+
+ui <- fluidPage(
+  sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1),
+  plotOutput("grafico")
+  )
+
+server <- function(input, output) {
+  output$grafico <- renderPlot({ 
+    plot(rnorm(input$valor), type = "l")
+  })
+}
+
+shinyApp(ui, server)
+```

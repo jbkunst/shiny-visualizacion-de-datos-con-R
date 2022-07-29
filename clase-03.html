@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Shiny: Visualizacion de datos con R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Joshua Kunst Fuentes jbkunst@gmail.com" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <script src="libs/fabric/fabric.min.js"></script>
+    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#B7410E"],"pen_size":3,"eraser_size":30,"palette":[]}) })</script>
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <script src="libs/xaringanExtra-webcam/webcam.js"></script>
+    <script id="xaringanExtra-webcam-options" type="application/json">{"width":"200","height":"200","margin":"1em"}</script>
+    <link href="libs/animate.css-xaringan/animate.fade.css" rel="stylesheet" />
+    <script src="libs/freezeframe/freezeframe.min.js"></script>
+    <script src="libs/xaringanExtra-freezeframe/freezeframe-init.js"></script>
+    <script id="xaringanExtra-freezeframe-options" type="application/json">{"selector":"img[src$=\"gif\"]","trigger":"click","overlay":false,"responsive":true,"warnings":true}</script>
+    <script src="libs/xaringanExtra-progressBar/progress-bar.js"></script>
+    <link rel="stylesheet" href="assets/custom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Shiny: Visualizacion de datos con R
+]
+.subtitle[
+## Diplomado en Data Science 22, MatPUC
+]
+.author[
+### Joshua Kunst Fuentes <a href="mailto:jbkunst@gmail.com" class="email">jbkunst@gmail.com</a>
+]
+
+---
+
+
+
+
+
+
+# Shiny: Visualizacion de datos con R
+
+## Version 2022
+
+### Johnson 
+
+Jue 21/7 - Sáb 23/7 - Jue 28/7 - Jue 4/8
+
+
+### Touring
+
+Mie 27/7 - Mie 02/8 - Mie 10/8 - Mie 17/8
+
+
+---
+
+# Programa
+
+- [Clase 1](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-01.html)
+  - Aplicación (web), ejemplos.
+  - Introducción a shiny: Interfaz usuario y servidor
+  - Reactividad
+- [Clase 2](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-02.html)
+  - Layouts  
+  - Integración HTMLWidgets
+- [Clase 3](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-03.html)
+  - Repaso/Ejercicios
+  - Templates y diseño    
+  - Compartir una app
+- [Clase 4](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-04.html)
+  - Expresiones reactivas
+  - Extensiones shiny
+
+---
+
+class: center, middle, inverse
+
+# Repaso resumido
+
+---
+
+# Repaso resumido
+
+- Una shiny app consta de dos partes:
+  - `ui` (**u**ser **i**nterface) donde definiremos el lugar de los los `input`s que 
+  el usuario podrá controlar, como también el lugar de donte estarán los `output`s que retornemos.
+  - `server` (**server** XD), donde definiremos que retornaremos en cada output dependiendo de los inputs.
+
+&lt;hr&gt;
+
+- Los inputs de forma general son de la forma `tipoInput("nombreinput", parametros_del_input)`, por ejemplo
+`sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1)`.
+- En el server accedo al valor del input como `input$nombreinput`. 
+
+
+&lt;hr&gt;
+
+- Un output se define en la interfaz (gráfico, tabla, mapa, texto) con la forma `tipoOutput("nombreoutput")`, por ejemplo si quiero una salida/output tipo gráfico se usa `plotOutput("grafico")`
+- Para enviar un grafico en el server se usa: `output$nombreoutput &lt;- renderTipo({ codigo })`, por ejemplo:
+
+`output$grafico &lt;- renderPlot({ plot(rnorm(input$valor), type = "l") })`
+
+---
+
+# Repaso resumido
+
+&lt;br&gt;
+
+Así nuestra app de repaso quedaría:
+
+```r
+library(shiny)
+
+# Antes del ui y server podemos cargar paquetes
+# o datos que nuestra app usará. No tiene por que ser todo
+# tan simple
+
+ui &lt;- fluidPage(
+  sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1),
+  plotOutput("grafico")
+  )
+
+server &lt;- function(input, output) {
+  output$grafico &lt;- renderPlot({ 
+    plot(rnorm(input$valor), type = "l")
+  })
+}
+
+shinyApp(ui, server)
+```
+
+---
+
+# Ejercicio grupal: Juntando inputs y htmlwidgets
+
+&lt;br&gt; 
+
+Generar una aplicación que considere los datos
+de los últimos sismos y que contenga:
+
+- Un widget de tabla con DT.
+- Un mapa con leaflet graficando el lugar de los 
+sismos.
+- Un slider con el fin de filtrar información.
+
+&lt;br&gt; 
+
+Hint: Leer documentación!
+
+&lt;br&gt; 
+
+Posible Solución en https://github.com/datosuc/Visualizacion-de-datos-con-R/blob/master/apps/htmlwidgets/app.R
+
+
+---
+
+# Solución
+
+
+---
+
+# Ejercicio: Transformando script R en una App
+
+&lt;br&gt;
+
+Muy común es que dado un código o proceso que hemos programado, lo necesitaremos
+migrar a una shiny app o documento rmarkdown. 
+
+
+Entonces:
+
+&lt;br&gt;
+
+- Inspeccionar, ejecutar y modificar el script https://github.com/datosuc/Visualizacion-de-datos-con-R/blob/master/R/script-exportaciones.R (la siguiente slide tambien lo tiene).
+- Generar una app que tenga como input una lista de países y
+muestre el forecast de las exportaciones de dicho país.
+- Luego utilizar algn HTMLWidget para complementar la aplicación.
+
+Posible solución en https://github.com/jbkunst/shiny-visualizacion-de-datos-con-R/blob/main/apps/exportaciones/app.R
+
+---
+
+# Código
+
+.code60[
+
+```r
+if(!require(forecast)) install.packages("forecast")
+if(!require(xts))      install.packages("xts")
+if(!require(ggplot2))  install.packages("ggplot2")
+if(!require(dplyr))    install.packages("dplyr")
+if(!require(remotes))  install.packages("remotes")
+if(!require(tradestatistics))  remotes::install_github("ropensci/tradestatistics")
+
+library(forecast) # forecast autoplot
+library(xts) # xts
+library(tradestatistics) # ots_create_tidy_data 
+library(ggplot2) # autoplot
+library(dplyr) # glimpse |&gt; group_by summarise
+
+pais &lt;- "can"  # seteo pais, usa, can
+
+data &lt;- ots_create_tidy_data(years = 2002:2019, reporters = pais, table = "yrp")
+
+glimpse(data)
+
+data &lt;- data |&gt; 
+  group_by(year, reporter_iso) |&gt; 
+  summarise(exportaciones = sum(trade_value_usd_exp))
+
+valores &lt;- data$exportaciones
+
+fechas &lt;- as.Date(paste0(data$year, "0101"), format = "%Y%m%d")
+
+serie &lt;- xts(valores, order.by = fechas) # creo la serie de tiempo para la fucion forecast
+
+prediccion &lt;- forecast(serie, h = 5) # realizo automágicamente una predicción
+
+autoplot(prediccion)
+```
+]
+
+
+---
+
+# Solución
+
+---
+
+class: center, middle, inverse
+
+# Temas &amp; Estilos
+
+---
+
+# Temas &amp; Estilos
+
+- Al principio todas nuestras app son similares.
+- Existen extensiones/paquetes que permiten cambiar el estilo/look de la aplicación.
+
+![](imgs/shinyapps.gif)
+
+
+
+---
+
+# shinythemes
+
+Los más fácil de implementar, sin tan alto impacto en código ni imagen. Opciones en http://bootswatch.com/
+
+https://rstudio.github.io/shinythemes/
+
+![](imgs/shinythemes.png)
+
+---
+
+# shinythemes
+
+Antes:
+
+```r
+library(shiny)
+
+ui &lt;- fluidPage(
+   sidebarLayout(...
+```
+
+Ahora:
+
+```r
+library(shiny)
+library(shinythemes)
+
+ui &lt;- fluidPage(
+   theme = shinytheme("superhero"),
+   sidebarLayout(...
+```
+
+**NOTAR** que este cambio es solo en la parte ui. La parte del server no cambia.
+
+---
+
+# shinydashboard
+
+Orientados a __dashboards__&lt;span class="fragment"&gt; agrega más funcionalidades&lt;/span&gt;
+
+![](https://rstudio.github.io/shinydashboard/images/crandash.png)
+
+---
+
+# shinydashboard
+
+```r
+library(shinydashboard)
+
+ui &lt;- dashboardPage(
+  dashboardHeader(),
+  dashboardSidebar(
+     sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1)
+  ),
+  dashboardBody(
+    fluidRow(box(width = 12, plotOutput("grafico")))
+  )
+)
+```
+
+---
+
+# Más y más templates y diseños
+
+&lt;br/&gt;
+
+Existen muchos paquetes para cambiar estilos/css.
+
+- shinydashboardPlus: https://rinterface.com/shiny/shinydashboardPlus/
+- bs4Dash: https://rinterface.com/shiny/bs4Dash/classic/
+- miniUI2Demo: https://dgranjon.shinyapps.io/miniUI2Demo
+- tablerDash: https://rinterface.com/shiny/tablerDash/
+
+Notar que estos paquetes cambian solos el diseño de la interfaz, como textos,
+colores, o botones, pero los gráficos quedan intactos. Existe  https://rstudio.github.io/thematic/index.html. 
+
+---
+
+# Ejercicio: Aplicar temas
+
+- Tomar la última app de y probar por al menos 2 temas (recomiendo *paper*) de `shinythemes`:
+- Modifcar el ui utilizando el ejemplo de `shinydashboard` (copy+paste).
+
+```r
+library(shiny)
+
+ui &lt;- fluidPage(
+  sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1),
+  plotOutput("grafico")
+  )
+
+server &lt;- function(input, output) {
+  output$grafico &lt;- renderPlot({ 
+    plot(rnorm(input$valor), type = "l")
+  })
+}
+
+shinyApp(ui, server)
+```
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
