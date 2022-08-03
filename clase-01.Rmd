@@ -101,9 +101,11 @@ a un servidor web a través de internet o de una intranet mediante un navegador.
 
 Puede ser de lo más simple...
 
-
-![](imgs/miprimerapp.png)
-
+.center[
+```{r, echo=FALSE, out.width = "900px", out.}
+knitr::include_graphics("imgs/miprimerapp.png")
+```
+]
 ---
 
 # Aplicación Web
@@ -320,43 +322,43 @@ class: center, middle, inverse
 
 # App
 
-![](imgs/shiny_works/Diapositiva1.PNG)
+![](imgs/shiny_works/Diapositiva1.png)
 
 ---
 
 # Contenedor 
 
-![](imgs/shiny_works/Diapositiva2.PNG)
+![](imgs/shiny_works/Diapositiva2.png)
 
 ---
 
 # Otros contenedores 
 
-![](imgs/shiny_works/Diapositiva3.PNG)
+![](imgs/shiny_works/Diapositiva3.png)
 
 ---
 
 # Inputs 
 
-![](imgs/shiny_works/Diapositiva4.PNG)
+![](imgs/shiny_works/Diapositiva4.png)
 
 ---
 
 # Outputs
 
-![](imgs/shiny_works/Diapositiva5.PNG)
+![](imgs/shiny_works/Diapositiva5.png)
 
 ---
 
 # Interacción 
 
-![](imgs/shiny_works/Diapositiva6.PNG)
+![](imgs/shiny_works/Diapositiva6.png)
 
 ---
 
 # Resultado
 
-![](imgs/shiny_works/Diapositiva7.PNG)
+![](imgs/shiny_works/Diapositiva7.png)
 
 ---
 
