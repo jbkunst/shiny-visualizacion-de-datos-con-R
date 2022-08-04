@@ -67,13 +67,15 @@ library(shiny)
 
 ui <- fluidPage(
   sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1),
-  plotOutput("grafico")
+  plotOutput("grafico"),
+  ...
   )
 
 server <- function(input, output) {
   output$grafico <- renderPlot({ 
     plot(rnorm(input$valor), type = "l")
   })
+  ...
 }
 
 shinyApp(ui, server)
@@ -81,24 +83,23 @@ shinyApp(ui, server)
 
 ---
 
-# Ejercicio: Juntando inputs y htmlwidgets
+# Ejercicio: Juntando inputs, laytous, htmlwidgets
 
-Generar una aplicación que considere los datos
-de los últimos sismos y que contenga:
+Generar una aplicación que considere/tenga:
 
-- Un widget de tabla con DT.
-- Un mapa con leaflet graficando el lugar de los 
-sismos.
-- Un slider con el fin de filtrar información.
+- El app debe ser generada con un `navbarPage` (con una única sección `tabPanel`)
 
-<br> 
+- En la única sección considere un `sidebarPanel`.
 
-Hint: Leer documentación!
+- La aplicación debe poseer un selector de fecha.
 
-<br> 
+- Dada una fecha, la aplicación muestre una tabla con la información
+de sismos de la fecha asociada y un mapa. Ayúdese generando una función 
+para descargar la información dada una fecha.
 
-Posible Solución en https://github.com/datosuc/Visualizacion-de-datos-con-R/blob/master/apps/htmlwidgets/app.R
+- Adicionalmente un _leaflet_ con la ubicación de los sismos.
 
+- Incorpore texto con información de la fecha seleccionada.
 
 ---
 
@@ -109,19 +110,16 @@ Posible Solución en https://github.com/datosuc/Visualizacion-de-datos-con-R/blo
 
 # Ejercicio: Transformando script R en una App
 
-<br>
-
 Muy común es que dado un código o proceso que hemos programado, lo necesitaremos
-migrar a una shiny app o documento rmarkdown. 
+migrar a una shiny app o documento rmarkdown. Entonces:
 
+- Inspeccionar, ejecutar y modificar el script de la siguiente slide.
 
-Entonces:
-
-<br>
-
-- Inspeccionar, ejecutar y modificar el script https://github.com/datosuc/Visualizacion-de-datos-con-R/blob/master/R/script-exportaciones.R (la siguiente slide tambien lo tiene).
 - Generar una app que tenga como input una lista de países y
 muestre el forecast de las exportaciones de dicho país.
+
+- _Encapsule_ la lógica de la aplicación en una función.
+
 - Luego utilizar algn HTMLWidget para complementar la aplicación.
 
 Posible solución en https://github.com/jbkunst/shiny-visualizacion-de-datos-con-R/blob/main/apps/exportaciones/app.R
@@ -189,14 +187,14 @@ class: center, middle, inverse
 ![](imgs/shinyapps.gif)
 ]
 
-
 ---
 
-# shinythemes
+# Paquete {bslib} + bootswatch
 
-Los más fácil de implementar, sin tan alto impacto en código ni imagen. Opciones en http://bootswatch.com/
+Los más fácil de implementar, sin tan alto impacto en código ni imagen. Opciones en http://bootswatch.com/.
 
-https://rstudio.github.io/shinythemes/
+Esto se implementa con `theme = bs_theme(bootswatch = "cerulean")`, como veremos en 
+la siguiente slide.    
 
 .center[
 ![](imgs/shinythemes.png)
@@ -204,7 +202,7 @@ https://rstudio.github.io/shinythemes/
 
 ---
 
-# shinythemes
+# Usando temas de bootswatch
 
 Antes:
 
@@ -219,20 +217,82 @@ Ahora:
 
 ```r
 library(shiny)
-library(shinythemes)
+library(bslib)
 
 ui <- fluidPage(
-   theme = shinytheme("superhero"),
+  theme = bs_theme(bootswatch = "paper")
    sidebarLayout(...
 ```
+
+Intentemos ahora con Darkyl, Flatly, Cosmos, Cerulean
 
 **NOTAR** que este cambio es solo en la parte ui. La parte del server no cambia.
 
 ---
 
-# shinydashboard
+# Incorporando propios estilos
 
-Orientados a __dashboards__<span class="fragment"> agrega más funcionalidades</span>
+Con `bs_theme` un puede cambiar varios elementos estéticos de la aplicación. En un principio, a modo de ejemplo, utilizaremos color de fondo, fuente, y tipografías de google para los _header_ y la aplicación.
+
+
+```r
+library(shiny)
+library(bslib)
+
+ui <- fluidPage(
+  theme = bs_theme(
+    bg = "#f9f9f9",
+    fg = "#202A44",
+    heading_font = font_google("Mouse Memoirs"),
+    base_font = font_google("Uchen")
+    ),
+  titlePanel("Old Faithful Geyser Data"),
+  sidebarLayout(...
+```
+
+- https://fonts.google.com/
+- https://www.colorhexa.com/202A44
+
+
+---
+
+# Incorporando propios estilos + {thematic} + {showtext}
+
+Adicionalmene:
+
+- Con {thematic} los gráficos incorporarán las mismas reglas de estilo -colores- que la aplicación.
+- Con {showtext}, los gráficos incorporarán las fuentes utilizadas.
+
+```r
+library(shiny)
+library(bslib)
+library(thematic)
+library(showtext)
+
+showtext_auto()
+font_add_google("Uchen")
+thematic_shiny(font = "auto")
+
+ui <- fluidPage(
+  theme = bs_theme(
+    bg = "#f9f9f9",
+    fg = "#202A44",
+    heading_font = font_google("Mouse Memoirs"),
+    base_font = font_google("Uchen")
+    ),
+  titlePanel("Old Faithful Geyser Data"),
+  sidebarLayout(...
+```
+
+- https://fonts.google.com/
+- https://www.colorhexa.com/202A44
+
+---
+
+# {shinydashboard} 
+
+El paquete {shinydashboard} nos ayuda a generar una app con estilo de  __dashboards__ demás de incorporar otros elementos para incorporar
+información.
 
 .center[
 ![](https://rstudio.github.io/shinydashboard/images/crandash.png)
@@ -240,7 +300,11 @@ Orientados a __dashboards__<span class="fragment"> agrega más funcionalidades</
 
 ---
 
-# shinydashboard
+# {shinydashboard} 
+
+El paquete nos provee de funciones/contenedores para generar la estructura
+que los dashboard poseen: `dashboardPage`, `dashboardHeader`, `dashboardSidebar`, 
+`dashboardBody`.
 
 ```r
 library(shinydashboard)
@@ -260,42 +324,54 @@ ui <- dashboardPage(
 
 # Más y más templates y diseños
 
-<br/>
-
 Existen muchos paquetes para cambiar estilos/css.
 
 - shinydashboardPlus: https://rinterface.com/shiny/shinydashboardPlus/
+
 - bs4Dash: https://rinterface.com/shiny/bs4Dash/classic/
+
 - miniUI2Demo: https://dgranjon.shinyapps.io/miniUI2Demo
+
 - tablerDash: https://rinterface.com/shiny/tablerDash/
 
-Notar que estos paquetes cambian solos el diseño de la interfaz, como textos,
-colores, o botones, pero los gráficos quedan intactos. Existe  https://rstudio.github.io/thematic/index.html. 
+Notar que estos paquetes cambian solos el diseño de la interfaz, como textos.
 
 ---
 
 # Ejercicio: Aplicar temas
 
-- Tomar la última app de y probar por al menos 2 temas (recomiendo *paper*) de `shinythemes`:
+Tomar la siguiente aplicación:
+- Modifcar el tema con un tema bootswatch.
+- Aplicar un tema utilizando `bs_theme`.
 - Modifcar el ui utilizando el ejemplo de `shinydashboard` (copy+paste).
+
 
 ```r
 library(shiny)
-
 ui <- fluidPage(
+  titlePanel("Titulo de la aplicación"),
   sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1),
   plotOutput("grafico")
   )
-
 server <- function(input, output) {
   output$grafico <- renderPlot({ 
     plot(rnorm(input$valor), type = "l")
   })
 }
-
 shinyApp(ui, server)
 ```
 
+---
+
+# Solución 1
+
+---
+
+# Solución 2
+
+---
+
+# Solución 3
 
 ---
 
@@ -307,15 +383,14 @@ class: center, middle, inverse
 
 # Publicar/Compartir tu app
 
-<br> 
-
 Existen dos formas simples/sencillas para compartir una aplicación. Es decir
 que sea visible en otros dispositivos pc/móviles. Luego existen otras 
 que requieren de mayor conocimiento técnico.
 
 ### Vía IP local
 
-Permite que tu pc sirva la aplicación y pueda ser visible 
+Permite que tu pc sirva la aplicación y pueda ser visible en una red local 
+(por ejemplo, la de tu casa), o también en una VPN.
 
 ### Servicio shinyapps.io
 
@@ -331,13 +406,14 @@ instalar shinyserver.
 
 # Vía IP local
 
-- Solamente funciona para redes locales (casa/trabajo).
+- Solamente funciona para redes locales (casa/trabajo) o tambien VPN.
 - Requiere que _nuestro_ pc esté encendido para que la app corra.
 
 <br> 
 
-Básicamente se obtiene la IP a través de una instrucción y luego
-se especifica correr la aplicación con dicha IP. Se deberá cambiar:
+Básicamente se obtiene la IP (_dirección de nuesto pc_) a través de una instrucción y luego se especifica correr la aplicación con dicha IP.
+
+Se deberá cambiar:
 
 ```{r, eval=FALSE}
 shinyApp(ui = ui, server = server)
@@ -376,18 +452,25 @@ Luego crear una app.
 
 # Ejercicio: Intentado usar todo
 
-<br>
-
 - Cree un **proyecto** en RStudio y seleccione crear una Shiny App.
+
 - Descargue:
   - Puntos bip! http://datos.gob.cl/dataset/28198 
   - GTFS (?) del transantiago https://www.dtpm.cl/index.php/noticias/gtfs-vigente
+  
 - Importe los datos de puntos bips en R. Limpiarlos si es necesario.
+
 - Cree una aplicación que tenga un selector de comunas, y que su 
 aplicación retorne un mapa con las ubicaciones de los lugares de cargasbip
 de la comuna seleccionada.
+
 - Agregar un thema shinythemes/thematic.
+
 - Evaluar agregar más outputs, o enriquecer el mapa.
+
 - Subir la aplicación a shinyapps.io
 
-Solución propuesta https://github.com/datosuc/Visualizacion-de-datos-con-R/blob/master/apps/puntos-bip/app.R
+
+---
+
+# Solución

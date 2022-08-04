@@ -1,25 +1,7 @@
-# luego de `library(shiny)` podemos cargar otros paquetes
-# a utilizar como también definir datos (por ejemplo)
-library(shiny)
-library(rvest)
-library(DT)
-library(leaflet)
-library(dplyr)
-library(stringr)
 
-url <- "http://www.sismologia.cl/ultimos_sismos.html"
-
-datos <- read_html(url) %>% 
-  html_table() %>% 
-  first() 
-
-datos <- datos %>% 
-  mutate(
-    Magnitud = str_remove(Magnitud, "Ml|Mw"),
-    Magnitud = as.numeric(Magnitud)
-  )
 
 ui <- fluidPage(
+    
   sliderInput("rango", label = "Magnitud", min = 0, max = 10, value = c(3, 5)),
   
   fluidRow(

@@ -278,7 +278,7 @@ Ejemplo de uso de script https://github.com/jbkunst/shiny-visualizacion-de-datos
 
 ---
 
-`r flipbookr::chunk_reveal("ggplot2", title = "# Antes de plotly, ggplot2")`
+`r flipbookr::chunk_reveal("ggplot2", title = "# Antes, un poco de {ggplot2}")`
 
 ```{r ggplot2, include = FALSE}
 library(ggplot2)
@@ -295,7 +295,7 @@ ggplot(iris, aes(Sepal.Length, Sepal.Width)) +
 
 ---
 
-`r flipbookr::chunk_reveal("plotly", title = "# plotly")`
+`r flipbookr::chunk_reveal("plotly", title = "# {plotly}")`
 
 ```{r plotly, include = FALSE}
 library(ggplot2)
@@ -315,7 +315,7 @@ ggplotly(p)
 
 ---
 
-`r flipbookr::chunk_reveal("highcharter", title = "# highcharter")`
+`r flipbookr::chunk_reveal("highcharter", title = "# {highcharter}")`
 
 ```{r highcharter, include = FALSE}
 library(highcharter)
@@ -364,7 +364,7 @@ datos <- read_html(url) |>
 
 ---
 
-`r flipbookr::chunk_reveal("dt", title = "# DT", widths = c(1, 4))`
+`r flipbookr::chunk_reveal("dt", title = "# {DT}", widths = c(1, 4))`
 
 ```{r dt, include = FALSE}
 library(DT)
@@ -374,7 +374,7 @@ datatable(datos)
 
 ---
 
-`r flipbookr::chunk_reveal("leaflet", title = "# leaflet")`
+`r flipbookr::chunk_reveal("leaflet", title = "# {leaflet}")`
 
 ```{r leaflet, include = FALSE}
 library(leaflet)
