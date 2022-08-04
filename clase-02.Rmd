@@ -24,6 +24,9 @@ xaringanExtra::use_webcam()                         # press W
 xaringanExtra::use_animate_all("fade")
 xaringanExtra::use_freezeframe() # for GIFs!
 xaringanExtra::use_progress_bar(color = "red", location = "bottom", height = "10px")
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE, fig.path = "imgs/clase2/")
+
 ```
 
 
@@ -43,8 +46,8 @@ class: center, middle, inverse
 Laytous se refiere a la disposición de elementos -como inputs, textos,
 outputs- en nuestra app. 
 
-Dependiendo de las necesidaes puede ser convenientes algunos
-tipos de layuts sobre otros
+Dependiendo de las necesidades puede ser convenientes algunos
+tipos de layuts sobre otros.
 
 .center[
 ```{r, out.width = "800px", echo=FALSE}
@@ -255,7 +258,6 @@ shinyApp(ui, server)
 ```
 ]
 
-
 ---
 
 class: center, middle, inverse
@@ -284,8 +286,8 @@ al utilizado en highcharter, echarts4r:
 Ejemplo de uso de script https://github.com/jbkunst/shiny-visualizacion-de-datos-con-R/blob/master/R/script-htmlwidgets.R 
 
 ---
-  
-  `r flipbookr::chunk_reveal("ggplot2", title = "# Antes de Plotly, ggplot2️", widths = c(2,3), chunk_options = "warnings = FALSE, message=FALSE")`
+
+`r flipbookr::chunk_reveal("ggplot2", title = "# Antes de plotly, ggplot2")`
 
 ```{r ggplot2, include = FALSE}
 library(ggplot2)
@@ -300,10 +302,9 @@ ggplot(iris, aes(Sepal.Length, Sepal.Width)) +
   theme_minimal()
 ```
 
-
 ---
-  
-  `r flipbookr::chunk_reveal("plotly", title = "# Plotly️", widths  =c(2,3), chunk_options = "warnings = FALSE, message=FALSE")`
+
+`r flipbookr::chunk_reveal("plotly", title = "# plotly")`
 
 ```{r plotly, include = FALSE}
 library(ggplot2)
@@ -322,8 +323,8 @@ ggplotly(p)
 ```
 
 ---
-  
-  `r flipbookr::chunk_reveal("highcharter", title = "# highcharter️", widths = c(2,3), chunk_options = "warnings = FALSE, message=FALSE")`
+
+`r flipbookr::chunk_reveal("highcharter", title = "# highcharter")`
 
 ```{r highcharter, include = FALSE}
 library(highcharter)
@@ -341,8 +342,8 @@ hchart(modelo) |>
 ```
 
 ---
-  
-  `r flipbookr::chunk_reveal("sismos", title = "# Antes de seguir, descarguemos datos!", widths =c(1,3), chunk_options = "warnings = FALSE, message=FALSE")`
+
+`r flipbookr::chunk_reveal("sismos", title = "# Antes, unos datos", widths = c(1, 2))`  
 
 ```{r sismos, include = FALSE}
 library(rvest)   # descargar datos de paginas web
@@ -371,8 +372,8 @@ datos <- read_html(url) |>
 ```
 
 ---
-  
-  `r flipbookr::chunk_reveal("dt", title = "# DT", widths = c(2, 3), chunk_options = "warnings = FALSE, message=FALSE")`
+
+`r flipbookr::chunk_reveal("dt", title = "# DT", widths = c(1, 4))`
 
 ```{r dt, include = FALSE}
 library(DT)
@@ -381,8 +382,8 @@ datatable(datos)
 ```
 
 ---
-  
-  `r flipbookr::chunk_reveal("leaflet", title = "# Leaflet", widths = c(2, 3), chunk_options = "warnings = FALSE, message=FALSE")`
+
+`r flipbookr::chunk_reveal("leaflet", title = "# leaflet")`
 
 ```{r leaflet, include = FALSE}
 library(leaflet)
@@ -477,3 +478,59 @@ server <- function(input, output) {
 shinyApp(ui, server)
 ```
 ]
+
+---
+
+# Solución v2
+
+
+.pull-left[
+```r
+library(shiny)
+library(ggplot2)
+library(plotly)
+library(DT)
+
+ui <- navbarPage(
+  title = "Hello Shiny!",
+  tabPanel("Plot",
+           sliderInput("obs",
+          "Number of observations:", 
+                min = 0, max = 1000, value = 500),
+    plotlyOutput("plot")
+  ),
+  tabPanel('Linea', plotOutput('linea')),
+  tabPanel("Summary", textOutput("summary")),
+  tabPanel("Table", dataTableOutput("tabla")),
+  tabPanel('Resumen', verbatimTextOutput('resumen'))
+)
+```
+]
+
+.pull-right[
+```r
+server <- function(input, output) {
+  output$plot <- renderPlotly({ 
+    n <- input$obs
+    x <- rnorm(n)
+    p <- qplot(x, geom = "histogram")
+    ggplotly(p)
+  })
+  
+  output$summary <- renderText({ input$obs })
+  output$tabla <- renderDataTable({ 
+    df <- data.frame(1:input$obs) 
+    datatable(df)
+    })
+  output$resumen <- renderPrint({
+    summary(rnorm(input$obs))
+  } )
+  output$linea <- renderPlot({   
+    plot(rnorm(input$obs), type = 'l')
+  })
+}
+shinyApp(ui, server)
+```
+]
+
+
