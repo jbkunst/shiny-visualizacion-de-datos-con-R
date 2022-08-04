@@ -24,9 +24,9 @@ Mie 27/7 - Mie 02/8 - Mie 10/8 - Mie 17/8
   - Layouts  
   - Integración HTMLWidgets
 - [Clase 3](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-03.html)
-  - Repaso/Ejercicios
   - Templates y diseño    
   - Compartir una app
 - [Clase 4](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-04.html)
+  - Orden de ejecución
   - Expresiones reactivas
   - Extensiones shiny

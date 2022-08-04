@@ -16,14 +16,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-library(flipbookr)
-options(htmltools.dir.version = FALSE)
-xaringanExtra::use_scribble(pen_color = "#B7410E")  # press S
-xaringanExtra::use_tile_view()                      # press O
-xaringanExtra::use_webcam()                         # press W
-xaringanExtra::use_animate_all("fade")
-xaringanExtra::use_freezeframe() # for GIFs!
-xaringanExtra::use_progress_bar(color = "red", location = "bottom", height = "10px")
+source("R/setup-xaringan.R")
 ```
 
 
@@ -63,8 +56,6 @@ class: center, middle, inverse
 
 # Repaso resumido
 
-<br>
-
 Así nuestra app de repaso quedaría:
 
 ```r
@@ -90,9 +81,7 @@ shinyApp(ui, server)
 
 ---
 
-# Ejercicio grupal: Juntando inputs y htmlwidgets
-
-<br> 
+# Ejercicio: Juntando inputs y htmlwidgets
 
 Generar una aplicación que considere los datos
 de los últimos sismos y que contenga:
@@ -196,8 +185,9 @@ class: center, middle, inverse
 - Al principio todas nuestras app son similares.
 - Existen extensiones/paquetes que permiten cambiar el estilo/look de la aplicación.
 
+.center[
 ![](imgs/shinyapps.gif)
-
+]
 
 
 ---
@@ -208,7 +198,9 @@ Los más fácil de implementar, sin tan alto impacto en código ni imagen. Opcio
 
 https://rstudio.github.io/shinythemes/
 
+.center[
 ![](imgs/shinythemes.png)
+]
 
 ---
 
@@ -242,7 +234,9 @@ ui <- fluidPage(
 
 Orientados a __dashboards__<span class="fragment"> agrega más funcionalidades</span>
 
+.center[
 ![](https://rstudio.github.io/shinydashboard/images/crandash.png)
+]
 
 ---
 
@@ -301,3 +295,99 @@ server <- function(input, output) {
 
 shinyApp(ui, server)
 ```
+
+
+---
+
+class: center, middle, inverse
+
+# Publicar/Compartir tu app
+
+---
+
+# Publicar/Compartir tu app
+
+<br> 
+
+Existen dos formas simples/sencillas para compartir una aplicación. Es decir
+que sea visible en otros dispositivos pc/móviles. Luego existen otras 
+que requieren de mayor conocimiento técnico.
+
+### Vía IP local
+
+Permite que tu pc sirva la aplicación y pueda ser visible 
+
+### Servicio shinyapps.io
+
+Permite que otro pc (una máquina virtual) sirva tu apliación y la exponga 
+con una url pública. Ejemplo https://usuario.shinyapps.io/nombreapp.
+
+### Otras
+
+Como por ejemplo arrendar una máquina virtual linode/digitalocean/aws e 
+instalar shinyserver.
+
+---
+
+# Vía IP local
+
+- Solamente funciona para redes locales (casa/trabajo).
+- Requiere que _nuestro_ pc esté encendido para que la app corra.
+
+<br> 
+
+Básicamente se obtiene la IP a través de una instrucción y luego
+se especifica correr la aplicación con dicha IP. Se deberá cambiar:
+
+```{r, eval=FALSE}
+shinyApp(ui = ui, server = server)
+```
+
+Por:
+
+```{r, eval=FALSE}
+# esto es en windows
+ip <- gsub(".*? ([[:digit:]])", "\\1", system("ipconfig", intern=T)[grep("IPv4", system("ipconfig", intern = T))])
+
+shinyApp(ui = ui, server = server, options = list(host = ip))
+```
+
+
+---
+
+# Servicio shinyapps.io
+
+- Básicamente sube todo lo que está en la carpeta de la aplicación archivos R y **otros** 
+a una máquina virtual y detecta los paquetes utilizados.
+- La versión gratuita tienes horas de uso que se van recuperando cada mes. Está
+máquina virtual es humilde en términos de recursos, puede ser lenta dependiendo
+del uso.
+
+
+Primero se debe una cuenta en https://www.shinyapps.io/ (puedes asociar tu correo gmail).
+Luego crear una app.
+- `rsconnect::deployApp("<ruta_a_la_aplicacion>")`, o:
+
+.center[
+![](imgs/publicar_screenshot_1v2.png)
+]
+
+---
+
+# Ejercicio: Intentado usar todo
+
+<br>
+
+- Cree un **proyecto** en RStudio y seleccione crear una Shiny App.
+- Descargue:
+  - Puntos bip! http://datos.gob.cl/dataset/28198 
+  - GTFS (?) del transantiago https://www.dtpm.cl/index.php/noticias/gtfs-vigente
+- Importe los datos de puntos bips en R. Limpiarlos si es necesario.
+- Cree una aplicación que tenga un selector de comunas, y que su 
+aplicación retorne un mapa con las ubicaciones de los lugares de cargasbip
+de la comuna seleccionada.
+- Agregar un thema shinythemes/thematic.
+- Evaluar agregar más outputs, o enriquecer el mapa.
+- Subir la aplicación a shinyapps.io
+
+Solución propuesta https://github.com/datosuc/Visualizacion-de-datos-con-R/blob/master/apps/puntos-bip/app.R

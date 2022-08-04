@@ -8,19 +8,6 @@
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
-    <script src="libs/fabric/fabric.min.js"></script>
-    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
-    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#B7410E"],"pen_size":3,"eraser_size":30,"palette":[]}) })</script>
-    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
-    <script src="libs/tile-view/tile-view.js"></script>
-    <script src="libs/xaringanExtra-webcam/webcam.js"></script>
-    <script id="xaringanExtra-webcam-options" type="application/json">{"width":"200","height":"200","margin":"1em"}</script>
-    <link href="libs/animate.css-xaringan/animate.fade.css" rel="stylesheet" />
-    <script src="libs/freezeframe/freezeframe.min.js"></script>
-    <script src="libs/xaringanExtra-freezeframe/freezeframe-init.js"></script>
-    <script id="xaringanExtra-freezeframe-options" type="application/json">{"selector":"img[src$=\"gif\"]","trigger":"click","overlay":false,"responsive":true,"warnings":true}</script>
-    <script src="libs/xaringanExtra-progressBar/progress-bar.js"></script>
     <link rel="stylesheet" href="assets/custom.css" type="text/css" />
   </head>
   <body>
@@ -70,10 +57,10 @@ Mie 27/7 - Mie 02/8 - Mie 10/8 - Mie 17/8
   - Layouts  
   - Integración HTMLWidgets
 - [Clase 3](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-03.html)
-  - Repaso/Ejercicios
   - Templates y diseño    
   - Compartir una app
 - [Clase 4](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-04.html)
+  - Orden de ejecución
   - Expresiones reactivas
   - Extensiones shiny
 
@@ -110,8 +97,6 @@ class: center, middle, inverse
 
 # Repaso resumido
 
-&lt;br&gt;
-
 Así nuestra app de repaso quedaría:
 
 ```r
@@ -137,9 +122,7 @@ shinyApp(ui, server)
 
 ---
 
-# Ejercicio grupal: Juntando inputs y htmlwidgets
-
-&lt;br&gt; 
+# Ejercicio: Juntando inputs y htmlwidgets
 
 Generar una aplicación que considere los datos
 de los últimos sismos y que contenga:
@@ -244,8 +227,9 @@ class: center, middle, inverse
 - Al principio todas nuestras app son similares.
 - Existen extensiones/paquetes que permiten cambiar el estilo/look de la aplicación.
 
+.center[
 ![](imgs/shinyapps.gif)
-
+]
 
 
 ---
@@ -256,7 +240,9 @@ Los más fácil de implementar, sin tan alto impacto en código ni imagen. Opcio
 
 https://rstudio.github.io/shinythemes/
 
+.center[
 ![](imgs/shinythemes.png)
+]
 
 ---
 
@@ -290,7 +276,9 @@ ui &lt;- fluidPage(
 
 Orientados a __dashboards__&lt;span class="fragment"&gt; agrega más funcionalidades&lt;/span&gt;
 
+.center[
 ![](https://rstudio.github.io/shinydashboard/images/crandash.png)
+]
 
 ---
 
@@ -349,6 +337,104 @@ server &lt;- function(input, output) {
 
 shinyApp(ui, server)
 ```
+
+
+---
+
+class: center, middle, inverse
+
+# Publicar/Compartir tu app
+
+---
+
+# Publicar/Compartir tu app
+
+&lt;br&gt; 
+
+Existen dos formas simples/sencillas para compartir una aplicación. Es decir
+que sea visible en otros dispositivos pc/móviles. Luego existen otras 
+que requieren de mayor conocimiento técnico.
+
+### Vía IP local
+
+Permite que tu pc sirva la aplicación y pueda ser visible 
+
+### Servicio shinyapps.io
+
+Permite que otro pc (una máquina virtual) sirva tu apliación y la exponga 
+con una url pública. Ejemplo https://usuario.shinyapps.io/nombreapp.
+
+### Otras
+
+Como por ejemplo arrendar una máquina virtual linode/digitalocean/aws e 
+instalar shinyserver.
+
+---
+
+# Vía IP local
+
+- Solamente funciona para redes locales (casa/trabajo).
+- Requiere que _nuestro_ pc esté encendido para que la app corra.
+
+&lt;br&gt; 
+
+Básicamente se obtiene la IP a través de una instrucción y luego
+se especifica correr la aplicación con dicha IP. Se deberá cambiar:
+
+
+```r
+shinyApp(ui = ui, server = server)
+```
+
+Por:
+
+
+```r
+# esto es en windows
+ip &lt;- gsub(".*? ([[:digit:]])", "\\1", system("ipconfig", intern=T)[grep("IPv4", system("ipconfig", intern = T))])
+
+shinyApp(ui = ui, server = server, options = list(host = ip))
+```
+
+
+---
+
+# Servicio shinyapps.io
+
+- Básicamente sube todo lo que está en la carpeta de la aplicación archivos R y **otros** 
+a una máquina virtual y detecta los paquetes utilizados.
+- La versión gratuita tienes horas de uso que se van recuperando cada mes. Está
+máquina virtual es humilde en términos de recursos, puede ser lenta dependiendo
+del uso.
+
+
+Primero se debe una cuenta en https://www.shinyapps.io/ (puedes asociar tu correo gmail).
+Luego crear una app.
+- `rsconnect::deployApp("&lt;ruta_a_la_aplicacion&gt;")`, o:
+
+.center[
+![](imgs/publicar_screenshot_1v2.png)
+]
+
+---
+
+# Ejercicio: Intentado usar todo
+
+&lt;br&gt;
+
+- Cree un **proyecto** en RStudio y seleccione crear una Shiny App.
+- Descargue:
+  - Puntos bip! http://datos.gob.cl/dataset/28198 
+  - GTFS (?) del transantiago https://www.dtpm.cl/index.php/noticias/gtfs-vigente
+- Importe los datos de puntos bips en R. Limpiarlos si es necesario.
+- Cree una aplicación que tenga un selector de comunas, y que su 
+aplicación retorne un mapa con las ubicaciones de los lugares de cargasbip
+de la comuna seleccionada.
+- Agregar un thema shinythemes/thematic.
+- Evaluar agregar más outputs, o enriquecer el mapa.
+- Subir la aplicación a shinyapps.io
+
+Solución propuesta https://github.com/datosuc/Visualizacion-de-datos-con-R/blob/master/apps/puntos-bip/app.R
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
