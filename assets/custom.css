@@ -1,8 +1,23 @@
 .title-slide {
-  background-image: url("shiny.png"), url("tidyverse.png"), url("htmltools.png"), url("background2.png");
-  background-size:  10%, 10%, 10%, cover;
-  background-position: 80% 0%, 91% 0%, 85.5% 23%, 10% 0;
+  background-image: 
+    url("shiny.png"), 
+    url("tidyverse.png"), 
+    url("htmltools.png"), 
+    url("thematic.png"), 
+    url("rsconnect.png"), 
+    url("background2.png");
+  background-size:  10%, 10%, 10%, 10%, 10%, 
+    cover;
+  background-position: 80% 0%, 91% 0%, 85.5% 23%, 74.5% 23%, 69% 0%,
+    10% 0;
   background-repeat: no-repeat;
+}
+
+/*remueve hr en la slide principal luego del h2 */
+.title-slide h2::after {
+    background-color: none;
+    color: none;
+    height: 0px;
 }
 
 .title       > h1, 
