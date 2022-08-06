@@ -90,6 +90,74 @@ el ejercicio de incorporar los colores y tipografías. Utilizando
 
 # Solución
 
+.pull-left[.code40[
+```r
+library(shiny);library(leaflet);library(rvest);library(dplyr);library(janitor)
+library(tidyverse);library(lubridate);library(DT);library(bslib)
+
+descarga_sismos_por_dia &lt;- function(fecha_string){
+  message(fecha_string)
+  fecha &lt;- ymd(fecha_string)
+  y &lt;- year(fecha)
+  m &lt;- format(fecha, "%m")  
+  d &lt;- format(fecha, "%Y%m%d")  
+  url &lt;- str_glue("https://www.sismologia.cl/sismicidad/catalogo/{y}/{m}/{d}.html")
+  datos &lt;- read_html(url) |&gt;
+    html_table() |&gt;
+    dplyr::nth(2) |&gt;
+    janitor::clean_names() |&gt;
+    tidyr::separate(latitud_longitud, into = c("latitud", "longitud"), sep = " ", convert = TRUE)
+  datos
+}
+
+ui &lt;- navbarPage(
+  theme = bs_theme("navbar-light-bg"  = "#002884", primary = "#5583ff", base_font = font_google("Nunito")),
+  tags$span("Sismos en ", tags$img(src = "https://portales.bancochile.cl/uploads/000/035/565/2ca8e2c5-606c-47f4-80ef-03bec528775d/original/bch-inverse.svg"),  
+  ),
+  tabPanel("Sismos",
+    sidebarLayout(
+      sidebarPanel(
+        dateInput("fecha", label = h5("Seleccione fecha por favor"), max = Sys.Date()),
+        actionButton("primary", "Primary", icon("r-project"), class = "btn-primary")
+      ),
+      mainPanel(
+        fluidRow(
+          column(width = 4, leafletOutput("mapa")),
+          column(width = 8, DTOutput("tabla"))
+        )
+      )
+    )
+  )
+)
+
+```
+]]
+.pull-right[.code60[
+```r
+server &lt;- function(input, output){
+  
+  output$mapa &lt;- renderLeaflet({
+    datos &lt;- descarga_sismos_por_dia(input$fecha)
+    leaflet(datos) |&gt;
+      addTiles() |&gt;
+      addMarkers(
+        lng = ~longitud,
+        lat = ~latitud,
+        popup = ~as.character(magnitud_2),
+        label = ~as.character(`fecha_local_lugar`)
+      )
+  })
+  
+  output$tabla &lt;- renderDataTable({
+    datos &lt;- descarga_sismos_por_dia(input$fecha)
+    datatable(datos)
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+]]
 
 
 ---
@@ -182,6 +250,86 @@ Para el ejercicio anterior:
 ---
 
 # Solución
+
+.pull-left[.code40[
+```r
+library(shiny);library(leaflet);library(rvest);library(dplyr);library(janitor)
+library(tidyverse);library(lubridate);library(DT);library(bslib)
+
+descarga_sismos_por_dia &lt;- function(fecha_string){
+  message(fecha_string)
+  fecha &lt;- ymd(fecha_string)
+  y &lt;- year(fecha)
+  m &lt;- format(fecha, "%m")  
+  d &lt;- format(fecha, "%Y%m%d")  
+  url &lt;- str_glue("https://www.sismologia.cl/sismicidad/catalogo/{y}/{m}/{d}.html")
+  datos &lt;- read_html(url) |&gt;
+    html_table() |&gt;
+    dplyr::nth(2) |&gt;
+    janitor::clean_names() |&gt;
+    tidyr::separate(latitud_longitud, into = c("latitud", "longitud"), sep = " ", convert = TRUE) |&gt; 
+    mutate(magnitud_3 = as.numeric(str_remove(magnitud_2, " Ml")))
+  datos
+}
+
+ui &lt;- navbarPage(
+  theme = bs_theme("navbar-light-bg"  = "#002884", primary = "#5583ff", base_font = font_google("Nunito")),
+  tags$span("Sismos en ", tags$img(src = "https://portales.bancochile.cl/uploads/000/035/565/2ca8e2c5-606c-47f4-80ef-03bec528775d/original/bch-inverse.svg"),  
+  ),
+  tabPanel("Sismos",
+    sidebarLayout(
+      sidebarPanel(
+        dateInput("fecha", label = h5("Seleccione fecha por favor"), max = Sys.Date()),
+        sliderInput("filtro_magnitud", label = "filtrar magnitud", min = 3, max = 10, value = 10),
+        actionButton("primary", "Primary", icon("r-project"), class = "btn-primary")
+      ),
+      mainPanel(
+        fluidRow(
+          column(width = 4, leafletOutput("mapa")),
+          column(width = 8, DTOutput("tabla"))
+        )
+      )
+    )
+  )
+)
+
+```
+]]
+.pull-right[.code60[
+```r
+server &lt;- function(input, output){
+  
+  dataSismos &lt;- reactive({
+    datos &lt;- descarga_sismos_por_dia(input$fecha)
+    datos
+  })
+  
+  output$mapa &lt;- renderLeaflet({
+    datos &lt;- dataSismos()
+    leaflet(datos) |&gt;
+      addTiles() |&gt;
+      addMarkers(
+        lng = ~longitud,
+        lat = ~latitud,
+        popup = ~as.character(magnitud_2),
+        label = ~as.character(`fecha_local_lugar`)
+      )
+  })
+  
+  output$tabla &lt;- renderDataTable({
+    datos &lt;- dataSismos()
+    mmax &lt;- input$filtro_magnitud
+    datos_filtrados &lt;- datos |&gt; 
+      filter(magnitud_3 &lt;= mmax) |&gt; 
+      select(-magnitud_3)
+    datatable(datos_filtrados)
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+]]
 
 ---
 
