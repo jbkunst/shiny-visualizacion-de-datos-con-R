@@ -25,6 +25,125 @@ source("R/setup-xaringan.R")
 
 ---
 
+# Ejercicio: Juntando inputs, laytous, htmlwidgets, {bslib}
+
+Recuerde el ejercicio de la clase pasada: Generar una aplicación que considere/tenga:
+
+- El app debe ser generada con un `navbarPage` (con una única sección `tabPanel`)
+- En la única sección considere un `sidebarPanel`.
+- La aplicación debe poseer un selector de fecha.
+- Dada una fecha, la aplicación muestre una tabla con la información
+de sismos de la fecha asociada y un mapa. Ayúdese generando una función 
+para descargar la información dada una fecha.
+- Adicionalmente un _leaflet_ con la ubicación de los sismos.
+- Incorpore texto con información de la fecha seleccionada.
+
+Adicionalmente:
+
+- Incorpore la tabla de sismos a la aplicación con {DT}.
+- Seleccione un retail, banco u otra marca de su preferencia y realice
+el ejercicio de incorporar los colores y tipografías. Utilizando
+`bs_theme(..., primary = color, "navbar-light-bg" = otrocolor)`
+
+---
+
+# Solución
+
+
+
+---
+
+class: center, middle, inverse
+
+# Expresiones reactivas
+
+---
+
+# Expresiones reactivas (_reactive expressions_)
+
+
+.pull-left[
+La idea de expresiones reactiva es que podemos limitar que es lo que se (re)ejecuta al cambiar un input.
+
+Una expresión reactiva es código R que usa un input y retorna un valor, 
+la expresion se actualizará cuando el valor del (de los) inputs de los cuales dependen
+cambien.
+
+Estos elementos se definen en el `server`. Se crea una expresion con la función `reactive` la que toma una expresión/código R entre `{}`, de la misma forma que las funciones `render` (`renderPlot`, `renderTable`):
+
+```
+server <- function(input, output) {
+  ...
+  elementoReactivo <- reactive({
+    codigo R...
+  })
+  ...
+
+} 
+```
+
+]
+
+.pull-right[
+```r
+server <- function(input, output) {
+  
+  dataSismos <- reactive({
+    fecha <- ymd(input$fecha)
+    ...
+    datos <- read_html(url) |>
+      html_table() |> ...
+    datos
+    
+  })
+  
+  output$mapa <- renderLeaflet({
+    
+    datos <- dataSismos()
+    
+    leaflet(datos) |> ...
+  })
+  
+  output$tabla <- renderDT({
+    datatable(dataSismos())
+  })
+  
+})
+```
+]
+
+---
+
+# Expresiones reactivas: Ejemplo
+
+.center[
+![](imgs/reactivity1.png)
+]
+
+---
+
+# Expresiones reactivas: Ejemplo _mejorado_
+
+.center[
+![](imgs/reactivity2.png)
+]
+
+---
+
+# Ejercicio: Creando una expresión reactiva
+
+Para el ejercicio anterior:
+
+- Cree la expresión reactiva necesaria para reducir la cantidad de descargas.
+
+- Incluya un `sliderInput` para filtrar los registros de la tabla (no así los registros/markers del mapa).
+
+---
+
+# Solución
+
+---
+
 class: center, middle, inverse
 
 # Orden de ejecución
@@ -59,171 +178,53 @@ knitr::include_graphics("imgs/run-many-times.png")
 ```
 ]
 
-
 ---
 
 class: center, middle, inverse
 
-# Optimizando código
+# Extensiones para Shiny
 
 ---
 
-# Optimizando código
+# Extensiones para Shiny
 
-Tomemos el ejemplo anterior de graficar y consideremos una opción para mostrar
-el eje en escala logaritmica
+Podemos decir que ya existe un _shinyverso_ dada la cantidad de paquetes
+que extienden shiny, agregando tanto diseños, nuevas funcionalidades, etc:
 
+https://github.com/nanxstats/awesome-shiny-extensions
 
-.code60[
-```r
-library(shiny) # fluidPage titlePanel sidebarLayout sidebarPanel selectInput checkboxInput mainPanel shinyApp
-library(forecast) # forecast %>%
-library(xts) # xts
-library(tradestatistics) # ots_create_tidy_data
-library(dplyr) # %>% mutate
-library(ggplot2) # ggplot geom_line aes geom_ribbon scale_y_continuous labs scale_y_log10
-library(scales) # comma
-library(plotly) # plotlyOutput renderPlotly ggplotly 
-library(shinythemes) # shinytheme
+Menciones honrosas (_en mi opinión_):
 
-formatear_monto <- function(monto){
-    paste("$", comma(monto/1e6, accuracy = .01), "MM")
-}
+- https://rinterface.github.io/shinydashboardPlus/
 
-lista_paises <- setNames(ots_countries$country_iso, ots_countries$country_name_english)
+- https://fullpage.rinterface.com/
 
-ui <- fluidPage(
-    theme = shinytheme("cyborg"), 
-    titlePanel("Ahora si que sí"),
-    sidebarLayout(
-        sidebarPanel(
-            selectInput("pais", "Seleccionar un país:", choices = lista_paises, selected = "chl"),
-            checkboxInput("log", label = "Escala en log")    #<<
-        ),
-        mainPanel(
-          plotlyOutput("grafico")
-        )
-    )
-)
-```
-]
+- https://waiter.john-coene.com/
+
+- https://cicerone.john-coene.com/
 
 
 ---
 
-# Optimizando código (cont.)
+# Ejercicio: Incorporando extensiones
 
-
-.code60[
-```r
-server <- function(input, output) {
-    output$grafico <- renderPlotly({
-        pais <- input$pais
-        data <- ots_create_tidy_data(years = 1990:2018, reporters = pais, table = "yr")
-        data <- mutate(data, year = as.numeric(year))
-        valores <- data$trade_value_usd_exp
-        fechas <- as.Date(paste0(data$year, "0101"), format = "%Y%m%d",)
-        serie <- xts(valores, order.by = fechas) 
-        prediccion <- forecast(serie, h = 5) 
-        dfpred <- as.data.frame(prediccion)
-        dfpred <- dfpred %>% mutate(anio = 2018 + 1:5)
-        
-        plt <- ggplot(data) +
-          geom_line(aes(x = year, y = trade_value_usd_exp)) +
-          geom_line(aes(x = anio, y = `Point Forecast`), data = dfpred, color = "darkred", size  = 1.2) +
-          geom_ribbon(aes(x = anio, ymin = `Lo 95`, ymax = `Hi 95`), data = dfpred, alpha = 0.25) +\
-          scale_y_continuous(labels = formatear_monto) +
-          labs(x = "Año", y = NULL, title = pais, subtitle = "Acá va un subtitulo",
-                caption = "Datos provenientes del paquete {tradestatistics}.")
-        
-        if(input$log){                    #<<
-          plt <- plt + scale_y_log10()    #<<
-        }
-        
-        ggplotly(plt)
-      
-    })
-    
-}
-
-shinyApp(ui = ui, server = server)
-```
-]
-
+Para el ejercicio incluya las características de {waiter} y {ciceroene}
 
 ---
 
-# Expresiones reactivas (_reactive expressions_)
-
-La idea de expresiones reactiva es que podemos limitar que es lo que se (re)ejecuta
-al cambiar un input.
-
-Una expresión reactiva es código R que usa un widget/input y retorna un valor, 
-la expresion se actualizará cuando el valor del (de los) widgets cambien.
-
-Se crea una expresion con la función `reactive` la que toma una expresión/código R
-entre `{}`, de la misma forma que las funciones `render` (`renderPlot`, `renderTable`)
-
-Así, por ejemplo ejemplo, para evitar correr código si solamente queremos cambiar
-elementos del gráfico una solución usando expresiones reactivas sería.
-
-.code60[
-```r
-
-server <- function(input, output) {
-  
-    dataExport <- reactive({
-      
-      pais <- input$pais
-      data <- ots_create_tidy_data(years = 1990:2018, reporters = pais, table = "yr")
-      data
-      
-    })
-    
-    output$grafico <- renderPlotly({
-        
-        data <- dataExport()
-        
-    
-    output
-
-```
-]
+# Solución
 
 ---
 
-# Expresiones reactivas (_reactive expressions_) (cont.)
+# Cosas que no vimos...
 
-Recordar que no necesariamente se puedes utilizar en **una** expresion, por ejemplo
-si queremos usar el data frame para realizar una tabla podríamos hacer:
-
-.code60[
-```r
-
-server <- function(input, output) {
-  
-    dataExport <- reactive({
-      
-      pais <- input$pais
-      data <- ots_create_tidy_data(years = 1990:2018, reporters = pais, table = "yr")
-      data
-      
-    })
-    
-    output$tabla <- renderTable({ dataExport()  })
-    
-    output$grafico <- renderPlotly({
-        
-        data <- dataExport()
-        
-    
-    output
-
-```
-]
-
-Pueden revisar el código en:
-
-- https://github.com/datosuc/Visualizacion-de-datos-con-R/blob/master/apps/exportaciones/app-reactive-expression.R
+... Que ni tan necesarias, pero que en futuro podrían ayudar!
 
 
+- `bindCache`: Se puede asociar un resultado de un `render` a ciertos inputs, para guardar automáticament el resultado sin tener que volver a ejecutar el código dentro del `render``. 
+https://shiny.rstudio.com/articles/caching.html
+
+- Bookmarking: La posibilidad de registrar la aplicación con ciertos inputs seleccionados.
+Como cuando comparter una aplicación de un retail con ciertos filtros. https://mastering-shiny.org/action-bookmark.html
+
+- HTMLWidgets Proxys: Características de algunos HTMLWidgets para no _recontruir_ el gráfico sino que actualizarlo. 

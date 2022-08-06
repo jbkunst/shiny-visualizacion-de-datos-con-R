@@ -8,19 +8,6 @@
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
-    <script src="libs/fabric/fabric.min.js"></script>
-    <link href="libs/xaringanExtra-scribble/scribble.css" rel="stylesheet" />
-    <script src="libs/xaringanExtra-scribble/scribble.js"></script>
-    <script>document.addEventListener('DOMContentLoaded', function() { window.xeScribble = new Scribble({"pen_color":["#B7410E"],"pen_size":3,"eraser_size":30,"palette":[]}) })</script>
-    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
-    <script src="libs/tile-view/tile-view.js"></script>
-    <script src="libs/xaringanExtra-webcam/webcam.js"></script>
-    <script id="xaringanExtra-webcam-options" type="application/json">{"width":"200","height":"200","margin":"1em"}</script>
-    <link href="libs/animate.css-xaringan/animate.fade.css" rel="stylesheet" />
-    <script src="libs/freezeframe/freezeframe.min.js"></script>
-    <script src="libs/xaringanExtra-freezeframe/freezeframe-init.js"></script>
-    <script id="xaringanExtra-freezeframe-options" type="application/json">{"selector":"img[src$=\"gif\"]","trigger":"click","overlay":false,"responsive":true,"warnings":true}</script>
-    <script src="libs/xaringanExtra-progressBar/progress-bar.js"></script>
     <link rel="stylesheet" href="assets/custom.css" type="text/css" />
   </head>
   <body>
@@ -70,31 +57,141 @@ Mie 27/7 - Mie 02/8 - Mie 10/8 - Mie 17/8
   - Layouts  
   - Integración HTMLWidgets
 - [Clase 3](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-03.html)
-  - Templates y diseño    
+  - Temas, templates y diseño    
   - Compartir una app
 - [Clase 4](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-04.html)
-  - Orden de ejecucuión
   - Expresiones reactivas
+  - Orden de ejecución  
   - Extensiones shiny
 
 ---
 
-# Repaso: orden de ejecución: Una vez 
+# Ejercicio: Juntando inputs, laytous, htmlwidgets, {bslib}
 
-&lt;style&gt;
+Recuerde el ejercicio de la clase pasada: Generar una aplicación que considere/tenga:
 
-.center2 {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  width: 70%;
-  height: 70%
-}
+- El app debe ser generada con un `navbarPage` (con una única sección `tabPanel`)
+- En la única sección considere un `sidebarPanel`.
+- La aplicación debe poseer un selector de fecha.
+- Dada una fecha, la aplicación muestre una tabla con la información
+de sismos de la fecha asociada y un mapa. Ayúdese generando una función 
+para descargar la información dada una fecha.
+- Adicionalmente un _leaflet_ con la ubicación de los sismos.
+- Incorpore texto con información de la fecha seleccionada.
 
-&lt;/style&gt;
+Adicionalmente:
+
+- Incorpore la tabla de sismos a la aplicación con {DT}.
+- Seleccione un retail, banco u otra marca de su preferencia y realice
+el ejercicio de incorporar los colores y tipografías. Utilizando
+`bs_theme(..., primary = color, "navbar-light-bg" = otrocolor)`
+
+---
+
+# Solución
+
+
+
+---
+
+class: center, middle, inverse
+
+# Expresiones reactivas
+
+---
+
+# Expresiones reactivas (_reactive expressions_)
+
+
+.pull-left[
+La idea de expresiones reactiva es que podemos limitar que es lo que se (re)ejecuta al cambiar un input.
+
+Una expresión reactiva es código R que usa un input y retorna un valor, 
+la expresion se actualizará cuando el valor del (de los) inputs de los cuales dependen
+cambien.
+
+Estos elementos se definen en el `server`. Se crea una expresion con la función `reactive` la que toma una expresión/código R entre `{}`, de la misma forma que las funciones `render` (`renderPlot`, `renderTable`):
+
+```
+server &lt;- function(input, output) {
+  ...
+  elementoReactivo &lt;- reactive({
+    codigo R...
+  })
+  ...
+
+} 
+```
+
+]
+
+.pull-right[
+```r
+server &lt;- function(input, output) {
+  
+  dataSismos &lt;- reactive({
+    fecha &lt;- ymd(input$fecha)
+    ...
+    datos &lt;- read_html(url) |&gt;
+      html_table() |&gt; ...
+    datos
+    
+  })
+  
+  output$mapa &lt;- renderLeaflet({
+    
+    datos &lt;- dataSismos()
+    
+    leaflet(datos) |&gt; ...
+  })
+  
+  output$tabla &lt;- renderDT({
+    datatable(dataSismos())
+  })
+  
+})
+```
+]
+
+---
+
+# Expresiones reactivas: Ejemplo
+
+.center[
+![](imgs/reactivity1.png)
+]
+
+---
+
+# Expresiones reactivas: Ejemplo _mejorado_
+
+.center[
+![](imgs/reactivity2.png)
+]
+
+---
+
+# Ejercicio: Creando una expresión reactiva
+
+Para el ejercicio anterior:
+
+- Cree la expresión reactiva necesaria para reducir la cantidad de descargas.
+
+- Incluya un `sliderInput` para filtrar los registros de la tabla (no así los registros/markers del mapa).
+
+---
+
+# Solución
+
+---
+
+class: center, middle, inverse
+
+# Orden de ejecución
+
+---
+
+# Una vez 
 
 .center[
 &lt;img src="imgs/run-once.png" width="70%" /&gt;
@@ -102,7 +199,7 @@ Mie 27/7 - Mie 02/8 - Mie 10/8 - Mie 17/8
 
 ---
 
-# Repaso orden de ejecución: Una vez por usuario
+# Una vez por usuario
 
 .center[
 &lt;img src="imgs/run-once-per-user.png" width="70%" /&gt;
@@ -110,253 +207,62 @@ Mie 27/7 - Mie 02/8 - Mie 10/8 - Mie 17/8
 
 ---
 
-# Repaso orden de ejecución: Muchas veces
+# Muchas veces
 
 .center[
 &lt;img src="imgs/run-many-times.png" width="70%" /&gt;
 ]
 
-
 ---
 
 class: center, middle, inverse
 
-# Optimizando código
+# Extensiones para Shiny
 
 ---
 
-# Optimizando código
+# Extensiones para Shiny
 
-Tomemos el ejemplo anterior de graficar y consideremos una opción para mostrar
-el eje en escala logaritmica
+Podemos decir que ya existe un _shinyverso_ dada la cantidad de paquetes
+que extienden shiny, agregando tanto diseños, nuevas funcionalidades, etc:
 
+https://github.com/nanxstats/awesome-shiny-extensions
 
-.code60[
-```r
-library(shiny) # fluidPage titlePanel sidebarLayout sidebarPanel selectInput checkboxInput mainPanel shinyApp
-library(forecast) # forecast %&gt;%
-library(xts) # xts
-library(tradestatistics) # ots_create_tidy_data
-library(dplyr) # %&gt;% mutate
-library(ggplot2) # ggplot geom_line aes geom_ribbon scale_y_continuous labs scale_y_log10
-library(scales) # comma
-library(plotly) # plotlyOutput renderPlotly ggplotly 
-library(shinythemes) # shinytheme
+Menciones honrosas (_en mi opinión_):
 
-formatear_monto &lt;- function(monto){
-    paste("$", comma(monto/1e6, accuracy = .01), "MM")
-}
+- https://rinterface.github.io/shinydashboardPlus/
 
-lista_paises &lt;- setNames(ots_countries$country_iso, ots_countries$country_name_english)
+- https://fullpage.rinterface.com/
 
-ui &lt;- fluidPage(
-    theme = shinytheme("cyborg"), 
-    titlePanel("Ahora si que sí"),
-    sidebarLayout(
-        sidebarPanel(
-            selectInput("pais", "Seleccionar un país:", choices = lista_paises, selected = "chl"),
-            checkboxInput("log", label = "Escala en log")    #&lt;&lt;
-        ),
-        mainPanel(
-          plotlyOutput("grafico")
-        )
-    )
-)
-```
-]
+- https://waiter.john-coene.com/
+
+- https://cicerone.john-coene.com/
 
 
 ---
 
-# Optimizando código (cont.)
+# Ejercicio: Incorporando extensiones
 
-
-.code60[
-```r
-server &lt;- function(input, output) {
-    output$grafico &lt;- renderPlotly({
-        pais &lt;- input$pais
-        data &lt;- ots_create_tidy_data(years = 1990:2018, reporters = pais, table = "yr")
-        data &lt;- mutate(data, year = as.numeric(year))
-        valores &lt;- data$trade_value_usd_exp
-        fechas &lt;- as.Date(paste0(data$year, "0101"), format = "%Y%m%d",)
-        serie &lt;- xts(valores, order.by = fechas) 
-        prediccion &lt;- forecast(serie, h = 5) 
-        dfpred &lt;- as.data.frame(prediccion)
-        dfpred &lt;- dfpred %&gt;% mutate(anio = 2018 + 1:5)
-        
-        plt &lt;- ggplot(data) +
-          geom_line(aes(x = year, y = trade_value_usd_exp)) +
-          geom_line(aes(x = anio, y = `Point Forecast`), data = dfpred, color = "darkred", size  = 1.2) +
-          geom_ribbon(aes(x = anio, ymin = `Lo 95`, ymax = `Hi 95`), data = dfpred, alpha = 0.25) +\
-          scale_y_continuous(labels = formatear_monto) +
-          labs(x = "Año", y = NULL, title = pais, subtitle = "Acá va un subtitulo",
-                caption = "Datos provenientes del paquete {tradestatistics}.")
-        
-        if(input$log){                    #&lt;&lt;
-          plt &lt;- plt + scale_y_log10()    #&lt;&lt;
-        }
-        
-        ggplotly(plt)
-      
-    })
-    
-}
-
-shinyApp(ui = ui, server = server)
-```
-]
-
+Para el ejercicio incluya las características de {waiter} y {ciceroene}
 
 ---
 
-# Expresiones reactivas (_reactive expressions_)
-
-La idea de expresiones reactiva es que podemos limitar que es lo que se (re)ejecuta
-al cambiar un input.
-
-Una expresión reactiva es código R que usa un widget/input y retorna un valor, 
-la expresion se actualizará cuando el valor del (de los) widgets cambien.
-
-Se crea una expresion con la función `reactive` la que toma una expresión/código R
-entre `{}`, de la misma forma que las funciones `render` (`renderPlot`, `renderTable`)
-
-Así, por ejemplo ejemplo, para evitar correr código si solamente queremos cambiar
-elementos del gráfico una solución usando expresiones reactivas sería.
-
-.code60[
-```r
-
-server &lt;- function(input, output) {
-  
-    dataExport &lt;- reactive({
-      
-      pais &lt;- input$pais
-      data &lt;- ots_create_tidy_data(years = 1990:2018, reporters = pais, table = "yr")
-      data
-      
-    })
-    
-    output$grafico &lt;- renderPlotly({
-        
-        data &lt;- dataExport()
-        
-    
-    output
-
-```
-]
+# Solución
 
 ---
 
-# Expresiones reactivas (_reactive expressions_) (cont.)
+# Cosas que no vimos...
 
-Recordar que no necesariamente se puedes utilizar en **una** expresion, por ejemplo
-si queremos usar el data frame para realizar una tabla podríamos hacer:
-
-.code60[
-```r
-
-server &lt;- function(input, output) {
-  
-    dataExport &lt;- reactive({
-      
-      pais &lt;- input$pais
-      data &lt;- ots_create_tidy_data(years = 1990:2018, reporters = pais, table = "yr")
-      data
-      
-    })
-    
-    output$tabla &lt;- renderTable({ dataExport()  })
-    
-    output$grafico &lt;- renderPlotly({
-        
-        data &lt;- dataExport()
-        
-    
-    output
-
-```
-]
-
-Pueden revisar el código en:
-
-- https://github.com/datosuc/Visualizacion-de-datos-con-R/blob/master/apps/exportaciones/app-reactive-expression.R
+... Que ni tan necesarias, pero que en futuro podrían ayudar!
 
 
----
+- `bindCache`: Se puede asociar un resultado de un `render` a ciertos inputs, para guardar automáticament el resultado sin tener que volver a ejecutar el código dentro del `render``. 
+https://shiny.rstudio.com/articles/caching.html
 
-# Memoización
+- Bookmarking: La posibilidad de registrar la aplicación con ciertos inputs seleccionados.
+Como cuando comparter una aplicación de un retail con ciertos filtros. https://mastering-shiny.org/action-bookmark.html
 
-(_Wikipedia_) 
-En Informática, el término memoización (del inglés memoization) es una técnica 
-de optimización que se usa principalmente para acelerar los tiempos de cálculo,
-almacenando los resultados de la llamada a una subrutina en una memoria intermedia
-o búfer y devolviendo esos mismos valores cuando se llame de nuevo a la subrutina
-o función con los mismos parámetros de entrada.
-
-Supongamos la eterna función:
-
-
-```r
-gran_funcion &lt;- function(valor){
-  Sys.sleep(sample(5:10, size = 1))
-  2 * valor 
-}
-
-gran_funcion(1)
-
-system.time({gran_funcion(1)})
-```
-
----
-
-# Memoización (cont)
-
-En R existe el paquete `memoise` el cual ayuda a _memoizar_ funciones:
-
-
-
-```r
-library(memoise)
-
-gran_funcion_memoizada &lt;- memoise(gran_funcion)
-
-gran_funcion_memoizada(1)
-
-gran_funcion_memoizada(1) == gran_funcion(1)
-
-system.time({gran_funcion_memoizada(1)})
-
-gran_funcion_memoizada
-```
-
-
----
-
-# Memoización (cont 2)
-
-En R existe el paquete `memoise` el cual ayuda a _memoizar_ funciones:
-
-Internamente lo que hace es:
-
-- En la primera vez que se ejecuta la funcion memoizada debe utilizar la función
-original para conocer su valor.
-- Luego guarda el valor del output (para una próxima ejecución de la función) asociándolo
-a los valores/parámetros.
-- En una futura ocación al ejecutar la función memoizada con un parámetro ya ejecutado, 
-en lugar de ejecutar la función original recupera anteriormente guardado.
-
-Comentarios y cuidados:
-- La función debe ser determinística, debe retornar siempre un valor fijo, ya sea un modelo,
-vector, etc (piense en memoizar `runif`).
-- Existen funciones que la memoización dura cierto
-- Recordar que esto no es exclusivo para shiny apps, ni para R.
-
-
-
-
-
+- HTMLWidgets Proxys: Características de algunos HTMLWidgets para no _recontruir_ el gráfico sino que actualizarlo. 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

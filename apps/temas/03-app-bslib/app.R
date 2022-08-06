@@ -1,9 +1,10 @@
 library(shiny)
+library(ggplot2)
 library(bslib)
 
 ui <- fluidPage(
   theme = bs_theme(
-    bg = "#f9f9f9",
+    bg = "#FFFDD0",
     fg = "#202A44",
     heading_font = font_google("Mouse Memoirs"),
     base_font = font_google("Uchen")
@@ -11,21 +12,16 @@ ui <- fluidPage(
   titlePanel("Old Faithful Geyser Data"),
   sidebarLayout(
     sidebarPanel(
-      sliderInput("bins","Number of bins:", min = 1, 
-                  max = 50, value = 30)
+      sliderInput("bins","Number of bins:", min = 1, max = 50, value = 30),
+      textInput("titulo", "Ingrese titulo")
     ),
     mainPanel(plotOutput("distPlot"))
   )
 )
 
 server <- function(input, output) {
-  
   output$distPlot <- renderPlot({
-    x    <- faithful[, 2]
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    hist(x, breaks = bins, col = 'darkgray', border = 'white',
-         xlab = 'Waiting time to next eruption (in mins)',
-         main = 'Histogram of waiting times')
+    qplot(faithful[, 2], geom = "histogram", bins = input$bins + 1) + ggtitle(input$titulo)
   })
 }
 

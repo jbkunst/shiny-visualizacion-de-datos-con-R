@@ -60,8 +60,8 @@ Mie 27/7 - Mie 02/8 - Mie 10/8 - Mie 17/8
   - Temas, templates y diseño    
   - Compartir una app
 - [Clase 4](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-04.html)
-  - Orden de ejecución
   - Expresiones reactivas
+  - Orden de ejecución  
   - Extensiones shiny
 
 ---
@@ -146,6 +146,73 @@ para descargar la información dada una fecha.
 
 # Solución
 
+.pull-left[.code60[
+```r
+library(shiny)
+library(leaflet)
+library(rvest)
+library(dplyr)
+library(janitor)
+library(tidyverse)
+library(lubridate)
+
+ui &lt;- navbarPage(
+  "VerSismos", 
+  tabPanel(
+    "Sismos",
+    sidebarLayout(
+      sidebarPanel(
+        dateInput(
+          "fecha",
+          label = h3("Seleccione fecha por favor"),
+          max = Sys.Date()
+          )
+      ),
+      mainPanel(leafletOutput("mapa"))
+      )
+    )
+  )
+
+```
+]]
+
+.pull-right[.code60[
+```r
+server &lt;- function(input, output){
+  
+  output$mapa &lt;- renderLeaflet({
+    
+    fecha &lt;- ymd(input$fecha)
+    y &lt;- year(fecha)
+    m &lt;- format(fecha, "%m")  
+    d &lt;- format(fecha, "%Y%m%d")  
+    
+    url &lt;- str_glue("https://www.sismologia.cl/sismicidad/catalogo/{y}/{m}/{d}.html")
+    
+    datos &lt;- read_html(url) |&gt;
+      html_table() |&gt;
+      dplyr::nth(2) |&gt;
+      janitor::clean_names() |&gt;
+      tidyr::separate(latitud_longitud, into = c("latitud", "longitud"),
+        sep = " ", convert = TRUE
+      )
+    
+    leaflet(datos) |&gt;
+      addTiles() |&gt;
+      addMarkers(
+        lng = ~longitud,
+        lat = ~latitud,
+        popup = ~as.character(magnitud_2),
+        label = ~as.character(`fecha_local_lugar`)
+      )
+    
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+]]
 
 ---
 
@@ -212,6 +279,8 @@ autoplot(prediccion)
 
 # Solución
 
+De tarea!
+
 ---
 
 class: center, middle, inverse
@@ -228,6 +297,36 @@ class: center, middle, inverse
 .center[
 ![](imgs/shinyapps.gif)
 ]
+
+---
+
+# App para ejemplos
+
+Utilizaremos la siguiente app para ver cada uno de los ejemplos:
+
+```r
+library(shiny)
+library(ggplot2)
+
+ui &lt;- fluidPage(
+  titlePanel("Old Faithful Geyser Data"),
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("bins","Number of bins:", min = 1, max = 50, value = 30)
+      ),
+    mainPanel(plotOutput("distPlot"))
+    )
+  )
+
+server &lt;- function(input, output) {
+  
+  output$distPlot &lt;- renderPlot({
+    qplot(faithful[, 2], geom = "histogram", bins = input$bins + 1)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
 
 ---
 
@@ -263,7 +362,8 @@ library(bslib)
 
 ui &lt;- fluidPage(
   theme = bs_theme(bootswatch = "paper")
-   sidebarLayout(...
+  titlePanel("Old Faithful Geyser Data"),
+  sidebarLayout(...
 ```
 
 Intentemos ahora con Darkyl, Flatly, Cosmos, Cerulean
@@ -279,12 +379,13 @@ Con `bs_theme` un puede cambiar varios elementos estéticos de la aplicación. E
 
 ```r
 library(shiny)
+library(ggplot2)
 library(bslib)
 
 ui &lt;- fluidPage(
   theme = bs_theme(
-    bg = "#f9f9f9",
-    fg = "#202A44",
+    bg = "#FFFDD0",  # background: color de fondo
+    fg = "#202A44",  # foreground: color de letra
     heading_font = font_google("Mouse Memoirs"),
     base_font = font_google("Uchen")
     ),
@@ -292,42 +393,37 @@ ui &lt;- fluidPage(
   sidebarLayout(...
 ```
 
-- https://fonts.google.com/
-- https://www.colorhexa.com/202A44
-
+- https://unleash-shiny.rinterface.com/beautify-with-bootstraplib.html
+- https://fonts.google.com/specimen/Mouse+Memoirs?query=Mouse+Memoirs
+- https://www.colorhexa.com/FFFDD0
 
 ---
 
-# Incorporando propios estilos + {thematic} + {showtext}
+# Incorporando propios estilos + {thematic} 
 
-Adicionalmene:
-
-- Con {thematic} los gráficos incorporarán las mismas reglas de estilo -colores- que la aplicación.
-- Con {showtext}, los gráficos incorporarán las fuentes utilizadas.
+Adicionalmene, con {thematic} los gráficos incorporarán las mismas reglas de estilo -colores- que la aplicación.
 
 ```r
 library(shiny)
+library(ggplot2)
 library(bslib)
 library(thematic)
-library(showtext)
 
-showtext_auto()
-font_add_google("Uchen")
-thematic_shiny(font = "auto")
+thematic_shiny(font = "Press Start 2P")
 
 ui &lt;- fluidPage(
   theme = bs_theme(
-    bg = "#f9f9f9",
-    fg = "#202A44",
+    bg = "#f5f5f5",       
+    fg = "#202A44",      
+    primary = "#8B0000", # color primario, acentos.
     heading_font = font_google("Mouse Memoirs"),
-    base_font = font_google("Uchen")
-    ),
+    base_font = font_google("Press Start 2P")
+  ),
   titlePanel("Old Faithful Geyser Data"),
   sidebarLayout(...
 ```
 
-- https://fonts.google.com/
-- https://www.colorhexa.com/202A44
+Más info en https://rstudio.github.io/thematic/.
 
 ---
 
@@ -362,6 +458,11 @@ ui &lt;- dashboardPage(
 )
 ```
 
+Adicionalmente provee de otros elementos como `valueBox`, `box`, `infoBox`. 
+
+Documentación en https://rstudio.github.io/shinydashboard/structure.html.
+
+
 ---
 
 # Más y más templates y diseños
@@ -384,7 +485,7 @@ Notar que estos paquetes cambian solos el diseño de la interfaz, como textos.
 
 Tomar la siguiente aplicación:
 - Modifcar el tema con un tema bootswatch.
-- Aplicar un tema utilizando `bs_theme`.
+- Aplicar un tema utilizando `bs_theme` + {thematic} + {showtext}.
 - Modifcar el ui utilizando el ejemplo de `shinydashboard` (copy+paste).
 
 

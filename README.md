@@ -27,6 +27,6 @@ Mie 27/7 - Mie 02/8 - Mie 10/8 - Mie 17/8
   - Temas, templates y diseño    
   - Compartir una app
 - [Clase 4](https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-04.html)
-  - Orden de ejecución
   - Expresiones reactivas
+  - Orden de ejecución  
   - Extensiones shiny
