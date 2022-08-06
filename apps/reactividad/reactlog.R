@@ -6,6 +6,13 @@ reactlog_enable()
 reactlogReset()
 
 # run a shiny app
+shiny::runApp("apps/reactividad/app-03-reactividad-mas-filtro/")
+
+# once app has closed, display reactlog from shiny
+shiny::reactlogShow()
+
+
+# run a shiny app
 shiny::runApp("apps/reactividad/app-01/app.R")
 
 # once app has closed, display reactlog from shiny

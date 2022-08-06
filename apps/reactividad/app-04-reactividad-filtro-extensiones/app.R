@@ -8,8 +8,13 @@ library(tidyverse)
 library(lubridate)
 library(DT)
 library(bslib)
+# library(waiter)
+library(shinycssloaders)
+library(cicerone)
 
 descarga_sismos_por_dia <- function(fecha_string){
+  
+  Sys.sleep(5)
   
   message(fecha_string)
   
@@ -32,6 +37,19 @@ descarga_sismos_por_dia <- function(fecha_string){
   datos
 }
 
+guide <- Cicerone$
+  new()$ 
+  step(
+    el = "fecha",
+    title = "Selecciona fecha",
+    description = "Selecciona fecha"
+  )$
+  step(
+    "mapa",
+    "Mapa",
+    "Muestra la ubicación de los sismos del día seleccionado."
+  )
+
 ui <- navbarPage(
   theme = bs_theme(
     "navbar-light-bg"  = "#002884",
@@ -39,6 +57,8 @@ ui <- navbarPage(
     base_font = font_google("Nunito")
   ),
   # "VerSismos", 
+  # autoWaiter(),
+  use_cicerone(), # include dependencies
   tags$span(
     "Sismos en ",
     tags$img(src = "https://portales.bancochile.cl/uploads/000/035/565/2ca8e2c5-606c-47f4-80ef-03bec528775d/original/bch-inverse.svg"),  
@@ -60,8 +80,8 @@ ui <- navbarPage(
       mainPanel(
         width = 10,
         fluidRow(
-          column(width = 4, leafletOutput("mapa")),
-          column(width = 8, DTOutput("tabla"))
+          column(width = 4, withSpinner(leafletOutput("mapa"))),
+          column(width = 8, withSpinner(DTOutput("tabla")))
         )
       )
     )
@@ -70,12 +90,16 @@ ui <- navbarPage(
 
 server <- function(input, output){
   
+  # initialise then start the guide
+  guide$init()$start()
+  
   dataSismos <- reactive({
     
     datos <- descarga_sismos_por_dia(input$fecha)
     datos
     
-  })
+  }) |>
+    bindCache(input$fecha)
   
   output$mapa <- renderLeaflet({
     
