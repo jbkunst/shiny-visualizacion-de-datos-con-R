@@ -1,4 +1,3 @@
-# Ejercio inicial de la clase 3
 library(shiny)
 library(leaflet)
 library(rvest)
@@ -8,7 +7,6 @@ library(tidyverse)
 library(lubridate)
 library(DT)
 library(bslib)
-# library(waiter)
 library(shinycssloaders)
 library(cicerone)
 
@@ -56,8 +54,6 @@ ui <- navbarPage(
     primary = "#5583ff",
     base_font = font_google("Nunito")
   ),
-  # "VerSismos", 
-  # autoWaiter(),
   use_cicerone(), # include dependencies
   tags$span(
     "Sismos en ",
