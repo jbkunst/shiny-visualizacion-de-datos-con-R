@@ -183,11 +183,8 @@ server &lt;- function(input, output){
   output$mapa &lt;- renderLeaflet({
     
     fecha &lt;- ymd(input$fecha)
-    y &lt;- year(fecha)
-    m &lt;- format(fecha, "%m")  
-    d &lt;- format(fecha, "%Y%m%d")  
     
-    url &lt;- str_glue("https://www.sismologia.cl/sismicidad/catalogo/{y}/{m}/{d}.html")
+    url &lt;- format(fecha, "https://www.sismologia.cl/sismicidad/catalogo/%Y/%m/%Y%m%d.html")
     
     datos &lt;- read_html(url) |&gt;
       html_table() |&gt;
@@ -312,16 +309,17 @@ ui &lt;- fluidPage(
   titlePanel("Old Faithful Geyser Data"),
   sidebarLayout(
     sidebarPanel(
-      sliderInput("bins","Number of bins:", min = 1, max = 50, value = 30)
-      ),
+      sliderInput("bins","Number of bins:", min = 1, max = 50, value = 30),
+      textInput("titulo", "Ingrese titulo"),
+      actionButton("boton", "No hago nada", class = "btn-primary")
+    ),
     mainPanel(plotOutput("distPlot"))
-    )
   )
+)
 
 server &lt;- function(input, output) {
-  
   output$distPlot &lt;- renderPlot({
-    qplot(faithful[, 2], geom = "histogram", bins = input$bins + 1)
+    qplot(faithful[, 2], geom = "histogram", bins = input$bins + 1) + ggtitle(input$titulo)
   })
 }
 
@@ -361,7 +359,7 @@ library(shiny)
 library(bslib)
 
 ui &lt;- fluidPage(
-  theme = bs_theme(bootswatch = "paper")
+  theme = bs_theme(bootswatch = "paper"),
   titlePanel("Old Faithful Geyser Data"),
   sidebarLayout(...
 ```

@@ -142,11 +142,8 @@ server <- function(input, output){
   output$mapa <- renderLeaflet({
     
     fecha <- ymd(input$fecha)
-    y <- year(fecha)
-    m <- format(fecha, "%m")  
-    d <- format(fecha, "%Y%m%d")  
     
-    url <- str_glue("https://www.sismologia.cl/sismicidad/catalogo/{y}/{m}/{d}.html")
+    url <- format(fecha, "https://www.sismologia.cl/sismicidad/catalogo/%Y/%m/%Y%m%d.html")
     
     datos <- read_html(url) |>
       html_table() |>
@@ -270,16 +267,17 @@ ui <- fluidPage(
   titlePanel("Old Faithful Geyser Data"),
   sidebarLayout(
     sidebarPanel(
-      sliderInput("bins","Number of bins:", min = 1, max = 50, value = 30)
-      ),
+      sliderInput("bins","Number of bins:", min = 1, max = 50, value = 30),
+      textInput("titulo", "Ingrese titulo"),
+      actionButton("boton", "No hago nada", class = "btn-primary")
+    ),
     mainPanel(plotOutput("distPlot"))
-    )
   )
+)
 
 server <- function(input, output) {
-  
   output$distPlot <- renderPlot({
-    qplot(faithful[, 2], geom = "histogram", bins = input$bins + 1)
+    qplot(faithful[, 2], geom = "histogram", bins = input$bins + 1) + ggtitle(input$titulo)
   })
 }
 
@@ -319,7 +317,7 @@ library(shiny)
 library(bslib)
 
 ui <- fluidPage(
-  theme = bs_theme(bootswatch = "paper")
+  theme = bs_theme(bootswatch = "paper"),
   titlePanel("Old Faithful Geyser Data"),
   sidebarLayout(...
 ```
