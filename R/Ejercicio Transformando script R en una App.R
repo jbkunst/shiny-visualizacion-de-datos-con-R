@@ -13,7 +13,7 @@ library(dplyr) # glimpse %>% group_by summarise
 
 pais <- "can"  # seteo pais, usa, can
 
-data <- ots_create_tidy_data(years = 1990:2018, reporters = pais, table = "yrp")
+data <- ots_create_tidy_data(years = 2010:2018, reporters = pais, table = "yrp")
 
 glimpse(data)
 

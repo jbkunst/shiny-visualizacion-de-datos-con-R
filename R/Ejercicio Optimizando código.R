@@ -31,7 +31,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   output$grafico <- renderPlotly({
     pais <- input$pais
-    data <- ots_create_tidy_data(years = 1990:2018, reporters = pais, table = "yr")
+    data <- ots_create_tidy_data(years = 2010:2018, reporters = pais, table = "yr")
     data <- mutate(data, year = as.numeric(year))
     valores <- data$trade_value_usd_exp
     fechas <- as.Date(paste0(data$year, "0101"), format = "%Y%m%d",)
