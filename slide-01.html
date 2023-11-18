@@ -100,11 +100,8 @@ install.packages(
 
 No olvidar que una buena forma de aprender es con la documentación oficial:
 
-- https://mastering-shiny.org/ (proceso de traducción al español https://github.com/cienciadedatos/mastering-shiny)
-- https://shiny.rstudio.com/tutorial/
-- https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/
-- https://shiny.rstudio.com/images/shiny-cheatsheet.pdf
-- https://raw.githubusercontent.com/rstudio/cheatsheets/main/translations/spanish/shiny_es.pdf
+- https://mastering-shiny.org/
+- https://shiny.posit.co/r/getstarted/shiny-basics/lesson1/
 
 
 ---
@@ -159,8 +156,8 @@ Hasta algo más complejo con más `input`s y `output`s
 Algunos simples.
 
 * https://jjallaire.shinyapps.io/shiny-kmeans/
-* https://jbkunst.shinyapps.io/05-arma/ (https://github.com/jbkunst/highcharter-shiny/tree/master/05-arma)
-
+* https://jbkunst.shinyapps.io/bias-variance/
+(https://github.com/jbkunst/shiny-apps-educational)
 &lt;br/&gt;
 
 Otros con más detalle en la parte visual.
@@ -168,12 +165,7 @@ Otros con más detalle en la parte visual.
 * https://jbkunst.shinyapps.io/trd-sttstcs/ (https://github.com/jbkunst/trd-sttstcs)
 * https://jorgehcas1998.shinyapps.io/Dataton-app/ (https://github.com/socapal/dataton-tudinero)
 * https://nz-stefan.shinyapps.io/commute-explorer-2
-
-
-&lt;br/&gt;
-
-Fuente: Shiny contest https://blog.rstudio.com/2021/06/24/winners-of-the-3rd-annual-shiny-contest/ 
-se le pide a los concursantes compartir el código, todos aprenden!
+* https://odes-chile.org/app/unidades/
 
 ---
 
@@ -313,6 +305,385 @@ server &lt;- function(input, output) {
 }         
 ```
 
+---
+
+# Repaso R: Que hace el siguiente código?
+
+&lt;br&gt;
+
+
+```r
+set.seed(123)
+
+x &lt;- rnorm(10)
+x
+
+t &lt;- ifelse(TRUE, "b", "l")
+t
+
+plot(x, type = t, col = "red")    
+```
+
+---
+
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace-auto[
+
+```r
+*set.seed(123)
+```
+]
+ 
+.panel2-quehace-auto[
+
+]
+
+---
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace-auto[
+
+```r
+set.seed(123)
+
+*x &lt;- rnorm(10)
+```
+]
+ 
+.panel2-quehace-auto[
+
+]
+
+---
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace-auto[
+
+```r
+set.seed(123)
+
+x &lt;- rnorm(10)
+*x 
+```
+]
+ 
+.panel2-quehace-auto[
+
+```
+##  [1] -0.56047565 -0.23017749  1.55870831  0.07050839  0.12928774  1.71506499
+##  [7]  0.46091621 -1.26506123 -0.68685285 -0.44566197
+```
+]
+
+---
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace-auto[
+
+```r
+set.seed(123)
+
+x &lt;- rnorm(10)
+x
+
+*t &lt;- ifelse(TRUE, "b", "l")
+```
+]
+ 
+.panel2-quehace-auto[
+
+```
+##  [1] -0.56047565 -0.23017749  1.55870831  0.07050839  0.12928774  1.71506499
+##  [7]  0.46091621 -1.26506123 -0.68685285 -0.44566197
+```
+]
+
+---
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace-auto[
+
+```r
+set.seed(123)
+
+x &lt;- rnorm(10)
+x
+
+t &lt;- ifelse(TRUE, "b", "l")
+*t 
+```
+]
+ 
+.panel2-quehace-auto[
+
+```
+##  [1] -0.56047565 -0.23017749  1.55870831  0.07050839  0.12928774  1.71506499
+##  [7]  0.46091621 -1.26506123 -0.68685285 -0.44566197
+```
+
+```
+## [1] "b"
+```
+]
+
+---
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace-auto[
+
+```r
+set.seed(123)
+
+x &lt;- rnorm(10)
+x
+
+t &lt;- ifelse(TRUE, "b", "l")
+t
+
+*plot(x, type = t, col = "red")
+```
+]
+ 
+.panel2-quehace-auto[
+
+```
+##  [1] -0.56047565 -0.23017749  1.55870831  0.07050839  0.12928774  1.71506499
+##  [7]  0.46091621 -1.26506123 -0.68685285 -0.44566197
+```
+
+```
+## [1] "b"
+```
+
+![](slide-01_files/figure-html/quehace_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-quehace-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-quehace-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-quehace-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+---
+
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace2-auto[
+
+```r
+*set.seed(123)
+```
+]
+ 
+.panel2-quehace2-auto[
+
+]
+
+---
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace2-auto[
+
+```r
+set.seed(123)
+
+*x &lt;- rnorm(20)
+```
+]
+ 
+.panel2-quehace2-auto[
+
+]
+
+---
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace2-auto[
+
+```r
+set.seed(123)
+
+x &lt;- rnorm(20)
+*x 
+```
+]
+ 
+.panel2-quehace2-auto[
+
+```
+##  [1] -0.56047565 -0.23017749  1.55870831  0.07050839  0.12928774  1.71506499
+##  [7]  0.46091621 -1.26506123 -0.68685285 -0.44566197  1.22408180  0.35981383
+## [13]  0.40077145  0.11068272 -0.55584113  1.78691314  0.49785048 -1.96661716
+## [19]  0.70135590 -0.47279141
+```
+]
+
+---
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace2-auto[
+
+```r
+set.seed(123)
+
+x &lt;- rnorm(20)
+x
+
+*t &lt;- ifelse(FALSE, "b", "l")
+```
+]
+ 
+.panel2-quehace2-auto[
+
+```
+##  [1] -0.56047565 -0.23017749  1.55870831  0.07050839  0.12928774  1.71506499
+##  [7]  0.46091621 -1.26506123 -0.68685285 -0.44566197  1.22408180  0.35981383
+## [13]  0.40077145  0.11068272 -0.55584113  1.78691314  0.49785048 -1.96661716
+## [19]  0.70135590 -0.47279141
+```
+]
+
+---
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace2-auto[
+
+```r
+set.seed(123)
+
+x &lt;- rnorm(20)
+x
+
+t &lt;- ifelse(FALSE, "b", "l")
+*t 
+```
+]
+ 
+.panel2-quehace2-auto[
+
+```
+##  [1] -0.56047565 -0.23017749  1.55870831  0.07050839  0.12928774  1.71506499
+##  [7]  0.46091621 -1.26506123 -0.68685285 -0.44566197  1.22408180  0.35981383
+## [13]  0.40077145  0.11068272 -0.55584113  1.78691314  0.49785048 -1.96661716
+## [19]  0.70135590 -0.47279141
+```
+
+```
+## [1] "l"
+```
+]
+
+---
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace2-auto[
+
+```r
+set.seed(123)
+
+x &lt;- rnorm(20)
+x
+
+t &lt;- ifelse(FALSE, "b", "l")
+t
+
+*plot(x, type = t, col = "green")
+```
+]
+ 
+.panel2-quehace2-auto[
+
+```
+##  [1] -0.56047565 -0.23017749  1.55870831  0.07050839  0.12928774  1.71506499
+##  [7]  0.46091621 -1.26506123 -0.68685285 -0.44566197  1.22408180  0.35981383
+## [13]  0.40077145  0.11068272 -0.55584113  1.78691314  0.49785048 -1.96661716
+## [19]  0.70135590 -0.47279141
+```
+
+```
+## [1] "l"
+```
+
+![](slide-01_files/figure-html/quehace2_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-quehace2-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-quehace2-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-quehace2-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+```r
+set.seed(123)
+
+x &lt;- rnorm(20)
+x
+
+t &lt;- ifelse(FALSE, "b", "l")
+t
+
+plot(x, type = t, col = "green")    
+```
 
 ---
 
