@@ -58,11 +58,8 @@ install.packages(
 
 No olvidar que una buena forma de aprender es con la documentación oficial:
 
-- https://mastering-shiny.org/ (proceso de traducción al español https://github.com/cienciadedatos/mastering-shiny)
-- https://shiny.rstudio.com/tutorial/
-- https://shiny.rstudio.com/tutorial/written-tutorial/lesson1/
-- https://shiny.rstudio.com/images/shiny-cheatsheet.pdf
-- https://raw.githubusercontent.com/rstudio/cheatsheets/main/translations/spanish/shiny_es.pdf
+- https://mastering-shiny.org/
+- https://shiny.posit.co/r/getstarted/shiny-basics/lesson1/
 
 
 ---
@@ -123,8 +120,8 @@ knitr::include_graphics("imgs/otraapp2.png")
 Algunos simples.
 
 * https://jjallaire.shinyapps.io/shiny-kmeans/
-* https://jbkunst.shinyapps.io/05-arma/ (https://github.com/jbkunst/highcharter-shiny/tree/master/05-arma)
-
+* https://jbkunst.shinyapps.io/bias-variance/
+(https://github.com/jbkunst/shiny-apps-educational)
 <br/>
 
 Otros con más detalle en la parte visual.
@@ -132,12 +129,7 @@ Otros con más detalle en la parte visual.
 * https://jbkunst.shinyapps.io/trd-sttstcs/ (https://github.com/jbkunst/trd-sttstcs)
 * https://jorgehcas1998.shinyapps.io/Dataton-app/ (https://github.com/socapal/dataton-tudinero)
 * https://nz-stefan.shinyapps.io/commute-explorer-2
-
-
-<br/>
-
-Fuente: Shiny contest https://blog.rstudio.com/2021/06/24/winners-of-the-3rd-annual-shiny-contest/ 
-se le pide a los concursantes compartir el código, todos aprenden!
+* https://odes-chile.org/app/unidades/
 
 ---
 
@@ -271,6 +263,43 @@ server <- function(input, output) {
 }         
 ```
 
+---
+
+# Repaso R: Que hace el siguiente código?
+
+<br>
+
+```{r quehace, eval=FALSE}
+set.seed(123)
+
+x <- rnorm(10)
+x
+
+t <- ifelse(TRUE, "b", "l")
+t
+
+plot(x, type = t, col = "red")    
+```
+
+---
+
+`r flipbookr::chunk_reveal("quehace", title = "# Repaso R: Que hace el siguiente código?")`
+
+---
+
+`r flipbookr::chunk_reveal("quehace2", title = "# Repaso R: Que hace el siguiente código?")`
+
+```{r quehace2, eval=FALSE}
+set.seed(123)
+
+x <- rnorm(20)
+x
+
+t <- ifelse(FALSE, "b", "l")
+t
+
+plot(x, type = t, col = "green")    
+```
 
 ---
 
