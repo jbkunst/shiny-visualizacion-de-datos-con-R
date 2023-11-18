@@ -1,7 +1,7 @@
 /**
-* Multicolor Series v2.4.0(2022-03-15)
+* Multicolor Series v2.2.7(2020-06-23)
 *
-* (c) 2012-2022 Black Label
+* (c) 2012-2016 Black Label
 *
 * License: Creative Commons Attribution (CC)
 */
@@ -17,7 +17,8 @@
 		factory(Highcharts);
 	}
 }(function (H) {
-	var seriesTypes = H.seriesTypes,
+	var each = H.each,
+		seriesTypes = H.seriesTypes,
 		pick = H.pick,
 		UNDEFINED,
 		NORMAL_STATE = '',
@@ -45,7 +46,7 @@
 	
 	function getPath(arr){
 	var ret = [];
-	arr.forEach(function(el, ind) {
+	each(arr, function(el, ind) {
 	var len = el[0].length;
 	for(var i = 0; i < len; i++){
 	var p = el[0][i];
@@ -62,7 +63,7 @@
 	
 	function getPath(arr) {
 		var ret = [];
-		arr.forEach(function (el) {
+		each(arr, function (el) {
 			ret = ret.concat(el[0]);
 		});
 		return ret;
@@ -79,7 +80,7 @@
 			step = series.options.step;
 
 		// build the segment line
-		segment.forEach(function (point, i) {
+		each(segment, function (point, i) {
 			var plotX = point.plotX,
 				plotY = point.plotY,
 				lastPoint;
@@ -245,14 +246,11 @@
 			
 			// The tracker is added to the series group, which is clipped, but is covered
 			// by the marker group. So the marker group also needs to capture events.
-			[series.tracker, series.markerGroup].forEach(function (track) {
+			each([series.tracker, series.markerGroup], function (track) {
 				track.addClass(PREFIX + 'tracker')
 				.on('mouseover', onMouseOver)
-				.on('mouseout', function (e) { pointer.onTrackerMouseOut(e); });
-
-				if (css) {
-					track.css(css);
-				}
+				.on('mouseout', function (e) { pointer.onTrackerMouseOut(e); })
+				.css(css);
 				
 				if (hasTouch) {
 					track.on('touchstart', onMouseOver);
@@ -288,7 +286,7 @@
 					'stroke-width': lineWidth
 				};
 				// use attr because animate will cause any other animation on the graph to stop
-				graph.forEach(function (seg) {
+				each(graph, function (seg) {
 					seg.attr(attribs);
 				});
 			}
@@ -320,7 +318,7 @@
 				}
 				pointsLength = points.length;
 				
-				points.forEach(function (point, j) {
+				each(points, function (point, j) {
 					if (j > 0 && points[j].segmentColor !== points[j - 1].segmentColor) {
 						segments.push({
 							points: points.slice(lastColor, j + 1),
@@ -347,7 +345,7 @@
 				// else, split on null points or different colors
 			} else {
 				var previousColor = null;
-				points.forEach(function (point, j) {
+				each(points, function (point, j) {
 					var colorChanged = j > 0 && (point.y === null || points[j - 1].y === null || (point.segmentColor !== points[j - 1].segmentColor && points[j].segmentColor !== previousColor)),
 						colorExists = points[j - 1] && points[j - 1].segmentColor && points[j - 1].y !== null ? true : false;
 					
@@ -355,7 +353,7 @@
 						var p = points.slice(lastColor, j + 1);
 						if (p.length > 0) {
 							// do not create segments with null ponits
-							p.forEach(function (pointObject, k) {
+							each(p, function (pointObject, k) {
 								if (pointObject.y === null) {
 									// remove null points (might be on edges)
 									p.splice(k, 1);
@@ -376,7 +374,7 @@
 						p = points.slice(lastColor, next);
 						if (p.length > 0) {
 							// do not create segments with null ponits
-							p.forEach(function (pointObject, k) {
+							each(p, function (pointObject, k) {
 								if (pointObject.y === null) {
 									// remove null points (might be on edges)
 									p.splice(k, 1);
@@ -409,7 +407,7 @@
 			segmentPath,
 			singlePoints = []; // used in drawTracker
 		// Divide into segments and build graph and area paths
-		series.segments.forEach(function (segment) {
+		each(series.segments, function (segment) {
 			segmentPath = series.getSegmentPath(segment.points);
 			// add the segment to the graph, or a single point for tracking
 			if (segment.points.length > 1) {
@@ -467,14 +465,14 @@
 		}
 
 		// draw the graph
-		props.forEach(function (prop, i) {
+		each(props, function (prop, i) {
 			var graphKey = prop[0],
 				graph = series[graphKey],
 				g;
 			
 			if (graph) { // cancel running animations, #459
 				// do we have animation
-				graphPath.forEach(function (segment, j) {
+				each(graphPath, function (segment, j) {
 					// update color and path
 					
 					if (series[graphKey][j]) {
@@ -486,7 +484,7 @@
 				
 			} else if (graphPath.length) { // #1487
 				graph = [];
-				graphPath.forEach(function (segment, j) {
+				each(graphPath, function (segment, j) {
 					graph[j] = getSegment(segment, prop, i);
 				});
 				series[graphKey] = graph;
@@ -545,9 +543,7 @@
 
 	H.wrap(seriesTypes.coloredline.prototype, 'destroy', function (proceed) {
 		// destroy all parts
-		if (this.graph) {
-			this.graph.destroy();
-		}
+		this.graph.destroy();
 		proceed.apply(this, Array.prototype.slice.call(arguments, 1));
 	});
 	
@@ -580,13 +576,13 @@
 			options = this.options,
 			props = [['graph', options.lineColor || series.color]];
 
-		props.forEach(function (prop) {
+		each(props, function (prop) {
 			var graphKey = prop[0],
 				graph = series[graphKey];
 			
 			if (graph) { // cancel running animations, #459
 				// do we have animation
-				series.graphPath.forEach(function (segment, j) {
+				each(series.graphPath, function (segment, j) {
 					// update color and path
 					
 					if (series[graphKey][j]) {
@@ -641,7 +637,7 @@
 		// Divide into segments and build graph and area paths
 		
 		this.areaPath = [];
-		series.segments.forEach(function (segment) {
+		each(series.segments, function (segment) {
 			segmentPath = series.getSegmentPath(segment.points);
 			// add the segment to the graph, or a single point for tracking
 			if (segment.points.length > 1) {
@@ -658,5 +654,5 @@
 	
 	};
 	
-	H.seriesTypes.coloredarea.prototype.drawLegendSymbol = Highcharts._modules['Core/Legend/LegendSymbol.js'].drawRectangle; // eslint-disable-line
+	H.seriesTypes.coloredarea.prototype.drawLegendSymbol = H.LegendSymbolMixin.drawRectangle;
 }));
