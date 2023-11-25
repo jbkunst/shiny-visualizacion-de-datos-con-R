@@ -1,6 +1,6 @@
 ---
 title: "Shiny: Visualizacion de datos con R"
-subtitle: "Diplomado en Data Science 23, MatPUC"
+subtitle: "Diplomado en Data Science, MatPUC"
 author: "Joshua Kunst Fuentes jbkunst@gmail.com"
 output:
   xaringan::moon_reader:
