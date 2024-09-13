@@ -29,30 +29,26 @@ hchart(modelo)
 library(DT)
 library(rvest)   # descargar datos de paginas web
 
-url <- "http://www.sismologia.cl/ultimos_sismos.html"
+url <- "http://www.sismologia.cl"
 
-datos <- read_html(url) %>% 
-  html_table() %>% 
+datos <- read_html(url)|> 
+  html_table()|> 
   dplyr::first()
 
 datatable(datos)
 
 # leaflet -----------------------------------------------------------------
 library(leaflet)
-library(rvest)   # descargar datos de paginas web
+data("quakes")
 
-url <- "http://www.sismologia.cl/ultimos_sismos.html"
+quakes
 
-datos <- read_html(url) %>% 
-  html_table() %>% 
-  dplyr::first()
-
-leaflet(datos) %>%
-  addTiles() %>%  
+leaflet(quakes)|>
+  addTiles()|>  
   addMarkers(
-    lng = ~Longitud, 
-    lat = ~Latitud,
-    popup = ~as.character(Magnitud),
-    label = ~as.character(`Referencia Geográfica`)
+    lng = ~long, 
+    lat = ~lat,
+    popup = ~as.character(mag),
+    label = ~as.character(depth)
   )
 
