@@ -87,7 +87,7 @@ para hacer manipulación y visualización de los datos.
 Necesitaremos algunos paquetes: 
 
 
-```r
+``` r
 install.packages(
   c("tidyverse", "shiny", "shinythemes", "shinyWidgets",
     "shinydashboard", "DT", "leaflet", "plotly", "highcharter")
@@ -174,7 +174,7 @@ Otros con más detalle en la parte visual.
 &lt;br&gt;
 
 
-```r
+``` r
 library(shiny)
 
 ui &lt;- fluidPage()
@@ -199,7 +199,7 @@ En `shiny`, una aplicación constará de **2** partes:
 
 
 
-```r
+``` r
 library(shiny)
 
 *ui &lt;- fluidPage()
@@ -229,7 +229,7 @@ Que se refiere la disposición de nuestros `inputs` y `outputs`.
 &lt;br&gt;
 
 
-```r
+``` r
 library(shiny)
 
 ui &lt;- fluidPage()                            
@@ -253,7 +253,7 @@ reflejaremos `outputs`: como tablas, gráficos.
 &lt;br&gt;
 
 
-```r
+``` r
 library(shiny)
 
 ui &lt;- fluidPage()                            
@@ -278,7 +278,7 @@ al crear una shinyApp nos pondrá un botón para _servir_ la aplicación.
 &lt;br&gt;
 
 
-```r
+``` r
 library(shiny)
 
 ui &lt;- fluidPage()                            
@@ -291,7 +291,7 @@ runApp(list(ui = ui, server = server))
 De formar general la aplicación será:
 
 
-```r
+``` r
 library(shiny)
 # acá se cargarán paquetes y posiblemente también datos
 # necesarios para ui (como definir opciones de inputs)
@@ -312,7 +312,7 @@ server &lt;- function(input, output) {
 &lt;br&gt;
 
 
-```r
+``` r
 set.seed(123)
 
 x &lt;- rnorm(10)
@@ -331,7 +331,7 @@ count: false
 # Repaso R: Que hace el siguiente código?
 .panel1-quehace-auto[
 
-```r
+``` r
 *set.seed(123)
 ```
 ]
@@ -346,7 +346,7 @@ count: false
 # Repaso R: Que hace el siguiente código?
 .panel1-quehace-auto[
 
-```r
+``` r
 set.seed(123)
 
 *x &lt;- rnorm(10)
@@ -363,7 +363,7 @@ count: false
 # Repaso R: Que hace el siguiente código?
 .panel1-quehace-auto[
 
-```r
+``` r
 set.seed(123)
 
 x &lt;- rnorm(10)
@@ -385,7 +385,7 @@ count: false
 # Repaso R: Que hace el siguiente código?
 .panel1-quehace-auto[
 
-```r
+``` r
 set.seed(123)
 
 x &lt;- rnorm(10)
@@ -409,7 +409,7 @@ count: false
 # Repaso R: Que hace el siguiente código?
 .panel1-quehace-auto[
 
-```r
+``` r
 set.seed(123)
 
 x &lt;- rnorm(10)
@@ -438,7 +438,7 @@ count: false
 # Repaso R: Que hace el siguiente código?
 .panel1-quehace-auto[
 
-```r
+``` r
 set.seed(123)
 
 x &lt;- rnorm(10)
@@ -501,7 +501,7 @@ count: false
 # Repaso R: Que hace el siguiente código?
 .panel1-quehace2-auto[
 
-```r
+``` r
 *set.seed(123)
 ```
 ]
@@ -516,7 +516,7 @@ count: false
 # Repaso R: Que hace el siguiente código?
 .panel1-quehace2-auto[
 
-```r
+``` r
 set.seed(123)
 
 *x &lt;- rnorm(20)
@@ -533,7 +533,7 @@ count: false
 # Repaso R: Que hace el siguiente código?
 .panel1-quehace2-auto[
 
-```r
+``` r
 set.seed(123)
 
 x &lt;- rnorm(20)
@@ -557,7 +557,7 @@ count: false
 # Repaso R: Que hace el siguiente código?
 .panel1-quehace2-auto[
 
-```r
+``` r
 set.seed(123)
 
 x &lt;- rnorm(20)
@@ -583,7 +583,7 @@ count: false
 # Repaso R: Que hace el siguiente código?
 .panel1-quehace2-auto[
 
-```r
+``` r
 set.seed(123)
 
 x &lt;- rnorm(20)
@@ -614,7 +614,7 @@ count: false
 # Repaso R: Que hace el siguiente código?
 .panel1-quehace2-auto[
 
-```r
+``` r
 set.seed(123)
 
 x &lt;- rnorm(20)
@@ -673,7 +673,7 @@ t
 
 
 
-```r
+``` r
 set.seed(123)
 
 x &lt;- rnorm(20)
@@ -693,7 +693,7 @@ Hacer funcionar el siguiente `código` en R Rstudio: (hint: sí, copy + paste + 
 
 .code70[
 
-```r
+``` r
 library(shiny)
 
 ui &lt;- fluidPage(
@@ -775,7 +775,7 @@ class: center, middle, inverse
 
 .code60[
 
-```r
+``` r
 ui &lt;- fluidPage(
    sidebarLayout(
       sidebarPanel(
@@ -804,7 +804,7 @@ server &lt;- function(input, output) {
 
 .code60[
 
-```r
+``` r
 *ui &lt;- fluidPage(
 *  sidebarLayout(
 *     sidebarPanel(
@@ -839,7 +839,7 @@ con navegación. Más detalles http://shiny.rstudio.com/articles/layout-guide.ht
 
 .code60[
 
-```r
+``` r
 ui &lt;- fluidPage(                                                                                          
    sidebarLayout(                                                 
       sidebarPanel(                                               
@@ -874,7 +874,7 @@ valores de estos inputs sean usados como valores usuales en R en la parte del se
 
 .code60[
 
-```r
+``` r
 ui &lt;- fluidPage(                                                                                          
    sidebarLayout(                                                 
       sidebarPanel(                                               
@@ -907,7 +907,7 @@ server &lt;- function(input, output) {
 
 .code60[
 
-```r
+``` r
 ui &lt;- fluidPage(                                                                                          
    sidebarLayout(                                                 
       sidebarPanel(                                               
@@ -941,7 +941,7 @@ server &lt;- function(input, output) {
 
 .code60[
 
-```r
+``` r
 ui &lt;- fluidPage(                                                                                          
    sidebarLayout(                                                 
       sidebarPanel(                                               

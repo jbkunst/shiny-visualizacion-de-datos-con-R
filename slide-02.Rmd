@@ -315,9 +315,9 @@ ggplotly(p)
 
 ---
 
-`r flipbookr::chunk_reveal("highcharter", title = "# {highcharter}")`
+<!-- `flipbookr::chunk_reveal("highcharter", title = "# {highcharter}")` -->
 
-```{r highcharter, include = FALSE}
+```{r highcharter, include = TRUE}
 library(highcharter)
 library(forecast)
 
@@ -334,7 +334,7 @@ hchart(modelo) |>
 
 ---
 
-`r flipbookr::chunk_reveal("sismos", title = "# Antes, unos datos", widths = c(1, 2))`  
+<!-- `flipbookr::chunk_reveal("sismos", title = "# Antes, unos datos", widths = c(1, 2))`   -->
 
 ```{r sismos, include = FALSE}
 library(rvest)   # descargar datos de paginas web
@@ -364,7 +364,7 @@ datos <- read_html(url) |>
 
 ---
 
-`r flipbookr::chunk_reveal("dt", title = "# {DT}", widths = c(1, 4))`
+<!-- `flipbookr::chunk_reveal("dt", title = "# {DT}", widths = c(1, 4))` -->
 
 ```{r dt, include = FALSE}
 library(DT)
@@ -374,7 +374,7 @@ datatable(datos)
 
 ---
 
-`r flipbookr::chunk_reveal("leaflet", title = "# {leaflet}")`
+<!-- `flipbookr::chunk_reveal("leaflet", title = "# {leaflet}")` -->
 
 ```{r leaflet, include = FALSE}
 library(leaflet)
