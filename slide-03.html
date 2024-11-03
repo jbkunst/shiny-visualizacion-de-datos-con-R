@@ -235,7 +235,7 @@ Posible solución en https://github.com/jbkunst/shiny-visualizacion-de-datos-con
 
 .code60[
 
-```r
+``` r
 if(!require(forecast)) install.packages("forecast")
 if(!require(xts))      install.packages("xts")
 if(!require(ggplot2))  install.packages("ggplot2")
@@ -557,14 +557,14 @@ Básicamente se obtiene la IP (_dirección de nuesto pc_) a través de una instr
 Se deberá cambiar:
 
 
-```r
+``` r
 shinyApp(ui = ui, server = server)
 ```
 
 Por:
 
 
-```r
+``` r
 # esto es en windows
 ip &lt;- gsub(".*? ([[:digit:]])", "\\1", system("ipconfig", intern=T)[grep("IPv4", system("ipconfig", intern = T))])
 

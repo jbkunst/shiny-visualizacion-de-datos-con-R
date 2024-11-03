@@ -43,9 +43,23 @@ pre > b {
 }
 
 .inverse {
-    background-color: #75aadb;
+    background-color: #36454F;
 }
 
 .remark-slide-content {
-    border-top: 80px solid #75aadb;
+    border-top: 80px solid #36454F;
 }
+
+
+
+@import url(https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap);
+
+body {
+  font-family: 'Fira Sans','Droid Serif', 'Palatino Linotype', 'Book Antiqua', Palatino, 'Microsoft YaHei', 'Songti SC', serif;
+}
+
+.remark-code, .remark-inline-code {
+  font-family: 'Source Code Pro', 'Lucida Console', Monaco, monospace;
+  font-size: 80%;
+}
+

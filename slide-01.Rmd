@@ -278,27 +278,31 @@ x
 t <- ifelse(TRUE, "b", "l")
 t
 
-plot(x, type = t, col = "red")    
+c <- "darkred"
+
+plot(x, type = t, col = c)    
 ```
 
 ---
 
-`r flipbookr::chunk_reveal("quehace", title = "# Repaso R: Que hace el siguiente código?")`
+`r flipbookr::chunk_reveal("quehace", title = "# Repaso R: Que hace el siguiente código?", chunk_options = "fig.height = 5")`
 
 ---
 
-`r flipbookr::chunk_reveal("quehace2", title = "# Repaso R: Que hace el siguiente código?")`
+`r flipbookr::chunk_reveal("quehace2", title = "# Repaso R: Que hace el siguiente código?", chunk_options = "fig.height = 5")`
 
 ```{r quehace2, eval=FALSE}
 set.seed(123)
 
-x <- rnorm(20)
+x <- rnorm(30)
 x
 
 t <- ifelse(FALSE, "b", "l")
 t
 
-plot(x, type = t, col = "green")    
+c <- "green"
+
+plot(x, type = t, col = c)    
 ```
 
 ---
