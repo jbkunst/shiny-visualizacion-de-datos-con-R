@@ -315,9 +315,10 @@ ggplotly(p)
 
 ---
 
-<!-- `flipbookr::chunk_reveal("highcharter", title = "# {highcharter}")` -->
+# {highcharter}
 
-```{r highcharter, include = TRUE}
+.pull-left[
+```{r highcharter, eval=FALSE}
 library(highcharter)
 library(forecast)
 
@@ -331,25 +332,23 @@ hchart(modelo) |>
   hc_rangeSelector(enabled = TRUE) |>
   hc_title(text = "Proyección")
 ```
+]
+
+.pull-right[
+```{r ref.label='highcharter', eval=TRUE, echo=FALSE}
+```
+]
+
 
 ---
 
-<!-- `flipbookr::chunk_reveal("sismos", title = "# Antes, unos datos", widths = c(1, 2))`   -->
+# Unos datos
 
-```{r sismos, include = FALSE}
+.pull-left[
+```{r sismos, eval=FALSE}
 library(rvest)   # descargar datos de paginas web
 
-url <- "https://www.sismologia.cl/sismicidad/catalogo/2022/07/20220721.html"
-
-read_html(url) |>
-  html_table() |>
-  dplyr::nth(2) |>
-  janitor::clean_names() |>
-  tidyr::separate(
-    latitud_longitud,
-    into = c("latitud", "longitud"),
-    sep = " ", convert = TRUE
-  )
+url <- "https://www.sismologia.cl/sismicidad/catalogo/2024/11/20241103.html"
 
 datos <- read_html(url) |>
   html_table() |>
@@ -360,23 +359,43 @@ datos <- read_html(url) |>
     into = c("latitud", "longitud"),
     sep = " ", convert = TRUE
   )
+
+datos
 ```
+]
+
+.pull-right[
+```{r ref.label='sismos', eval=TRUE, echo=FALSE}
+```
+]
+
+
+
 
 ---
 
-<!-- `flipbookr::chunk_reveal("dt", title = "# {DT}", widths = c(1, 4))` -->
+# {leaflet}
 
-```{r dt, include = FALSE}
+.pull-left[
+```{r dt, eval=FALSE}
 library(DT)
 
 datatable(datos)
 ```
+]
+
+.pull-right[
+```{r ref.label='df', eval=TRUE, echo=FALSE}
+```
+]
+
 
 ---
 
-<!-- `flipbookr::chunk_reveal("leaflet", title = "# {leaflet}")` -->
+# {leaflet}
 
-```{r leaflet, include = FALSE}
+.pull-left[
+```{r leaflet, eval=FALSE}
 library(leaflet)
 
 leaflet(datos) |>
@@ -389,6 +408,13 @@ leaflet(datos) |>
   ) |>
   addProviderTiles("Esri.WorldImagery")
 ```
+]
+
+.pull-right[
+```{r ref.label='leaflet', eval=TRUE, echo=FALSE}
+```
+]
+
 
 ---
 
