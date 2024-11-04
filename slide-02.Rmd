@@ -1,5 +1,5 @@
 ---
-title: "Shiny: Visualizacion de datos con R"
+title: "Shiny<br>Visualizacion de datos con R<br>Slides 2"
 subtitle: "Diplomado en Data Science, MatPUC"
 author: "Joshua Kunst Fuentes jbkunst@gmail.com"
 output:

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Shiny: Visualizacion de datos con R</title>
+    <title>Shiny Visualizacion de datos con R Slides 1</title>
     <meta charset="utf-8" />
     <meta name="author" content="Joshua Kunst Fuentes jbkunst@gmail.com" />
     <script src="libs/header-attrs/header-attrs.js"></script>
@@ -15,7 +15,7 @@
 class: center, middle, inverse, title-slide
 
 .title[
-# Shiny: Visualizacion de datos con R
+# Shiny<br>Visualizacion de datos con R<br>Slides 1
 ]
 .subtitle[
 ## Diplomado en Data Science, MatPUC
@@ -47,17 +47,17 @@ class: center, middle, inverse, title-slide
 
 # Programa
 
-- [Slide 1](https://jkunst.com/shiny-visualizacion-de-datos-con-R/slide-01.html)
+- [Slides 1](https://jkunst.com/shiny-visualizacion-de-datos-con-R/slide-01.html)
   - Aplicación (web), ejemplos.
   - Introducción a shiny: Interfaz usuario y servidor
   - Reactividad
-- [Slide 2](https://jkunst.com/shiny-visualizacion-de-datos-con-R/slide-02.html)
+- [Slides 2](https://jkunst.com/shiny-visualizacion-de-datos-con-R/slide-02.html)
   - Layouts  
   - Integración HTMLWidgets
-- [Slide 3](https://jkunst.com/shiny-visualizacion-de-datos-con-R/slide-03.html)
+- [Slides 3](https://jkunst.com/shiny-visualizacion-de-datos-con-R/slide-03.html)
   - Temas, templates y diseño    
   - Compartir una app
-- [Slide 4](https://jkunst.com/shiny-visualizacion-de-datos-con-R/slide-04.html)
+- [Slides 4](https://jkunst.com/shiny-visualizacion-de-datos-con-R/slide-04.html)
   - Expresiones reactivas
   - Orden de ejecución  
   - Extensiones shiny
@@ -87,7 +87,7 @@ Necesitaremos algunos paquetes:
 
 ``` r
 install.packages(
-  c("tidyverse", "shiny", "shinythemes", "shinyWidgets",
+  c("tidyverse", "shiny", "shinythemes", "shinyWidgets", "bslib",
     "shinydashboard", "DT", "leaflet", "plotly", "highcharter")
   )
 ```
@@ -1176,6 +1176,77 @@ server &lt;- function(input, output) {
 - `selectInput` otorga la posibildad que el usuario escoge entre un conjunto de valores
 - `checkboxInput` en el server es un valor lógico `TRUE`/`FALSE`
 - ¿Necesitas más? https://gallery.shinyapps.io/065-update-input-demo/ y http://shinyapps.dreamrs.fr/shinyWidgets/ 
+
+---
+
+# Paquete {bslib}
+
+Contenerdoes como `fluidPage`, `sidebarLayout`, `mainPanel` son basadas en boostrap 3. Para tener un diseño más actualizado se usa el paquete `{bslib}`. Notar que cambia solamente el ui/layout.
+
+.code70[
+
+``` r
+library(shiny)
+library(bslib)
+
+*ui &lt;- bslib::page_sidebar(
+  title = "Mi primer app bslib",    
+* sidebar = bslib::sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
+    selectInput("col", "Color", c("red", "blue", "black")),
+    checkboxInput("punto", "Puntos:", value = FALSE)
+  ),
+  plotOutput("outplot")
+  )
+
+server &lt;- function(input, output) {
+  output$outplot &lt;- renderPlot({
+    set.seed(123)
+    x &lt;- rnorm(input$nrand)
+    t &lt;- ifelse(input$punto, "b", "l")
+    plot(x, type = t, col = input$col)
+  })
+}
+
+shinyApp(ui, server)
+```
+]
+
+---
+
+# Paquete {bslib}
+
+Contenerdoes como `fluidPage`, `sidebarLayout`, `mainPanel` son basadas en boostrap 3. Para tener un diseño más actualizado se usa el paquete `{bslib}`. Notar que cambia solamente el ui/layout.
+
+.code70[
+
+``` r
+library(shiny)
+library(bslib)
+
+*ui &lt;- page_sidebar(
+  title = "Mi primer app bslib",    
+* sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
+    selectInput("col", "Color", c("red", "blue", "black")),
+    checkboxInput("punto", "Puntos:", value = FALSE)
+  ),
+  plotOutput("outplot")
+  )
+
+server &lt;- function(input, output) {
+  output$outplot &lt;- renderPlot({
+    set.seed(123)
+    x &lt;- rnorm(input$nrand)
+    t &lt;- ifelse(input$punto, "b", "l")
+    plot(x, type = t, col = input$col)
+  })
+}
+
+shinyApp(ui, server)
+```
+]
+
 
 ---
 

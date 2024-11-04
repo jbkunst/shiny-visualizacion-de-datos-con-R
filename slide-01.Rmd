@@ -1,5 +1,5 @@
 ---
-title: "Shiny: Visualizacion de datos con R"
+title: "Shiny<br>Visualizacion de datos con R<br>Slides 1"
 subtitle: "Diplomado en Data Science, MatPUC"
 author: "Joshua Kunst Fuentes jbkunst@gmail.com"
 output:
@@ -47,7 +47,7 @@ Necesitaremos algunos paquetes:
 
 ```{r, eval=FALSE}
 install.packages(
-  c("tidyverse", "shiny", "shinythemes", "shinyWidgets",
+  c("tidyverse", "shiny", "shinythemes", "shinyWidgets", "bslib",
     "shinydashboard", "DT", "leaflet", "plotly", "highcharter")
   )
 ```
@@ -714,6 +714,75 @@ server <- function(input, output) {
 - `selectInput` otorga la posibildad que el usuario escoge entre un conjunto de valores
 - `checkboxInput` en el server es un valor lógico `TRUE`/`FALSE`
 - ¿Necesitas más? https://gallery.shinyapps.io/065-update-input-demo/ y http://shinyapps.dreamrs.fr/shinyWidgets/ 
+
+---
+
+# Paquete {bslib}
+
+Contenerdoes como `fluidPage`, `sidebarLayout`, `mainPanel` son basadas en boostrap 3. Para tener un diseño más actualizado se usa el paquete `{bslib}`. Notar que cambia solamente el ui/layout.
+
+.code70[
+```{r, eval=FALSE}
+library(shiny)
+library(bslib)
+
+ui <- bslib::page_sidebar(                                     #<<    
+  title = "Mi primer app bslib",    
+  sidebar = bslib::sidebar(                                   #<<    
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
+    selectInput("col", "Color", c("red", "blue", "black")),
+    checkboxInput("punto", "Puntos:", value = FALSE)
+  ),
+  plotOutput("outplot")
+  )
+
+server <- function(input, output) {
+  output$outplot <- renderPlot({
+    set.seed(123)
+    x <- rnorm(input$nrand)
+    t <- ifelse(input$punto, "b", "l")
+    plot(x, type = t, col = input$col)
+  })
+}
+
+shinyApp(ui, server)
+```
+]
+
+---
+
+# Paquete {bslib}
+
+Contenerdoes como `fluidPage`, `sidebarLayout`, `mainPanel` son basadas en boostrap 3. Para tener un diseño más actualizado se usa el paquete `{bslib}`. Notar que cambia solamente el ui/layout.
+
+.code70[
+```{r, eval=FALSE}
+library(shiny)
+library(bslib)
+
+ui <- page_sidebar(                                     #<<    
+  title = "Mi primer app bslib",    
+  sidebar = sidebar(                                   #<<    
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
+    selectInput("col", "Color", c("red", "blue", "black")),
+    checkboxInput("punto", "Puntos:", value = FALSE)
+  ),
+  plotOutput("outplot")
+  )
+
+server <- function(input, output) {
+  output$outplot <- renderPlot({
+    set.seed(123)
+    x <- rnorm(input$nrand)
+    t <- ifelse(input$punto, "b", "l")
+    plot(x, type = t, col = input$col)
+  })
+}
+
+shinyApp(ui, server)
+```
+]
+
 
 ---
 
