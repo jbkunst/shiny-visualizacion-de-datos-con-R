@@ -369,7 +369,7 @@ Para el ejercicio incluya las características de {waiter} y {ciceroene}
 ... Que ni tan necesarias, pero que en futuro podrían ayudar!
 
 
-- `bindCache`: Se puede asociar un resultado de un `render` a ciertos inputs, para guardar automáticament el resultado sin tener que volver a ejecutar el código dentro del `render``. 
+- `bindCache`: Se puede asociar un resultado de un `render` a ciertos inputs, para guardar automáticament el resultado sin tener que volver a ejecutar el código dentro del `render`. 
 https://shiny.rstudio.com/articles/caching.html
 
 - Bookmarking: La posibilidad de registrar la aplicación con ciertos inputs seleccionados.
