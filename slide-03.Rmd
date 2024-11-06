@@ -482,70 +482,126 @@ class: center, middle, inverse
 
 # Publicar/Compartir tu app
 
-Existen dos formas simples/sencillas para compartir una aplicación. Es decir
+Existen varias formas simples/sencillas para compartir una aplicación. Es decir
 que sea visible en otros dispositivos pc/móviles. Luego existen otras 
 que requieren de mayor conocimiento técnico.
 
-### Vía IP local
+--
 
-Permite que tu pc sirva la aplicación y pueda ser visible en una red local 
+**Vía IP local**: Permite que tu pc sirva la aplicación y pueda ser visible en una red local 
 (por ejemplo, la de tu casa), o también en una VPN.
 
-### Servicio shinyapps.io
+--
 
-Permite que otro pc (una máquina virtual) sirva tu apliación y la exponga 
+**[shinyapps.io](https://shinyapps.io/)**: Permite que otro pc (una máquina virtual) sirva tu apliación y la exponga 
 con una url pública. Ejemplo https://usuario.shinyapps.io/nombreapp.
 
-### Otras
+--
 
-Como por ejemplo arrendar una máquina virtual linode/digitalocean/aws e 
-instalar shinyserver.
+**[shinylive](https://posit-dev.github.io/r-shinylive/)**: Paquete que permite crear aplicaciones Shiny que se ejecutan completamente en el navegador, sin necesidad de un servidor, utilizando WebAssembly a través del proyecto [webR](https://docs.r-wasm.org/webr/latest/).
+
+
+--
+
+**https://connect.posit.cloud**: Similar al servicio https://shinyapps.io, pero puede publicar otros frameworks pero requiere que el codigo esté en un repositorio.
+
+--
+
+**[shiny-server](https://posit.co/products/open-source/shiny-server/)**: Software que se puede instalar en tu propio servidor con juegos de azar.
+
 
 ---
 
 # Vía IP local
 
-- Solamente funciona para redes locales (casa/trabajo) o tambien VPN.
-- Requiere que _nuestro_ pc esté encendido para que la app corra.
+Básicamente se obtiene la IP (_dirección de nuesto pc_) a través de una instrucción y luego se especifica correr la aplicación con dicha IP. Se deberá cambiar:
 
-<br> 
-
-Básicamente se obtiene la IP (_dirección de nuesto pc_) a través de una instrucción y luego se especifica correr la aplicación con dicha IP.
-
-Se deberá cambiar:
-
-```{r, eval=FALSE}
+```r
 shinyApp(ui = ui, server = server)
 ```
 
 Por:
 
-```{r, eval=FALSE}
-# esto es en windows
-ip <- gsub(".*? ([[:digit:]])", "\\1", system("ipconfig", intern=T)[grep("IPv4", system("ipconfig", intern = T))])
-
+```r
 shinyApp(ui = ui, server = server, options = list(host = ip))
 ```
+
+Donde:
+
+```r
+# esto es en windows
+library(stringr)
+ip <-str_extract(str_subset(system("ipconfig", intern=T), "IPv4"), "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b")
+
+# o "a mano"
+ip <- "192.168.1.46"
+```
+
+✔️ Es simple de usar, amigable para principiantes.
+
+⚠️ Requiere que _nuestro_ pc esté encendido para que la app corra. Solamente funciona para redes locales (casa/trabajo) o tambien VPN.
+
+
 
 
 ---
 
 # Servicio shinyapps.io
 
-- Básicamente sube todo lo que está en la carpeta de la aplicación archivos R y **otros** 
+.pull-left[
+- Básicamente sube todo lo que está en la carpeta de la aplicación archivos R y otros 
 a una máquina virtual y detecta los paquetes utilizados.
+
 - La versión gratuita tienes horas de uso que se van recuperando cada mes. Está
 máquina virtual es humilde en términos de recursos, puede ser lenta dependiendo
 del uso.
 
 
 Primero se debe una cuenta en https://www.shinyapps.io/ (puedes asociar tu correo gmail).
-Luego crear una app.
-- `rsconnect::deployApp("<ruta_a_la_aplicacion>")`, o:
 
-.center[
+
+✔️ Es simple de usar, amigable para principiantes.
+
+⚠️ Plan gratuido recomendado para aplicacione simples. 
+
+]
+
+
+.pull-right[
 ![](imgs/publicar_screenshot_1v2.png)
 ]
+
+
+
+---
+
+# {shinylive}
+
+El paquete shinylive ayuda a exportar tus aplicaciones Shiny desde archivos locales a un directorio que puede alojarse en un servidor web estático.
+
+
+--
+
+```r
+# remotes::install_github("posit-dev/r-shinylive")
+library(shinylive)
+
+# Crear un directorio
+fs::dir_create("exported")
+
+# Exportar la aplicación Shiny a un directorio
+shinylive::export("apps/ejemplo/", "exported/")
+
+# Para testear
+httpuv::runStaticServer("exported/")
+```
+
+--
+
+✔️ No requiere de un servido que aloje y sirva la aplicación.
+
+⚠️ Cada vez que se accede se realiza la instalación de R en la pestaña del navegador.
+
 
 ---
 
@@ -573,3 +629,51 @@ de la comuna seleccionada.
 ---
 
 # Solución
+
+---
+
+class: center, middle, inverse
+
+# Shiny en Python
+
+---
+
+# Shiny en Python
+
+.pull-left[
+```python
+from shiny import App, ui, render
+import matplotlib.pyplot as plt
+import numpy as np
+
+app_ui = ui.page_sidebar(  
+    ui.sidebar(
+        ui.input_slider("n", "N", 0, 100, 20),
+        bg="#f8f8f8" 
+    ),
+    ui.output_plot("histogram")
+)  
+
+def server(input, output, session):
+    
+    @render.plot(alt="A histogram")
+    def histogram():
+        np.random.seed(19680801)
+        x = 100 + 15 * np.random.randn(437)
+        plt.hist(x, input.n(), density=True)
+
+app = App(app_ui, server)
+```
+]
+
+.pull-right[
+
+* https://shiny.posit.co/py/
+* https://shiny.posit.co/py/gallery/
+* https://shinylive.io/py/examples/#app-with-plot
+* https://shinylive.io/r/examples/
+
+]
+
+
+

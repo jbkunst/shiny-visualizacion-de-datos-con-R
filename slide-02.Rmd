@@ -286,6 +286,9 @@ shinyApp(ui, server)
 
 .pull-left[
 ```r
+library(shiny)
+library(bslib)
+
 ui <- page_sidebar(
 
   title = "Hello Shiny!",
