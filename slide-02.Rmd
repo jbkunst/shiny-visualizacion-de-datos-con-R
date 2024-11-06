@@ -32,13 +32,31 @@ class: center, middle, inverse
 
 ---
 
-# Tipos de Layouts
+# Layouts
 
+<br/>
 Laytous se refiere a la disposición de elementos -como inputs, textos,
-outputs- en nuestra app. 
-
-Dependiendo de las necesidades puede ser convenientes algunos
+outputs- en nuestra app. Dependiendo de las necesidades puede ser convenientes algunos
 tipos de layuts sobre otros.
+
+--
+
+<br/>
+Como mencionamos anteriormente {shiny} utiliza boostrap 3, y seguirá usando 
+esta versión  para evitar problemas de compatibilidad con aplicaciones existentes y mantener la estabilidad en diseños desarrollados bajo esa versión.
+
+--
+
+<br/>
+Para usar versiones recientes de boostrap se debe utilizar el paquete {bslib} que
+viene con otro contenedores (funciones) y nuevas funcionalidades, como _valueBox_es.
+
+
+---
+
+# {shiny} Tipos de Layouts
+
+<br/>
 
 .center[
 ```{r, out.width = "800px", echo=FALSE}
@@ -49,7 +67,7 @@ knitr::include_graphics("imgs/shiny-layouts.png")
 
 ---
 
-# sidebarLayout
+# {shiny} sidebarLayout
 
 <br/>
 
@@ -57,7 +75,7 @@ knitr::include_graphics("imgs/shiny-layouts.png")
 
 ---
 
-# sidebarLayout: Estructura
+# {shiny} sidebarLayout - Estructura
 
 Es una distribución simple donde lo primero en aparecer es los controles o
 inputs.
@@ -73,37 +91,44 @@ knitr::include_graphics("imgs/sidebar2.png")
 
 ---
 
-# sidebarLayout: Ejemplo código
+# {shiny} sidebarLayout - Ejemplo código
 
+.code70[
 ```r
 library(shiny)
 
 ui <- fluidPage(
-  titlePanel("Hello Shiny!"),
-  sidebarLayout(
-    sidebarPanel(
-      sliderInput("obs", "Number of observations:", min = 0, max = 1000, value = 500)
-    ),
-    mainPanel(plotOutput("distPlot"))
-  )
+    titlePanel("Hello Shiny!"),
+
+    sidebarLayout(
+        sidebarPanel(
+            sliderInput("bins", "Number of bins:", min = 1, max = 50, value = 30)
+        ),
+        mainPanel(
+           plotOutput("distPlot")
+        )
+    )
 )
 
 server <- function(input, output) {
-  output$distPlot <- renderPlot({ hist(rnorm(input$obs)) })
+
+    output$distPlot <- renderPlot({
+        x    <- faithful[, 2]
+        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+
+        hist(x, breaks = bins, col = 'skyblue', border = 'white',
+             xlab = 'Waiting time to next eruption (in mins)',
+             main = 'Histogram of waiting times')
+    })
 }
 
-shinyApp(ui, server)
+shinyApp(ui = ui, server = server)
 ```
+]
 
 ---
 
-class: center, middle, inverse
-
-# Paneles de Navegación
-
----
-
-# Tipos de Paneles de Navegación
+# {shiny} Tipos de Paneles de Navegación
 
 Es posible que nuestra aplicación vaya creciendo, en dicho caso, Los paneles 
 nos permiten organizar distintas secciones de la aplicación.
@@ -116,7 +141,7 @@ knitr::include_graphics("imgs/navlayouts.png")
 
 ---
 
-# tabsetPanel
+# {shiny} tabsetPanel
 
 Los tabs (`tabsetPanel`) son útiles para separar secciones _similares_ en nuestra app. A diferencia de por ejemplo `navbarPage`.
 
@@ -152,7 +177,7 @@ shinyApp(ui, server)
 
 ---
 
-# tabsetPanel
+# {shiny} tabsetPanel
 
 Los tabs (`tabsetPanel`) son útiles para separar secciones _similares_ en nuestra app. A diferencia de por ejemplo `navbarPage`.
 
@@ -251,6 +276,67 @@ shinyApp(ui, server)
 
 ---
 
+# {bslib} page_sidebar
+
+![](imgs/page_sidebar.png)
+
+---
+
+# {bslib} page_sidebar
+
+.pull-left[
+```r
+ui <- page_sidebar(
+
+  title = "Hello Shiny!",
+
+  sidebar = sidebar(
+    sliderInput(
+      "bins", label = "Number of bins:",
+      min = 1, value = 30, max = 50
+    )
+  ),
+
+  plotOutput("distPlot")
+)
+```
+<small>https://shiny.posit.co/r/articles/build/layout-guide/</small>
+]
+
+.pull-right[
+![](imgs/page_sidebar.png)
+]
+
+
+---
+
+# {bslib} page_navbar
+
+![](imgs/page_navbar.png)
+
+.code70[
+```r
+ui <- page_navbar(
+  title = "My App",
+  bg = "#2D89C8",
+  inverse = TRUE,
+  nav_panel(title = "One", p("First page content.")),
+  nav_panel(title = "Two", p("Second page content.")),
+  nav_panel(title = "Three", p("Third page content.")),
+  nav_spacer(),
+  nav_menu(
+    title = "Links",
+    align = "right",
+    nav_item(tags$a("Posit", href = "https://posit.co")),
+    nav_item(tags$a("Shiny", href = "https://shiny.posit.co"))
+  )
+)
+```
+]
+
+
+---
+
 class: center, middle, inverse
 
 # HTMLWidgets
@@ -295,9 +381,10 @@ ggplot(iris, aes(Sepal.Length, Sepal.Width)) +
 
 ---
 
-`r flipbookr::chunk_reveal("plotly", title = "# {plotly}")`
+# {plotly}
 
-```{r plotly, include = FALSE}
+.pull-left[
+```{r plotly, eval = FALSE}
 library(ggplot2)
 library(plotly)
 
@@ -312,6 +399,14 @@ p <- ggplot(iris, aes(Sepal.Length, Sepal.Width)) +
 
 ggplotly(p)
 ```
+]
+
+.pull-right[
+```{r ref.label='plotly', eval=TRUE, echo=FALSE}
+```
+]
+
+
 
 ---
 
@@ -368,8 +463,6 @@ datos
 ```{r ref.label='sismos', eval=TRUE, echo=FALSE}
 ```
 ]
-
-
 
 
 ---
