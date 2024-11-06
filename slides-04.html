@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Shiny Visualizacion de datos con R Slides 4</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Joshua Kunst Fuentes jbkunst@gmail.com" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/custom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Shiny<br>Visualizacion de datos con R<br>Slides 4
+]
+.subtitle[
+## Diplomado en Data Science, MatPUC
+]
+.author[
+### Joshua Kunst Fuentes <a href="mailto:jbkunst@gmail.com" class="email">jbkunst@gmail.com</a>
+]
+
+---
+
+
+
+
+
+
+# Shiny: Visualizacion de datos con R
+
+## Version 2024
+
+### Clases
+
+* Lunes 4 de noviembre
+
+
+* Miércoles 6 de Noviembre
+
+
+---
+
+# Programa
+
+- [Slides 1](https://jkunst.com/shiny-visualizacion-de-datos-con-R/slides-01.html)
+  - Aplicación (web), ejemplos.
+  - Introducción a shiny: Interfaz usuario y servidor
+- [Slides 2](https://jkunst.com/shiny-visualizacion-de-datos-con-R/slides-02.html)
+  - Layouts  
+  - Integración HTMLWidgets
+- [Slides 3](https://jkunst.com/shiny-visualizacion-de-datos-con-R/slides-03.html)
+  - Temas, templates y diseño    
+  - Compartir una app
+  - Shiny en Python
+- [Slides 4](https://jkunst.com/shiny-visualizacion-de-datos-con-R/slides-04.html)
+  - Expresiones reactivas
+  - Orden de ejecución  
+  - Extensiones shiny
+
+---
+
+# Ejercicio: Juntando inputs, laytous, htmlwidgets, {bslib}
+
+Recuerde el ejercicio de la clase pasada: Generar una aplicación que considere/tenga:
+
+- El app debe ser generada con un `navbarPage` (con una única sección `tabPanel`)
+- En la única sección considere un `sidebarPanel`.
+- La aplicación debe poseer un selector de fecha.
+- Dada una fecha, la aplicación muestre una tabla con la información
+de sismos de la fecha asociada y un mapa. Ayúdese generando una función 
+para descargar la información dada una fecha.
+- Adicionalmente un _leaflet_ con la ubicación de los sismos.
+- Incorpore texto con información de la fecha seleccionada.
+
+Adicionalmente:
+
+- Incorpore la tabla de sismos a la aplicación con {DT}.
+- Seleccione un retail, banco u otra marca de su preferencia y realice
+el ejercicio de incorporar los colores y tipografías. Utilizando
+`bs_theme(..., primary = color, "navbar-light-bg" = otrocolor)`
+
+---
+
+# Solución
+
+.pull-left[.code40[
+```r
+library(shiny);library(leaflet);library(rvest);library(dplyr);library(janitor)
+library(tidyverse);library(lubridate);library(DT);library(bslib)
+
+descarga_sismos_por_dia &lt;- function(fecha_string){
+  message(fecha_string)
+  fecha &lt;- ymd(fecha_string)
+  y &lt;- year(fecha)
+  m &lt;- format(fecha, "%m")  
+  d &lt;- format(fecha, "%Y%m%d")  
+  url &lt;- str_glue("https://www.sismologia.cl/sismicidad/catalogo/{y}/{m}/{d}.html")
+  datos &lt;- read_html(url) |&gt;
+    html_table() |&gt;
+    dplyr::nth(2) |&gt;
+    janitor::clean_names() |&gt;
+    tidyr::separate(latitud_longitud, into = c("latitud", "longitud"), sep = " ", convert = TRUE)
+  datos
+}
+
+ui &lt;- navbarPage(
+  theme = bs_theme("navbar-light-bg"  = "#002884", primary = "#5583ff", base_font = font_google("Nunito")),
+  tags$span("Sismos en ", tags$img(src = "https://portales.bancochile.cl/uploads/000/035/565/2ca8e2c5-606c-47f4-80ef-03bec528775d/original/bch-inverse.svg"),  
+  ),
+  tabPanel("Sismos",
+    sidebarLayout(
+      sidebarPanel(
+        dateInput("fecha", label = h5("Seleccione fecha por favor"), max = Sys.Date()),
+        actionButton("primary", "Primary", icon("r-project"), class = "btn-primary")
+      ),
+      mainPanel(
+        fluidRow(
+          column(width = 4, leafletOutput("mapa")),
+          column(width = 8, DTOutput("tabla"))
+        )
+      )
+    )
+  )
+)
+
+```
+]]
+.pull-right[.code60[
+```r
+server &lt;- function(input, output){
+  
+  output$mapa &lt;- renderLeaflet({
+    datos &lt;- descarga_sismos_por_dia(input$fecha)
+    leaflet(datos) |&gt;
+      addTiles() |&gt;
+      addMarkers(
+        lng = ~longitud,
+        lat = ~latitud,
+        popup = ~as.character(magnitud_2),
+        label = ~as.character(`fecha_local_lugar`)
+      )
+  })
+  
+  output$tabla &lt;- renderDataTable({
+    datos &lt;- descarga_sismos_por_dia(input$fecha)
+    datatable(datos)
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+]]
+
+
+---
+
+class: center, middle, inverse
+
+# Expresiones reactivas
+
+---
+
+# Expresiones reactivas (_reactive expressions_)
+
+
+.pull-left[
+La idea de expresiones reactiva es que podemos limitar que es lo que se (re)ejecuta al cambiar un input.
+
+Una expresión reactiva es código R que usa un input y retorna un valor, 
+la expresion se actualizará cuando el valor del (de los) inputs de los cuales dependen
+cambien.
+
+Estos elementos se definen en el `server`. Se crea una expresion con la función `reactive` la que toma una expresión/código R entre `{}`, de la misma forma que las funciones `render` (`renderPlot`, `renderTable`):
+
+```
+server &lt;- function(input, output) {
+  ...
+  elementoReactivo &lt;- reactive({
+    codigo R...
+  })
+  ...
+
+} 
+```
+
+]
+
+.pull-right[
+```r
+server &lt;- function(input, output) {
+  
+  dataSismos &lt;- reactive({
+    fecha &lt;- ymd(input$fecha)
+    ...
+    datos &lt;- read_html(url) |&gt;
+      html_table() |&gt; ...
+    datos
+    
+  })
+  
+  output$mapa &lt;- renderLeaflet({
+    
+    datos &lt;- dataSismos()
+    
+    leaflet(datos) |&gt; ...
+  })
+  
+  output$tabla &lt;- renderDT({
+    datatable(dataSismos())
+  })
+  
+})
+```
+]
+
+---
+
+# Expresiones reactivas: Ejemplo
+
+.center[
+![](imgs/reactivity1.png)
+]
+
+---
+
+# Expresiones reactivas: Ejemplo _mejorado_
+
+.center[
+![](imgs/reactivity2.png)
+]
+
+---
+
+# Ejercicio: Creando una expresión reactiva
+
+Para el ejercicio anterior:
+
+- Cree la expresión reactiva necesaria para reducir la cantidad de descargas.
+
+- Incluya un `sliderInput` para filtrar los registros de la tabla (no así los registros/markers del mapa).
+
+---
+
+# Solución
+
+.pull-left[.code40[
+```r
+library(shiny);library(leaflet);library(rvest);library(dplyr);library(janitor)
+library(tidyverse);library(lubridate);library(DT);library(bslib)
+
+descarga_sismos_por_dia &lt;- function(fecha_string){
+  message(fecha_string)
+  fecha &lt;- ymd(fecha_string)
+  y &lt;- year(fecha)
+  m &lt;- format(fecha, "%m")  
+  d &lt;- format(fecha, "%Y%m%d")  
+  url &lt;- str_glue("https://www.sismologia.cl/sismicidad/catalogo/{y}/{m}/{d}.html")
+  datos &lt;- read_html(url) |&gt;
+    html_table() |&gt;
+    dplyr::nth(2) |&gt;
+    janitor::clean_names() |&gt;
+    tidyr::separate(latitud_longitud, into = c("latitud", "longitud"), sep = " ", convert = TRUE) |&gt; 
+    mutate(magnitud_3 = as.numeric(str_remove(magnitud_2, " Ml")))
+  datos
+}
+
+ui &lt;- navbarPage(
+  theme = bs_theme("navbar-light-bg"  = "#002884", primary = "#5583ff", base_font = font_google("Nunito")),
+  tags$span("Sismos en ", tags$img(src = "https://portales.bancochile.cl/uploads/000/035/565/2ca8e2c5-606c-47f4-80ef-03bec528775d/original/bch-inverse.svg"),  
+  ),
+  tabPanel("Sismos",
+    sidebarLayout(
+      sidebarPanel(
+        dateInput("fecha", label = h5("Seleccione fecha por favor"), max = Sys.Date()),
+        sliderInput("filtro_magnitud", label = "filtrar magnitud", min = 3, max = 10, value = 10),
+        actionButton("primary", "Primary", icon("r-project"), class = "btn-primary")
+      ),
+      mainPanel(
+        fluidRow(
+          column(width = 4, leafletOutput("mapa")),
+          column(width = 8, DTOutput("tabla"))
+        )
+      )
+    )
+  )
+)
+
+```
+]]
+.pull-right[.code60[
+```r
+server &lt;- function(input, output){
+  
+  dataSismos &lt;- reactive({
+    datos &lt;- descarga_sismos_por_dia(input$fecha)
+    datos
+  })
+  
+  output$mapa &lt;- renderLeaflet({
+    datos &lt;- dataSismos()
+    leaflet(datos) |&gt;
+      addTiles() |&gt;
+      addMarkers(
+        lng = ~longitud,
+        lat = ~latitud,
+        popup = ~as.character(magnitud_2),
+        label = ~as.character(`fecha_local_lugar`)
+      )
+  })
+  
+  output$tabla &lt;- renderDataTable({
+    datos &lt;- dataSismos()
+    mmax &lt;- input$filtro_magnitud
+    datos_filtrados &lt;- datos |&gt; 
+      filter(magnitud_3 &lt;= mmax) |&gt; 
+      select(-magnitud_3)
+    datatable(datos_filtrados)
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+]]
+
+---
+
+class: center, middle, inverse
+
+# Orden de ejecución
+
+---
+
+# Una vez 
+
+.center[
+&lt;img src="imgs/run-once.png" width="70%" /&gt;
+]
+
+---
+
+# Una vez por usuario
+
+.center[
+&lt;img src="imgs/run-once-per-user.png" width="70%" /&gt;
+]
+
+---
+
+# Muchas veces
+
+.center[
+&lt;img src="imgs/run-many-times.png" width="70%" /&gt;
+]
+
+---
+
+class: center, middle, inverse
+
+# Extensiones para Shiny
+
+---
+
+# Extensiones para Shiny
+
+Podemos decir que ya existe un _shinyverso_ dada la cantidad de paquetes
+que extienden shiny, agregando tanto diseños, nuevas funcionalidades, etc:
+
+https://github.com/nanxstats/awesome-shiny-extensions
+
+Menciones honrosas (_en mi opinión_):
+
+- https://rinterface.github.io/shinydashboardPlus/
+
+- https://fullpage.rinterface.com/
+
+- https://waiter.john-coene.com/
+
+- https://cicerone.john-coene.com/
+
+
+---
+
+# Ejercicio: Incorporando extensiones
+
+Para el ejercicio incluya las características de {waiter} y {ciceroene}
+
+---
+
+# Solución
+
+---
+
+# Cosas que no vimos...
+
+... Que ni tan necesarias, pero que en futuro podrían ayudar!
+
+
+- `bindCache`: Se puede asociar un resultado de un `render` a ciertos inputs, para guardar automáticament el resultado sin tener que volver a ejecutar el código dentro del `render`. 
+https://shiny.rstudio.com/articles/caching.html
+
+- Bookmarking: La posibilidad de registrar la aplicación con ciertos inputs seleccionados.
+Como cuando comparter una aplicación de un retail con ciertos filtros. https://mastering-shiny.org/action-bookmark.html
+
+- HTMLWidgets Proxys: Características de algunos HTMLWidgets para no _recontruir_ el gráfico sino que actualizarlo. 
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
