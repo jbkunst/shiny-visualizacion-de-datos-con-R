@@ -481,7 +481,7 @@ datatable(datos)
 ]
 
 .pull-right[
-```{r ref.label='df', eval=TRUE, echo=FALSE}
+```{r ref.label='dt', eval=TRUE, echo=FALSE}
 ```
 ]
 
