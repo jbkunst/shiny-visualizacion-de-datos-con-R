@@ -470,7 +470,7 @@ datos
 
 ---
 
-# {leaflet}
+# {DT}
 
 .pull-left[
 ```{r dt, eval=FALSE}
@@ -530,19 +530,116 @@ A modo de ejemplo, el paquete `leaflet` tiene `leafletOutput()` y `renderLeaflet
 
 Los anterior está documentado en https://rstudio.github.io/leaflet/shiny.html.
 
+---
+
+# Ejercicio: Agregar un HTMLWidget a la app
+
+A la aplicación de ejemplo del sidebar que se muestra a continuación, modificar para que sea un gráfico _interactivo_ usando el plaque {plotly}.
+
+.pull-left[
+```{r, eval=FALSE}
+library(shiny)
+library(bslib)
+
+
+ui <- page_sidebar(
+  title = "Hello Shiny!",
+  sidebar = sidebar(
+    sliderInput(
+      "bins", label = "Number of bins:",
+      min = 1, value = 30, max = 50
+    )
+  ),
+  plotOutput("distPlot")
+)
+```
+]
+
+.pull-right[
+```{r, eval=FALSE}
+server <- function(input, output) {
+  
+  output$distPlot <- renderPlot({
+    
+    x    <- faithful[, 2]
+    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    
+    hist(
+      x,
+      breaks = bins,
+      col = 'darkgray', border = 'white',
+      xlab = 'Waiting time to next eruption (in mins)',
+      main = 'Histogram of waiting times'
+      )
+      
+    })
+}
+
+shinyApp(ui, server)
+```
+]
 
 ---
 
-# Ejercicio: Agregar HTMLWidgets a la app
+# Ejercicio: Agregar un HTMLWidget a la app **Solución**
+
+A la aplicación de ejemplo del sidebar que se muestra a continuación, modificar para que sea un gráfico _interactivo_ usando el plaque {plotly}.
+
+.pull-left[
+```{r, eval=FALSE}
+library(shiny)
+library(bslib)
+library(plotly)             #<<
+
+ui <- page_sidebar(
+  title = "Hello Shiny!",
+  sidebar = sidebar(
+    sliderInput(
+      "bins", label = "Number of bins:",
+      min = 1, value = 30, max = 50
+    )
+  ),
+  plotlyOutput("distPlot")      #<<
+)
+```
+]
+
+.pull-right[
+```{r, eval=FALSE}
+server <- function(input, output) {
+  
+  output$distPlot <- renderPlotly({         #<<
+    
+    x    <- faithful[, 2]
+    bins <- list(start = min(x),  end = max(x),  size =  (max(x) - min(x))/input$bins)
+    
+    plot_ly(
+      x = ~ x, type = "histogram",
+      nbinsx = bins,
+      marker = list(color = 'darkgray', line = list(color = 'white', width = 1)
+      )
+    ) |>
+      layout(
+        xaxis = list(title = 'Waiting time to next eruption (in mins)'),
+        title = 'Histogram of waiting times'
+        )
+}
+
+shinyApp(ui, server)
+```
+]
+
+---
+
+# Ejercicio: Agregar + HTMLWidgets a la app
 
 <br/>
 
-A la aplicación obtenida de modificar la de `tabsetPanel` (Nivel _entretenido_),
-modificar gráficos y tablas para incluir algunos HTMLWidgets.
+A la aplicación obtenida de modificar la de `tabsetPanel` (Nivel entretenido), modificar gráficos y tablas para incluir algunos HTMLWidgets.
 
 ---
 
-# Solución
+# Ejercicio: Agregar + HTMLWidgets a la app **Solución**
 
 
 .pull-left[
@@ -594,7 +691,7 @@ shinyApp(ui, server)
 
 ---
 
-# Solución v2
+# Ejercicio: Agregar + HTMLWidgets a la app **Solución v2**
 
 
 .pull-left[

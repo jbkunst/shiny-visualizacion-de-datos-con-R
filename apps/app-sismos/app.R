@@ -89,4 +89,4 @@ server <- function(input, output) {
 
 }
 
-# shinyApp(ui = ui, server = server, options = list(host = "192.168.1.46"))
+shinyApp(ui = ui, server = server)
