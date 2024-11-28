@@ -35,3 +35,4 @@ vignettes/*.pdf
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
 .Rproj.user
+slides-ocuc/~$Introducción a la creación de aplicaciones web con Shiny.pptx
