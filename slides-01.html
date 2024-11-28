@@ -204,7 +204,7 @@ library(shiny)
 
 server &lt;- function(input, output) {}
 
-runApp(list(ui = ui, server = server)) 
+shinyApp(ui, server)
 ```
 
 
@@ -234,7 +234,7 @@ ui &lt;- fluidPage()
 
 *server &lt;- function(input, output) {}
 
-runApp(list(ui = ui, server = server)) 
+shinyApp(ui, server)
 ```
 
 &lt;br&gt;
@@ -258,12 +258,12 @@ ui &lt;- fluidPage()
 
 server &lt;- function(input, output) {}         
 
-*runApp(list(ui = ui, server = server))
+*shinyApp(ui, server)
 ```
 
 &lt;br&gt;
 
-- `runApp` es la funcion que crea y deja corriendo la app con los 
+- `shinyApp` es la funcion que crea y deja corriendo la app con los 
 parámetros otorgados.
 - **No siempre** tendremos que escribirla pues veremos que RStudio
 al crear una shinyApp nos pondrá un botón para _servir_ la aplicación.
@@ -283,7 +283,7 @@ ui &lt;- fluidPage()
 
 server &lt;- function(input, output) {}         
 
-runApp(list(ui = ui, server = server))       
+shinyApp(ui, server)    
 ```
 
 De formar general la aplicación será:
@@ -320,6 +320,7 @@ t &lt;- ifelse(TRUE, "b", "l")
 t
 
 c &lt;- "darkred"
+c
 
 plot(x, type = t, col = c)    
 ```
@@ -479,6 +480,43 @@ t &lt;- ifelse(TRUE, "b", "l")
 t
 
 c &lt;- "darkred"
+*c 
+```
+]
+ 
+.panel2-quehace-auto[
+
+```
+##  [1] -0.56047565 -0.23017749  1.55870831  0.07050839  0.12928774  1.71506499
+##  [7]  0.46091621 -1.26506123 -0.68685285 -0.44566197
+```
+
+```
+## [1] "b"
+```
+
+```
+## [1] "darkred"
+```
+]
+
+---
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace-auto[
+
+``` r
+set.seed(123)
+
+x &lt;- rnorm(10)
+x
+
+t &lt;- ifelse(TRUE, "b", "l")
+t
+
+c &lt;- "darkred"
+c
 
 *plot(x, type = t, col = c)
 ```
@@ -495,7 +533,11 @@ c &lt;- "darkred"
 ## [1] "b"
 ```
 
-![](imgs/slides1/quehace_auto_07_output-1.png)&lt;!-- --&gt;
+```
+## [1] "darkred"
+```
+
+![](imgs/slides1/quehace_auto_08_output-1.png)&lt;!-- --&gt;
 ]
 
 &lt;style&gt;
@@ -694,6 +736,46 @@ t &lt;- ifelse(FALSE, "b", "l")
 t
 
 c &lt;- "green"
+*c 
+```
+]
+ 
+.panel2-quehace2-auto[
+
+```
+##  [1] -0.56047565 -0.23017749  1.55870831  0.07050839  0.12928774  1.71506499
+##  [7]  0.46091621 -1.26506123 -0.68685285 -0.44566197  1.22408180  0.35981383
+## [13]  0.40077145  0.11068272 -0.55584113  1.78691314  0.49785048 -1.96661716
+## [19]  0.70135590 -0.47279141 -1.06782371 -0.21797491 -1.02600445 -0.72889123
+## [25] -0.62503927 -1.68669331  0.83778704  0.15337312 -1.13813694  1.25381492
+```
+
+```
+## [1] "l"
+```
+
+```
+## [1] "green"
+```
+]
+
+---
+count: false
+ 
+# Repaso R: Que hace el siguiente código?
+.panel1-quehace2-auto[
+
+``` r
+set.seed(123)
+
+x &lt;- rnorm(30)
+x
+
+t &lt;- ifelse(FALSE, "b", "l")
+t
+
+c &lt;- "green"
+c
 
 *plot(x, type = t, col = c)
 ```
@@ -713,7 +795,11 @@ c &lt;- "green"
 ## [1] "l"
 ```
 
-![](imgs/slides1/quehace2_auto_07_output-1.png)&lt;!-- --&gt;
+```
+## [1] "green"
+```
+
+![](imgs/slides1/quehace2_auto_08_output-1.png)&lt;!-- --&gt;
 ]
 
 &lt;style&gt;
@@ -756,6 +842,7 @@ t &lt;- ifelse(FALSE, "b", "l")
 t
 
 c &lt;- "green"
+c
 
 plot(x, type = t, col = c)    
 ```

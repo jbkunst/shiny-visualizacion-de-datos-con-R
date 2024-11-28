@@ -169,7 +169,7 @@ ui <- fluidPage()                            #<<
 
 server <- function(input, output) {}
 
-runApp(list(ui = ui, server = server)) 
+shinyApp(ui, server)
 ```
 
 
@@ -198,7 +198,7 @@ ui <- fluidPage()
 
 server <- function(input, output) {}         #<<
 
-runApp(list(ui = ui, server = server)) 
+shinyApp(ui, server)
 ```
 
 <br>
@@ -221,12 +221,12 @@ ui <- fluidPage()
 
 server <- function(input, output) {}         
 
-runApp(list(ui = ui, server = server))       #<<
+shinyApp(ui, server)             #<<
 ```
 
 <br>
 
-- `runApp` es la funcion que crea y deja corriendo la app con los 
+- `shinyApp` es la funcion que crea y deja corriendo la app con los 
 parámetros otorgados.
 - **No siempre** tendremos que escribirla pues veremos que RStudio
 al crear una shinyApp nos pondrá un botón para _servir_ la aplicación.
@@ -245,7 +245,7 @@ ui <- fluidPage()
 
 server <- function(input, output) {}         
 
-runApp(list(ui = ui, server = server))       
+shinyApp(ui, server)    
 ```
 
 De formar general la aplicación será:
@@ -280,6 +280,7 @@ t <- ifelse(TRUE, "b", "l")
 t
 
 c <- "darkred"
+c
 
 plot(x, type = t, col = c)    
 ```
@@ -302,6 +303,7 @@ t <- ifelse(FALSE, "b", "l")
 t
 
 c <- "green"
+c
 
 plot(x, type = t, col = c)    
 ```
