@@ -1,13 +1,13 @@
 # Shiny: Visualizacion de datos con R
 
-## Version 2024
+## Version 2025
 
 ### Clases
 
-* Lunes 4 de noviembre
+* Martes 18 de noviembre
 
 
-* Miércoles 6 de Noviembre
+* Jueves 20 de Noviembre
 
 
 ---

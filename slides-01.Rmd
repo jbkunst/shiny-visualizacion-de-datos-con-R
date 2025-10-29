@@ -127,10 +127,11 @@ Algunos simples.
 
 Otros con más detalle en la parte visual.
 
+* https://indice.nudos.cl/
+* https://odes-chile.org/app/unidades/
 * https://jbkunst.shinyapps.io/trd-sttstcs/ (https://github.com/jbkunst/trd-sttstcs)
 * https://jorgehcas1998.shinyapps.io/Dataton-app/ (https://github.com/socapal/dataton-tudinero)
 * https://nz-stefan.shinyapps.io/commute-explorer-2
-* https://odes-chile.org/app/unidades/
 
 ---
 

@@ -446,7 +446,7 @@ hchart(modelo) |>
 ```{r sismos, eval=FALSE}
 library(rvest)   # descargar datos de paginas web
 
-url <- "https://www.sismologia.cl/sismicidad/catalogo/2024/11/20241103.html"
+url <- "https://www.sismologia.cl/sismicidad/catalogo/2025/10/20251027.html"
 
 datos <- read_html(url) |>
   html_table() |>
