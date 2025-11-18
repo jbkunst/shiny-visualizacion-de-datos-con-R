@@ -1,7 +1,7 @@
 ---
 title: "Shiny<br>Visualizacion de datos con R<br>Slides 1"
 subtitle: "Diplomado en Data Science, MatPUC"
-author: "Joshua Kunst Fuentes jbkunst@gmail.com"
+author: "Joshua Kunst Fuentes jbkunst@gmail.com https://jkunst.com/blog/"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -79,6 +79,21 @@ knitr::include_graphics("imgs/data-science-communicate.png")
 ```
 ]
 
+---
+
+# Por que shiny?
+
+<br/>
+
+- **De script a app en minutos**. Lo que ya tienes en R/Python lo envuelves en una interfaz sin crear APIs ni reescribir lógica.
+
+<br/>
+
+- **Sin cambiar de lenguaje ni stack**. Sigues usando R/Python — no necesitas aprender React, JS, Flask, Django, etc.
+
+<br/>
+
+- **Interactividad analítica inmediata**. La reactividad está integrada: los outputs se actualizan solos al cambiar los inputs.
 
 ---
 
@@ -93,7 +108,7 @@ class: center, middle, inverse
 (Wikipedia:) Herramientas que los usuarios pueden utilizar accediendo 
 a un servidor web a través de internet o de una intranet mediante un navegador.
 
-Puede ser de lo más simple...
+Puede ser de lo más simple:
 
 .center[
 ```{r, echo=FALSE, out.width = "550px"}
@@ -104,7 +119,7 @@ knitr::include_graphics("imgs/miprimerappbslib.png")
 
 # Aplicación Web
 
-Hasta algo más complejo con más `input`s y `output`s
+Hasta algo más complejo con más `input`s y `output`s:
 
 <!-- ![](imgs/otraapp2.png) -->
 
@@ -183,7 +198,6 @@ shinyApp(ui, server)
 
 - Se define una interfaz de usuario (user interface). En adelante `ui`.
 - En este caso es una página fluida vacía `page_fluid()`.
-
 - En el futuro acá definiremos diseño/estructura de nuestra aplicación (_layout_).
 Que se refiere la disposición de nuestros `inputs` y `outputs`.
 

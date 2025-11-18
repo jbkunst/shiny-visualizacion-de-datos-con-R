@@ -1,7 +1,7 @@
 ---
 title: "Shiny<br>Visualizacion de datos con R<br>Slides 2"
 subtitle: "Diplomado en Data Science, MatPUC"
-author: "Joshua Kunst Fuentes jbkunst@gmail.com"
+author: "Joshua Kunst Fuentes jbkunst@gmail.com https://jkunst.com/blog/"
 output:
   xaringan::moon_reader:
     lib_dir: libs
@@ -53,7 +53,7 @@ tipos de layuts sobre otros.
 --
 
 <br/>
-Revisemos el ejemplo *Chicago Flights* que viene en el paquete {bslib}
+Revisemos el ejemplo *Chicago Flights* que viene en el paquete {bslib}:
 
 ```{r, eval=FALSE}
 # install.packages(c("histoslider", "DT", "fontawesome", "bsicons", "pak"))
@@ -67,7 +67,6 @@ shiny::runApp(system.file("examples-shiny", "flights", package = "bslib"))
 
 # Layouts
 
---
 
 <br/>
 Como mencionamos anteriormente utilizaremos para esto el paquete {bslib}.
@@ -84,24 +83,24 @@ Acá nos centraremos solamente en el *ui* pues al modificar la disposición de l
 
 ---
 
-# {bslib} page_sidebar
+# page_sidebar
 
 ![](imgs/page_sidebar.png)
 
 ---
 
-# {bslib} page_sidebar
+# page_sidebar
 
 .pull-left[
-```r
+```{r, eval=FALSE}
 library(shiny)
 library(bslib)
 
-ui <- page_sidebar(
+ui <- page_sidebar(              #<<
 
   title = "Hello Shiny!",
 
-  sidebar = sidebar(
+  sidebar = sidebar(              #<<
     sliderInput(
       "bins", label = "Number of bins:",
       min = 1, value = 30, max = 50
@@ -121,12 +120,12 @@ ui <- page_sidebar(
 
 ---
 
-# {bslib} page_navbar
+# page_navbar
 
 ![](imgs/page_navbar.png)
 
 .code70[
-```r
+```{r, eval=FALSE}
 ui <- page_navbar(
   title = "My App",
   bg = "#2D89C8",
@@ -144,6 +143,350 @@ ui <- page_navbar(
 )
 ```
 ]
+
+
+---
+
+# navset card underline/pill/tab
+
+.pull-left[
+```{r, eval=FALSE}
+library(shiny)
+library(bslib)
+
+ui <- page_sidebar(
+  title = "Tabsets",
+  sidebar = sidebar(
+    ...
+  ),
+  navset_card_underline(                                #<<
+    title = "Visualizations",
+    nav_panel("Plot", plotOutput("plot")),
+    nav_panel("Summary", tableOutput("summary")),
+    nav_panel("Table", tableOutput("table"))
+  )
+)
+```
+]
+
+.pull-right[
+![](imgs/tabsets.png)
+]
+
+---
+
+# accordion
+
+.pull-left[
+```{r, eval=FALSE}
+ui <- page_sidebar(
+  title = "Penguins dashboard",
+  sidebar = sidebar(
+    accordion(                                #<<
+      accordion_panel(
+        "Primary controls",
+        varSelectInput(...)
+      ),
+      accordion_panel(
+        "Other controls",
+        "Other controls go here"
+      )
+    )
+  ),
+  accordion(                                 #<<
+    accordion_panel("Bill Length", plotOutput("p1")),
+    accordion_panel("Bill Depth", plotOutput("p2")),
+    accordion_panel("Body Mass", plotOutput("p3"))
+  )
+)
+```
+
+<small>https://shiny.posit.co/r/articles/build/layout-guide/</small>
+]
+
+.pull-right[
+![](imgs/accordions.png)
+]
+
+
+---
+
+# Multiples columnas: Layout por filas
+
+.pull-left[
+`page_fillable()` permite crear una app sin barra lateral.
+Los componentes dentro de page_fillable() se ajustan automáticamente para ocupar el espacio vertical y horizontal disponible.
+Por defecto, Shiny coloca cada nuevo componente debajo del anterior, como si cada uno fuera una nueva fila.
+
+```{r, eval=FALSE}
+ui <- page_fillable(
+
+  card(card_header("Card 1")),
+  card(card_header("Card 2")),
+  card(card_header("Card 3"))
+  
+)
+```
+
+]
+
+.pull-right[
+![](imgs/rows.png)
+]
+
+---
+
+# Multiples columnas: Layout por columnas
+
+
+.pull-left[
+```{r, eval=FALSE}
+ui <- page_fillable(
+
+  layout_columns(         #<<
+     card(card_header("Card 1")),
+     card(card_header("Card 2")),
+     card(card_header("Card 3"))
+  )
+  
+)
+```
+]
+
+.pull-right[
+![](imgs/columns.png)
+]
+
+---
+
+# Multiples columnas: Layout por columnas (anchos)
+
+
+.pull-left[
+```{r, eval=FALSE}
+ui <- page_fillable(
+
+  layout_columns(
+     card(card_header("Card 1")),
+     card(card_header("Card 2")),
+     card(card_header("Card 3")),
+     col_widths = c(4, 6, 2)            #<<
+  )
+  
+)
+```
+]
+
+.pull-right[
+![](imgs/column-widths.png)
+]
+
+---
+
+# Multiples columnas: Layout por columnas (anchos 2)
+
+.pull-left[
+```{r, eval=FALSE}
+ui <- page_fillable(
+
+  layout_columns(
+     card(card_header("Card 1")),
+     card(card_header("Card 2")),
+     card(card_header("Card 3")),
+     col_widths = c(6, 6, 8)  #<<
+  )
+  
+)
+```
+
+Si los elementos superan las 12 unidades de ancho, automáticamente pasan a una nueva fila.
+
+]
+
+.pull-right[
+![](imgs/column-wrap.png)
+]
+
+---
+
+# Multiples columnas: Distintas altos por filas
+
+
+.pull-left[
+```{r, eval=FALSE}
+ui <- page_fillable(
+
+  layout_columns(
+     card(card_header("Card 1")),
+     card(card_header("Card 2")),
+     card(card_header("Card 3")),
+     col_widths = c(6, 6, 8),
+     row_heights = c(1, 2)        #<<
+  )
+  
+)
+```
+
+Si los elementos superan las 12 unidades de ancho, automáticamente pasan a una nueva fila.
+
+]
+
+.pull-right[
+![](imgs/row-heights.png)
+]
+
+---
+
+# Multiples columnas: Layout mixto
+
+
+.pull-left[
+Se pueden combinar y anidarpara crear diseños personalizados basados en grillas.
+
+```r
+ui <- page_fillable(
+  layout_columns(
+    card(card_header("Card 1")),
+    layout_columns(
+      card(card_header("Card 2")),
+      card(card_header("Card 3")),
+      col_widths = c(12, 12)
+      )
+  ),
+  card(card_header("Card 4"))
+)
+```
+]
+
+.pull-right[
+![](imgs/mixed.png)
+]
+
+
+---
+
+# Ejercicio: Distribuyendo outputs
+
+Tomar la siguiente app e implementar un `navset_card_*`, `accordion` y un layout mixto.
+
+.pull-left[
+.code70[
+```{r, eval=FALSE}
+# UI
+library(shiny)
+library(bslib)
+
+datos <- rnorm(100)
+
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50,
+                max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  plotOutput("grafico"),
+  plotOutput("grafico2"),  
+  tableOutput("tabla")    
+  )
+``` 
+]
+]
+
+.pull-right[
+.code70[
+```{r, eval=FALSE}
+# Server
+server <- function(input, output) {
+  output$grafico <- renderPlot({
+    plot(
+      head(datos, input$nrand),
+      type =  ifelse(input$punto, "b", "l"),
+      col = input$col
+      )
+  })
+  
+  output$grafico2 <- renderPlot({                            
+    hist(head(datos, input$nrand), col = input$col) 
+  })                                               
+  
+  output$tabla <- renderTable({            
+    x <- head(datos, input$nrand)           
+    data.frame(mean(x), sd(x), length(x))  
+  })                                       
+  
+}
+
+shinyApp(ui, server)
+``` 
+]
+]
+
+
+---
+
+# Ejercicio: Distribuyendo outputs (solución)
+
+Solamente modificamos la `ui`. El resto de implementaciones son similares.
+
+.pull-left[
+.code70[
+```{r, eval=FALSE}
+# UI
+library(shiny)
+library(bslib)
+
+datos <- rnorm(100)
+
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50,
+                max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  navset_card_underline(
+    title = "Resultados",
+    nav_panel("Lineas", plotOutput("grafico")),
+    nav_panel("Histograma", plotOutput("grafico2")),
+    nav_panel("Tabla", tableOutput("tabla"))
+    )   
+  )
+``` 
+]
+]
+
+.pull-right[
+.code70[
+```{r, eval=FALSE}
+# Server
+server <- function(input, output) {
+  output$grafico <- renderPlot({
+    plot(
+      head(datos, input$nrand),
+      type =  ifelse(input$punto, "b", "l"),
+      col = input$col
+      )
+  })
+  
+  output$grafico2 <- renderPlot({                            
+    hist(head(datos, input$nrand), col = input$col) 
+  })                                               
+  
+  output$tabla <- renderTable({            
+    x <- head(datos, input$nrand)           
+    data.frame(mean(x), sd(x), length(x))  
+  })                                       
+  
+}
+
+shinyApp(ui, server)
+``` 
+]
+]
+
 
 
 ---
@@ -254,7 +597,7 @@ hchart(modelo) |>
 ```{r sismos, eval=FALSE}
 library(rvest)   # descargar datos de paginas web
 
-url <- "https://www.sismologia.cl/sismicidad/catalogo/2025/10/20251027.html"
+url <- "https://www.sismologia.cl/sismicidad/catalogo/2025/11/20251117.html"
 
 datos <- read_html(url) |>
   html_table() |>
@@ -342,7 +685,7 @@ Los anterior está documentado en https://rstudio.github.io/leaflet/shiny.html.
 
 # Ejercicio: Agregar un HTMLWidget a la app
 
-A la aplicación de ejemplo del sidebar que se muestra a continuación, modificar para que sea un gráfico _interactivo_ usando el plaque {plotly}.
+A la aplicación de ejemplo del sidebar que se muestra a continuación, modificar para que sea un gráfico _interactivo_ usando el plaque {plotly} y el ejemplo https://plotly.com/r/histograms/.
 
 .pull-left[
 ```{r, eval=FALSE}
@@ -389,7 +732,7 @@ shinyApp(ui, server)
 
 ---
 
-# Ejercicio: Agregar un HTMLWidget a la app **Solución**
+# Ejercicio: Agregar un HTMLWidget a la app (solución)
 
 A la aplicación de ejemplo del sidebar que se muestra a continuación, modificar para que sea un gráfico _interactivo_ usando el plaque {plotly}.
 
@@ -424,8 +767,7 @@ server <- function(input, output) {
     plot_ly(
       x = ~ x, type = "histogram",
       nbinsx = bins,
-      marker = list(color = 'darkgray', line = list(color = 'white', width = 1)
-      )
+      marker = list(color = 'darkgray', line = list(color = 'white', width = 1))
     ) |>
       layout(
         xaxis = list(title = 'Waiting time to next eruption (in mins)'),
@@ -441,114 +783,127 @@ shinyApp(ui, server)
 
 # Ejercicio: Agregar + HTMLWidgets a la app
 
-<br/>
-
-A la aplicación obtenida de modificar la de `tabsetPanel` (Nivel entretenido), modificar gráficos y tablas para incluir algunos HTMLWidgets.
-
----
-
-# Ejercicio: Agregar + HTMLWidgets a la app **Solución**
-
+A la siguiente aplicación implementar HTMLWidgets
 
 .pull-left[
-```r
+.code70[
+```{r, eval=FALSE}
+# UI
 library(shiny)
-library(ggplot2)
-library(plotly)
-library(DT)
+library(bslib)
 
-ui <- navbarPage(
-  title = "Hello Shiny!",
-  tabPanel("Plot",
-           sliderInput("obs", 
-           "Number of observations:",
-           min = 0, max = 1000, value = 500),
-           plotOutput("plot")
-           ),
-  tabPanel("Línea", plotlyOutput("linea")),
-  tabPanel("Summary", verbatimTextOutput("summary")),
-  tabPanel("Table", DTOutput("tabla"))
-)
-```
+datos <- rnorm(100)
+
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50,
+                max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  navset_card_underline(
+    title = "Resultados",
+    nav_panel("Lineas", plotOutput("grafico")),
+    nav_panel("Histograma", plotOutput("grafico2")),
+    nav_panel("Tabla", tableOutput("tabla"))
+    )   
+  )
+``` 
+]
 ]
 
 .pull-right[
-```r
+.code70[
+```{r, eval=FALSE}
+# Server
 server <- function(input, output) {
-  output$plot <- renderPlot({
-    hist(rnorm(input$obs))
-    })
-  output$summary <- renderPrint({
-    summary(rnorm(input$obs))
-    })
-  output$tabla <- renderDT({ 
-    d <- data.frame(rnorm(input$obs))
-    datatable(d)
-    })
-  output$linea <- renderPlotly({
-    y <- rnorm(input$obs)
-    p <- qplot(x = 1:input$obs, y = y, geom = "line")
-    ggplotly(p)
+  output$grafico <- renderPlot({
+    plot(
+      head(datos, input$nrand),
+      type =  ifelse(input$punto, "b", "l"),
+      col = input$col
+      )
   })
+  
+  output$grafico2 <- renderPlot({                            
+    hist(head(datos, input$nrand), col = input$col) 
+  })                                               
+  
+  output$tabla <- renderTable({            
+    x <- head(datos, input$nrand)           
+    data.frame(mean(x), sd(x), length(x))  
+  })                                       
   
 }
 
 shinyApp(ui, server)
-```
+``` 
 ]
+]
+
 
 ---
 
-# Ejercicio: Agregar + HTMLWidgets a la app **Solución v2**
+# Ejercicio: Agregar + HTMLWidgets a la app (solución)
 
+Revisando https://jkunst.com/highcharter/articles/hchart.html:
 
 .pull-left[
-```r
+.code70[
+```{r, eval=FALSE}
+# UI
 library(shiny)
-library(ggplot2)
-library(plotly)
+library(bslib)
+library(highcharter)
 library(DT)
 
-ui <- navbarPage(
-  title = "Hello Shiny!",
-  tabPanel("Plot",
-           sliderInput("obs",
-          "Number of observations:", 
-                min = 0, max = 1000, value = 500),
-    plotlyOutput("plot")
+datos <- rnorm(100)
+
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50,
+                max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    # checkboxInput("punto", "Puntos:", value = FALSE)
   ),
-  tabPanel('Linea', plotOutput('linea')),
-  tabPanel("Summary", textOutput("summary")),
-  tabPanel("Table", dataTableOutput("tabla")),
-  tabPanel('Resumen', verbatimTextOutput('resumen'))
+  navset_card_underline(
+    title = "Resultados",
+    nav_panel("Lineas", highchartOutput("grafico")),
+    nav_panel("Histograma", highchartOutput("grafico2")),
+    nav_panel("Tabla", DTOutput("tabla"))
+  )   
 )
-```
+``` 
+]
 ]
 
 .pull-right[
-```r
+.code70[
+```{r, eval=FALSE}
+# Server
 server <- function(input, output) {
-  output$plot <- renderPlotly({ 
-    n <- input$obs
-    x <- rnorm(n)
-    p <- qplot(x, geom = "histogram")
-    ggplotly(p)
+  output$grafico <- renderHighchart({
+    hchart(
+      ts(head(datos, input$nrand)),
+      name = "Datos",
+      color = input$col
+      )
   })
   
-  output$summary <- renderText({ input$obs })
-  output$tabla <- renderDataTable({ 
-    df <- data.frame(1:input$obs) 
-    datatable(df)
-    })
-  output$resumen <- renderPrint({
-    summary(rnorm(input$obs))
-  } )
-  output$linea <- renderPlot({   
-    plot(rnorm(input$obs), type = 'l')
+  output$grafico2 <- renderHighchart({
+    hchart(head(datos, input$nrand), color = input$col)
   })
+  
+  output$tabla <- renderDT({
+    x <- head(datos, input$nrand)
+    data.frame(mean(x), sd(x), length(x))  
+  })
+  
 }
+
 shinyApp(ui, server)
-```
+``` 
 ]
-
-
+]

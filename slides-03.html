@@ -3,7 +3,7 @@
   <head>
     <title>Shiny Visualizacion de datos con R Slides 3</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Joshua Kunst Fuentes jbkunst@gmail.com" />
+    <meta name="author" content="Joshua Kunst Fuentes jbkunst@gmail.com https://jkunst.com/blog/" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
@@ -21,7 +21,7 @@ class: center, middle, inverse, title-slide
 ## Diplomado en Data Science, MatPUC
 ]
 .author[
-### Joshua Kunst Fuentes <a href="mailto:jbkunst@gmail.com" class="email">jbkunst@gmail.com</a>
+### Joshua Kunst Fuentes <a href="mailto:jbkunst@gmail.com" class="email">jbkunst@gmail.com</a> <a href="https://jkunst.com/blog/" class="uri">https://jkunst.com/blog/</a>
 ]
 
 ---
@@ -233,7 +233,7 @@ Posible solución en https://github.com/jbkunst/shiny-visualizacion-de-datos-con
 
 .code60[
 
-```r
+``` r
 if(!require(forecast)) install.packages("forecast")
 if(!require(xts))      install.packages("xts")
 if(!require(ggplot2))  install.packages("ggplot2")
@@ -721,10 +721,10 @@ app = App(app_ui, server)
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
-"ratio": "16:9",
-"highlightStyle": "github",
-"highlightLines": true,
-"countIncrementalSlides": false
+  "ratio": "16:9",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
