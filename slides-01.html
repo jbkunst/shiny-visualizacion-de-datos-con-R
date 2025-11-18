@@ -88,7 +88,8 @@ Necesitaremos algunos paquetes:
 ``` r
 install.packages(
   c("tidyverse", "shiny", "shinythemes", "shinyWidgets", "bslib",
-    "shinydashboard", "DT", "leaflet", "plotly", "highcharter")
+    "shinydashboard", "DT", "leaflet", "plotly", "highcharter",
+    "forecast", "janitor")
   )
 ```
 
@@ -98,6 +99,7 @@ install.packages(
 
 No olvidar que una buena forma de aprender es con la documentación oficial:
 
+- https://shiny.posit.co/
 - https://mastering-shiny.org/
 - https://shiny.posit.co/r/getstarted/shiny-basics/lesson1/
 
@@ -182,7 +184,7 @@ ui &lt;- page_fluid()
 
 server &lt;- function(input, output) {}
 
-runApp(list(ui = ui, server = server)) 
+shinyApp(ui, server)
 ```
 
 &lt;br&gt;
@@ -878,7 +880,9 @@ plot(x, type = t, col = c)
 
 # Ejercicio: Nuestra primer App
 
-Hacer funcionar el siguiente `código` en R Rstudio: (hint: sí, copy + paste + run) 
+Hacer funcionar el siguiente `código` en R Rstudio: (hint: sí, copy + paste + run).
+
+Note que al *guardar* el script Rstudio lo reconoce como app y aparece un botón de RUN.
 
 .code70[
 
@@ -1353,11 +1357,11 @@ ui &lt;- page_sidebar(
     sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
     selectInput("col", "Color", c("red", "blue", "black")),   
     checkboxInput("punto", "Puntos:", value = FALSE)
-  ),
+    ),
   plotOutput("grafico"),
 * plotOutput("grafico2"),
 * tableOutput("tabla")
-)
+  )
 
 server &lt;- function(input, output) {
   output$grafico &lt;- renderPlot({                               

@@ -53,23 +53,6 @@ tipos de layuts sobre otros.
 --
 
 <br/>
-Revisemos el ejemplo *Chicago Flights* que viene en el paquete {bslib}
-
-```{r, eval=FALSE}
-# install.packages(c("histoslider", "DT", "fontawesome", "bsicons", "pak"))
-# pak::pak("cpsievert/chiflights22")
-
-shiny::runApp(system.file("examples-shiny", "flights", package = "bslib"))
-```
-
-
----
-
-# Layouts
-
---
-
-<br/>
 Como mencionamos anteriormente utilizaremos para esto el paquete {bslib}.
 
 --
@@ -80,7 +63,236 @@ Lo importante es considerar que los elementos que revisaremos se pueden utilizar
 --
 
 <br/>
-Acá nos centraremos solamente en el *ui* pues al modificar la disposición de los elementos no afectaremos al *server*.
+Revisemos el ejemplo *Chicago Flights* que viene en el paquete {bslib}
+
+```{r, eval=FALSE}
+# install.packages(c("histoslider", "DT", "fontawesome", "bsicons", "pak"))
+# pak::pak("cpsievert/chiflights22")
+
+shiny::runApp(system.file("examples-shiny", "flights", package = "bslib"))
+```
+
+---
+
+# {shiny} Tipos de Layouts
+
+<br/>
+
+.center[
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics("imgs/shiny-layouts.png")
+```
+]
+
+
+---
+
+# {shiny} sidebarLayout
+
+<br/>
+
+![](imgs/sidebar.png)
+
+---
+
+# {shiny} sidebarLayout - Estructura
+
+Es una distribución simple donde lo primero en aparecer es los controles o
+inputs.
+
+Luego viene el panel principal el cual posee mayor espacio.
+
+
+.center[
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics("imgs/sidebar2.png")
+```
+]
+
+---
+
+# {shiny} sidebarLayout - Ejemplo código
+
+.code70[
+```r
+library(shiny)
+
+ui <- fluidPage(
+    titlePanel("Hello Shiny!"),
+
+    sidebarLayout(
+        sidebarPanel(
+            sliderInput("bins", "Number of bins:", min = 1, max = 50, value = 30)
+        ),
+        mainPanel(
+           plotOutput("distPlot")
+        )
+    )
+)
+
+server <- function(input, output) {
+
+    output$distPlot <- renderPlot({
+        x    <- faithful[, 2]
+        bins <- seq(min(x), max(x), length.out = input$bins + 1)
+
+        hist(x, breaks = bins, col = 'skyblue', border = 'white',
+             xlab = 'Waiting time to next eruption (in mins)',
+             main = 'Histogram of waiting times')
+    })
+}
+
+shinyApp(ui = ui, server = server)
+```
+]
+
+---
+
+# {shiny} Tipos de Paneles de Navegación
+
+Es posible que nuestra aplicación vaya creciendo, en dicho caso, Los paneles 
+nos permiten organizar distintas secciones de la aplicación.
+
+.center[
+```{r, out.width = "800px", echo=FALSE}
+knitr::include_graphics("imgs/navlayouts.png")
+```
+]
+
+---
+
+# {shiny} tabsetPanel
+
+Los tabs (`tabsetPanel`) son útiles para separar secciones _similares_ en nuestra app. A diferencia de por ejemplo `navbarPage`.
+
+.code70[
+```{r, eval=FALSE}
+library(shiny)
+
+ui <- fluidPage(
+  titlePanel("Hello Shiny!"),
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("obs", "Number of observations:", min = 0, max = 1000, value = 500)
+    ),
+    mainPanel(
+      tabsetPanel(
+        tabPanel("Plot", plotOutput("plot")),
+        tabPanel("Summary", verbatimTextOutput("summary")),
+        tabPanel("Table", tableOutput("tabla"))
+      )
+    )
+  )
+)
+
+server <- function(input, output) {
+  output$plot <- renderPlot({ hist(rnorm(input$obs)) })
+  output$summary <- renderText({ input$obs })
+  output$tabla <- renderTable({ data.frame(input$obs) })
+}
+
+shinyApp(ui, server)
+```
+]
+
+---
+
+# {shiny} tabsetPanel
+
+Los tabs (`tabsetPanel`) son útiles para separar secciones _similares_ en nuestra app. A diferencia de por ejemplo `navbarPage`.
+
+![](imgs/tabs.png)
+
+---
+
+# Ejercicio: Modificar la estructura de la aplicación
+
+<br/>
+
+Nivel _fácil, para calentar las manos_: Para el ejemplo de `sidebarLayout`: Modifique la aplicación para que posea un layout de tipo `flowLayout`.
+
+<br/>
+
+Nivel _entretenido_: Para el ejemplo de `tabsetPanel` agregue:
+  - Un tab más con un gráfico de líneas.
+  - Un tab que utilice la función `summary` para mostra resúmen de los datos.
+  - Modifique la applicación para utilizar la función `navbarPage`.
+
+---
+
+# Solución 1
+
+```r
+library(shiny)
+
+ui <- fluidPage(
+  titlePanel("Hello Shiny!"),
+  flowLayout(
+    sliderInput("obs", 
+                "Number of observations:",
+                min = 0, 
+                max = 1000, 
+                value = 500),
+    plotOutput("distPlot")
+    )
+  )
+
+server <- function(input, output) {
+  output$distPlot <- renderPlot({
+    hist(rnorm(input$obs)) 
+    })
+}
+
+shinyApp(ui, server)
+```
+
+---
+
+# Solución 2
+
+.pull-left[
+```r
+library(shiny)
+library(ggplot2)
+
+ui <- navbarPage(
+  title = "Hello Shiny!",
+  tabPanel("Plot",
+           sliderInput("obs", 
+           "Number of observations:", 
+           min = 0, max = 1000, value = 500),
+           plotOutput("plot")
+           ),
+  tabPanel("Línea", plotOutput("linea")),
+  tabPanel("Summary", verbatimTextOutput("summary")),
+  tabPanel("Table", tableOutput("tabla"))
+)
+```
+]
+
+.pull-right[
+```r
+server <- function(input, output) {
+  output$plot <- renderPlot({
+    hist(rnorm(input$obs))
+    })
+  output$summary <- renderPrint({
+    summary(rnorm(input$obs))
+    })
+  output$tabla <- renderTable({ 
+    data.frame(rnorm(input$obs)) 
+    })
+  output$linea <- renderPlot({
+    x <- rnorm(input$obs)
+    qplot(x = 1:input$obs, x, geom = "line")
+  })
+  
+  
+}
+
+shinyApp(ui, server)
+```
+]
 
 ---
 

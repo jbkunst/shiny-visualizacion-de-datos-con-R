@@ -1,10 +1,10 @@
 .title-slide {
   background-image: 
-    url("shiny.png"), 
+    url("bslib.png"),  
     url("tidyverse.png"), 
     url("htmltools.png"), 
-    url("thematic.png"), 
     url("rsconnect.png"), 
+    url("shiny.png"),
     url("background2.png");
   background-size:  10%, 10%, 10%, 10%, 10%, 
     cover;
