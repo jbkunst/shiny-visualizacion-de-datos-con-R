@@ -49,7 +49,8 @@ Necesitaremos algunos paquetes:
 ```{r, eval=FALSE}
 install.packages(
   c("tidyverse", "shiny", "shinythemes", "shinyWidgets", "bslib",
-    "shinydashboard", "DT", "leaflet", "plotly", "highcharter")
+    "shinydashboard", "DT", "leaflet", "plotly", "highcharter",
+    "forecast", "janitor")
   )
 ```
 
@@ -94,8 +95,8 @@ a un servidor web a través de internet o de una intranet mediante un navegador.
 Puede ser de lo más simple...
 
 .center[
-```{r, echo=FALSE, out.width = "900px", out.}
-knitr::include_graphics("imgs/miprimerapp.png")
+```{r, echo=FALSE, out.width = "550px"}
+knitr::include_graphics("imgs/miprimerappbslib.png")
 ```
 ]
 ---
@@ -129,6 +130,7 @@ Otros con más detalle en la parte visual.
 
 * https://indice.nudos.cl/
 * https://odes-chile.org/app/unidades/
+* https://jbkunst.shinyapps.io/shiny-sidebot-demo-school/
 * https://jbkunst.shinyapps.io/trd-sttstcs/ (https://github.com/jbkunst/trd-sttstcs)
 * https://jorgehcas1998.shinyapps.io/Dataton-app/ (https://github.com/socapal/dataton-tudinero)
 * https://nz-stefan.shinyapps.io/commute-explorer-2
@@ -141,8 +143,9 @@ Otros con más detalle en la parte visual.
 
 ```{r, eval=FALSE}
 library(shiny)
+library(bslib) # Shiny incluye el paquete bslib, que usaremos para crear interfaces
 
-ui <- fluidPage()
+ui <- page_fluid()
 
 server <- function(input, output) {}
 
@@ -165,8 +168,9 @@ En `shiny`, una aplicación constará de **2** partes:
 
 ```{r, eval=FALSE}
 library(shiny)
+library(bslib)
 
-ui <- fluidPage()                            #<<
+ui <- page_fluid()                            #<<
 
 server <- function(input, output) {}
 
@@ -177,14 +181,10 @@ shinyApp(ui, server)
 <br>
 
 - Se define una interfaz de usuario (user interface). En adelante `ui`.
-- En este caso es una página fluida vacía `fluidPage()`.
-
-
+- En este caso es una página fluida vacía `page_fluid()`.
 
 - En el futuro acá definiremos diseño/estructura de nuestra aplicación (_layout_).
 Que se refiere la disposición de nuestros `inputs` y `outputs`.
-
-
 
 ---
 
@@ -194,8 +194,9 @@ Que se refiere la disposición de nuestros `inputs` y `outputs`.
 
 ```{r, eval=FALSE}
 library(shiny)
+library(bslib)
 
-ui <- fluidPage()                            
+ui <- page_fluid()                            
 
 server <- function(input, output) {}         #<<
 
@@ -217,8 +218,9 @@ reflejaremos `outputs`: como tablas, gráficos.
 
 ```{r, eval=FALSE}
 library(shiny)
+library(bslib)
 
-ui <- fluidPage()                            
+ui <- page_fluid()                            
 
 server <- function(input, output) {}         
 
@@ -241,8 +243,9 @@ al crear una shinyApp nos pondrá un botón para _servir_ la aplicación.
 
 ```{r, eval=FALSE}
 library(shiny)
+library(bslib)
 
-ui <- fluidPage()                            
+ui <- page_fluid()                            
 
 server <- function(input, output) {}         
 
@@ -253,10 +256,10 @@ De formar general la aplicación será:
 
 ```{r, eval=FALSE}
 library(shiny)
-# acá se cargarán paquetes y posiblemente también datos
-# necesarios para ui (como definir opciones de inputs)
+library(bslib)
+# acá se cargarán paquetes y también datos necesarios
 
-ui <- fluidPage(
+ui <- page_fluid(
   # código que da forma a nuestrá aplicación: títulos, secciones, textos, inputs
 )                            
 
@@ -297,7 +300,7 @@ plot(x, type = t, col = c)
 ```{r quehace2, eval=FALSE}
 set.seed(123)
 
-x <- rnorm(30)
+x <- rnorm(50)
 x
 
 t <- ifelse(FALSE, "b", "l")
@@ -311,27 +314,27 @@ plot(x, type = t, col = c)
 
 ---
 
-# Ejercicio: Nuestra primer App andando
+# Ejercicio: Nuestra primer App
 
 Hacer funcionar el siguiente `código` en R Rstudio: (hint: sí, copy + paste + run) 
 
 .code70[
 ```{r, eval=FALSE}
 library(shiny)
+library(bslib)
 
-ui <- fluidPage(
-   sidebarLayout(
-      sidebarPanel(
-        sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
-        selectInput("col", "Color", c("red", "blue", "black")),
-        checkboxInput("punto", "Puntos:", value = FALSE)
-      ),
-      mainPanel(plotOutput("outplot"))
-   )
-)
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
+    selectInput("col", "Color", c("red", "blue", "black")),
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  plotOutput("grafico")
+  )
 
 server <- function(input, output) {
-   output$outplot <- renderPlot({
+   output$grafico <- renderPlot({
      set.seed(123)
      x <- rnorm(input$nrand)
      t <- ifelse(input$punto, "b", "l")
@@ -345,6 +348,24 @@ shinyApp(ui, server)
 
 ---
 
+# Si quieres más ejemplos 
+
+```{r, eval=FALSE}
+shiny::runExample("01_hello")      # un histograma
+shiny::runExample("02_text")       # tablas y data frames
+shiny::runExample("03_reactivity") # una expresión reactiva
+shiny::runExample("04_mpg")        # variables globales
+shiny::runExample("05_sliders")    # controles deslizantes (sliders)
+shiny::runExample("06_tabsets")    # paneles con pestañas (tabs)
+shiny::runExample("07_widgets")    # texto de ayuda y botones de envío
+shiny::runExample("08_html")       # app Shiny construida desde HTML
+shiny::runExample("09_upload")     # asistente para subir archivos
+shiny::runExample("10_download")   # asistente para descargar archivos
+shiny::runExample("11_timer")      # temporizador automático
+```
+
+---
+
 class: center, middle, inverse
 
 # Funcionamiento de una app de Shiny
@@ -353,64 +374,63 @@ class: center, middle, inverse
 
 # App
 
-![](imgs/shiny_works/diapo1.png)
+![](imgs/shiny_works2/diapo1.jpg)
 
 ---
 
-# Contenedor 
+# Página/layout 
 
-![](imgs/shiny_works/diapo2.png)
+![](imgs/shiny_works2/diapo2.jpg)
 
 ---
 
-# Otros contenedores 
+# Elementos 
 
-![](imgs/shiny_works/diapo3.png)
+![](imgs/shiny_works2/diapo3.jpg)
 
 ---
 
 # Inputs 
 
-![](imgs/shiny_works/diapo4.png)
+![](imgs/shiny_works2/diapo4.jpg)
 
 ---
 
-# Outputs
+# Output(s)
 
-![](imgs/shiny_works/diapo5.png)
-
----
-
-# Interacción 
-
-![](imgs/shiny_works/diapo6.png)
+![](imgs/shiny_works2/diapo5.jpg)
 
 ---
 
-# Resultado
+# Obtener valores en el *ui* del usuario el *server*
 
-![](imgs/shiny_works/diapo7.png)
+![](imgs/shiny_works2/diapo6.jpg)
 
 ---
 
-# La estructura de una ShinyApp 2
+# Resultado de *server* a *ui*
+
+![](imgs/shiny_works2/diapo7.jpg)
+
+---
+
+# El funcionamiento de una ShinyApp
 
 
 .code60[
 ```{r, eval=FALSE}
-ui <- fluidPage(
-   sidebarLayout(
-      sidebarPanel(
-        sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
-        selectInput("col", "Color", c("red", "blue", "black")),
-        checkboxInput("punto", "Puntos:", value = FALSE)
-      ),
-      mainPanel(plotOutput("outplot"))
-   )
-)
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
+    selectInput("col", "Color", c("red", "blue", "black")),
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  plotOutput("grafico")
+  )
 
 server <- function(input, output) {
-   output$outplot <- renderPlot({
+   output$grafico <- renderPlot({
      set.seed(123)
      x <- rnorm(input$nrand)
      t <- ifelse(input$punto, "b", "l")
@@ -422,23 +442,22 @@ server <- function(input, output) {
 
 ---
 
-# La estructura de una ShinyApp 2
+# El funcionamiento de una ShinyApp
 
 .code60[
 ```{r, eval=FALSE}
-ui <- fluidPage(                                                  #<<                                        
-   sidebarLayout(                                                 #<<
-      sidebarPanel(                                               #<<
-        sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
-        selectInput("col", "Color", c("red", "blue", "black")),
-        checkboxInput("punto", "Puntos:", value = FALSE)
-      ),
-      mainPanel(plotOutput("outplot"))                            #<<
-   )
-)
+ui <- page_sidebar(                                                  #<<                                
+  title = "Mi primer app",
+  sidebar = sidebar(                                                 #<<
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
+    selectInput("col", "Color", c("red", "blue", "black")),
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  plotOutput("grafico")                           
+  )
 
 server <- function(input, output) {
-   output$outplot <- renderPlot({
+   output$grafico <- renderPlot({
      set.seed(123)
      x <- rnorm(input$nrand)
      t <- ifelse(input$punto, "b", "l")
@@ -448,7 +467,7 @@ server <- function(input, output) {
 ``` 
 ]
 
-- `fluidPage`, `sidebarLayout`, `sidebarPanel`, `mainPanel` definen el diseño/_layout_ de nuestra
+- `page_sidebar`, `page_fluid`, `sidebar`, definen el diseño/_layout_ de nuestra
 app.
 -  Existen muchas más formas de organizar una app: Por ejemplo uso de _tabs_ de _menus_, o páginas
 con navegación. Más detalles http://shiny.rstudio.com/articles/layout-guide.html.
@@ -456,23 +475,22 @@ con navegación. Más detalles http://shiny.rstudio.com/articles/layout-guide.ht
 
 ---
 
-# La estructura de una ShinyApp 2
+# El funcionamiento de una ShinyApp
 
 .code60[
 ```{r, eval=FALSE}
-ui <- fluidPage(                                                                                          
-   sidebarLayout(                                                 
-      sidebarPanel(                                               
-        sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             #<<
-        selectInput("col", "Color", c("red", "blue", "black")),   #<<
-        checkboxInput("punto", "Puntos:", value = FALSE)          #<<
-      ),
-      mainPanel(plotOutput("outplot"))                            
-   )
-)
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             #<<
+    selectInput("col", "Color", c("red", "blue", "black")),   #<<
+    checkboxInput("punto", "Puntos:", value = FALSE)          #<<
+    ),
+  plotOutput("grafico")
+  )
 
 server <- function(input, output) {
-   output$outplot <- renderPlot({
+   output$grafico <- renderPlot({
      set.seed(123)
      x <- rnorm(input$nrand)
      t <- ifelse(input$punto, "b", "l")
@@ -490,23 +508,22 @@ valores de estos inputs sean usados como valores usuales en R en la parte del se
 
 ---
 
-# La estructura de una ShinyApp 2
+# El funcionamiento de una ShinyApp
 
 .code60[
 ```{r, eval=FALSE}
-ui <- fluidPage(                                                                                          
-   sidebarLayout(                                                 
-      sidebarPanel(                                               
-        sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
-        selectInput("col", "Color", c("red", "blue", "black")),   
-        checkboxInput("punto", "Puntos:", value = FALSE)          
-      ),
-      mainPanel(plotOutput("outplot"))                            #<<                       
-   )
-)
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  plotOutput("grafico")                            #<<                       
+  )
 
 server <- function(input, output) {
-   output$outplot <- renderPlot({
+   output$grafico <- renderPlot({
      set.seed(123)
      x <- rnorm(input$nrand)
      t <- ifelse(input$punto, "b", "l")
@@ -522,23 +539,22 @@ server <- function(input, output) {
 
 ---
 
-# La estructura de una ShinyApp 2
+# El funcionamiento de una ShinyApp
 
 .code60[
 ```{r, eval=FALSE}
-ui <- fluidPage(                                                                                          
-   sidebarLayout(                                                 
-      sidebarPanel(                                               
-        sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
-        selectInput("col", "Color", c("red", "blue", "black")),   
-        checkboxInput("punto", "Puntos:", value = FALSE)          
-      ),
-      mainPanel(plotOutput("outplot"))                                                   
-   )
-)
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  plotOutput("grafico")
+  )
 
 server <- function(input, output) {
-   output$outplot <- renderPlot({                               #<<
+   output$grafico <- renderPlot({                               #<<
      set.seed(123)
      x <- rnorm(input$nrand)
      t <- ifelse(input$punto, "b", "l")
@@ -555,23 +571,22 @@ server <- function(input, output) {
 
 ---
 
-# La estructura de una ShinyApp 2
+# El funcionamiento de una ShinyApp
 
 .code60[
 ```{r, eval=FALSE}
-ui <- fluidPage(                                                                                          
-   sidebarLayout(                                                 
-      sidebarPanel(                                               
-        sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
-        selectInput("col", "Color", c("red", "blue", "black")),   
-        checkboxInput("punto", "Puntos:", value = FALSE)          
-      ),
-      mainPanel(plotOutput("outplot"))                                                   
-   )
-)
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  plotOutput("grafico")
+  )
 
 server <- function(input, output) {
-   output$outplot <- renderPlot({                               
+   output$grafico <- renderPlot({                               
      set.seed(123)                                              #<<
      x <- rnorm(input$nrand)                                    #<<
      t <- ifelse(input$punto, "b", "l")                         #<<
@@ -586,23 +601,22 @@ server <- function(input, output) {
 
 ---
 
-# La estructura de una ShinyApp 2
+# El funcionamiento de una ShinyApp
 
 .code60[
 <pre class="r hljs remark-code">
-ui <- fluidPage(                                                                                          
-   sidebarLayout(                                                 
-      sidebarPanel(                                               
-        sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
-        selectInput("col", "Color", c("red", "blue", "black")),   
-        checkboxInput("punto", "Puntos:", value = FALSE)          
-      ),
-      mainPanel(<b>plotOutput</b>("outplot"))
-   )
-)
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  plotOutput("grafico")
+  )
 
 server <- function(input, output) {
-   output$outplot <- <b>renderPlot</b>({                               
+   output$grafico <- <b>renderPlot</b>({                               
      set.seed(123)                                              
      x <- rnorm(input$nrand)                                    
      t <- ifelse(input$punto, "b", "l")                         
@@ -621,23 +635,22 @@ otras (revisar la sección de outputs en el cheat sheet)
  
 ---
 
-# La estructura de una ShinyApp 2
+# El funcionamiento de una ShinyApp
 
 .code60[
 <pre class="r hljs remark-code">
-ui <- fluidPage(                                                                                          
-   sidebarLayout(                                                 
-      sidebarPanel(                                               
-        sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
-        selectInput("col", "Color", c("red", "blue", "black")),   
-        checkboxInput("punto", "Puntos:", value = FALSE)          
-      ),
-      mainPanel(plotOutput(<b>"outplot"</b>))
-   )
-)
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  plotOutput("grafico")
+  )
 
 server <- function(input, output) {
-   output$<b>outplot</b> <- renderPlot({                               
+   output$<b>grafico</b> <- renderPlot({                               
      set.seed(123)                                              
      x <- rnorm(input$nrand)                                    
      t <- ifelse(input$punto, "b", "l")                         
@@ -649,27 +662,26 @@ server <- function(input, output) {
 
 - Cada `*Output()` y `render*()` se asocian con un **id** definido por nosotros
 - Este **id** debe ser único en la applicación
-- En el ejemplo `renderPlot` esta asociado con `plotOutput` vía el id `outplot`
+- En el ejemplo `renderPlot` esta asociado con `plotOutput` vía el id `grafico`
 
 ---
 
-# La estructura de una ShinyApp 2
+# El funcionamiento de una ShinyApp
 
 .code60[
 <pre class="r hljs remark-code">
-ui <- fluidPage(                                                                                          
-   sidebarLayout(                                                 
-      sidebarPanel(                                               
-        sliderInput(<b>"nrand"</b>, "Simulaciones", min = 50, max = 100, value = 70),             
-        selectInput("col", "Color", c("red", "blue", "black")),   
-        checkboxInput("punto", "Puntos:", value = FALSE)          
-      ),
-      mainPanel(plotOutput("outplot"))
-   )
-)
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  plotOutput("grafico")
+  )
 
 server <- function(input, output) {
-   output$outplot <- renderPlot({                               
+   output$grafico <- renderPlot({                               
      set.seed(123)                                              
      x <- rnorm(input$<b>nrand</b>)                                    
      t <- ifelse(input$punto, "b", "l")                         
@@ -688,23 +700,22 @@ acceder en el server bajo `input$nrand`
 
 ---
 
-# La estructura de una ShinyApp 2
+# El funcionamiento de una ShinyApp
 
 .code60[
 <pre class="r hljs remark-code">
-ui <- fluidPage(                                                                                          
-   sidebarLayout(                                                 
-      sidebarPanel(                                               
-        sliderInput(<b>"nrand"</b>, "Simulaciones", min = 50, max = 100, value = 70),             
-        selectInput(<b>"col"</b>, "Color", c("red", "blue", "black")),   
-        checkboxInput(<b>"punto"</b>, "Puntos:", value = FALSE)          
-      ),
-      mainPanel(plotOutput("outplot"))
-   )
-)
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  plotOutput("grafico")
+  )
 
 server <- function(input, output) {
-   output$outplot <- renderPlot({                               
+   output$grafico <- renderPlot({                               
      set.seed(123)                                              
      x <- rnorm(input$<b>nrand</b>)                                    
      t <- ifelse(input$<b>punto</b>, "b", "l")                         
@@ -721,93 +732,104 @@ server <- function(input, output) {
 
 ---
 
-# Paquete {bslib}
+# Agregando más *output*s
 
-Contenerdoes como `fluidPage`, `sidebarLayout`, `mainPanel` son basadas en boostrap 3. Para tener un diseño más actualizado se usa el paquete `{bslib}`. Notar que cambia solamente el ui/layout.
-
-.code70[
+.code60[
 ```{r, eval=FALSE}
 library(shiny)
 library(bslib)
 
-ui <- bslib::page_sidebar(                                     #<<    
-  title = "Mi primer app bslib",    
-  sidebar = bslib::sidebar(                                   #<<    
-    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
-    selectInput("col", "Color", c("red", "blue", "black")),
+datos <- rnorm(100)                                            #<<
+
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
     checkboxInput("punto", "Puntos:", value = FALSE)
-  ),
-  plotOutput("outplot")
+    ),
+  plotOutput("grafico")
   )
 
 server <- function(input, output) {
-  output$outplot <- renderPlot({
-    set.seed(123)
-    x <- rnorm(input$nrand)
-    t <- ifelse(input$punto, "b", "l")
-    plot(x, type = t, col = input$col)
+  output$grafico <- renderPlot({                               
+    plot(head(datos, input$nrand), type =  ifelse(input$punto, "b", "l"), col = input$col) #<<
   })
 }
 
 shinyApp(ui, server)
-```
+``` 
+]
+
+- Asumamos que tenemos informacion en la variable `datos` y hemos reducido lineas para la parte del primer gráfico.
+- Para agregar más outputs se deben incorporar el elemento output en el `ui` y luego el bloque de código asociado en el server como `output$id_del_output`.
+
+---
+
+# Agregando más *output*s
+
+.code60[
+```{r, eval=FALSE}
+library(shiny)
+library(bslib)
+
+datos <- rnorm(100)
+
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+  ),
+  plotOutput("grafico"),
+  plotOutput("grafico2"),  #<<
+  tableOutput("tabla")     #<<
+)
+
+server <- function(input, output) {
+  output$grafico <- renderPlot({                               
+    plot(head(datos, input$nrand), type =  ifelse(input$punto, "b", "l"), col = input$col)
+  })
+  
+  output$grafico2 <- renderPlot({                   #<<            
+    hist(head(datos, input$nrand), col = input$col) #<<
+  })                                                #<<
+  
+  output$tabla <- renderTable({             #<< 
+    x <- head(datos, input$nrand)           #<<
+    data.frame(mean(x), sd(x), length(x))   #<<
+  })                                        #<<
+  
+}
+
+shinyApp(ui, server)
+``` 
 ]
 
 ---
 
-# Paquete {bslib}
+# Agregando más *output*s
 
-Contenerdoes como `fluidPage`, `sidebarLayout`, `mainPanel` son basadas en boostrap 3. Para tener un diseño más actualizado se usa el paquete `{bslib}`. Notar que cambia solamente el ui/layout.
+Es importante recordar:
 
-.code70[
-```{r, eval=FALSE}
-library(shiny)
-library(bslib)
-
-ui <- page_sidebar(                                     #<<    
-  title = "Mi primer app bslib",    
-  sidebar = sidebar(                                   #<<    
-    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
-    selectInput("col", "Color", c("red", "blue", "black")),
-    checkboxInput("punto", "Puntos:", value = FALSE)
-  ),
-  plotOutput("outplot")
-  )
-
-server <- function(input, output) {
-  output$outplot <- renderPlot({
-    set.seed(123)
-    x <- rnorm(input$nrand)
-    t <- ifelse(input$punto, "b", "l")
-    plot(x, type = t, col = input$col)
-  })
-}
-
-shinyApp(ui, server)
-```
-]
-
+- Los ids deben ser únicos.
+- El tipo de cada output.
+- No necesariamente debemos utilizar *todos* los inputs en cada output, por ejemplo la tabla no utiliza el color ni el si es punto/línea.
+- Se pueden crear variables *intermedias* en cada bloque de output.
+- Cada output retornará lo definido en la última línea de su bloque.
 
 ---
 
 # Ejercicio: Inputs y outputs vengan a mi!
 
-
-Haga click en:
-
-- _File_, luego _New File_ y _Shiny Web App_, seleccione el nombre
-- Ejecutela con _Run App_ e intearctúe
-- Luego modifique y cree una app que contenga:
+Modifiquemos la última versión de la aplicación para que contenga:
   - 2 inputs, un `sliderInput` y un `textInput` 
-  - 3 outputs de tipo texto `textOutput` donde el primero contenga 
-el valor del primer input, el segundo el valor del segundo input, y el tercero la suma de los
-dos.
+  - 3 outputs de tipo texto `textOutput` donde:
+    1. El primero contenga simplemenbte el valor del primer input
+    2. El segundo el valor del segundo input, y
+    3. El tercero la suma de los dos inputs.
 
-
-Hints importantes:
-
-- No tema a escribir, ni preguntar!
-- Está totalmente permitido equivocarse, de hecho se pondrán puntos extras.
 
 
 ---
@@ -816,23 +838,22 @@ Hints importantes:
 
 .code60[
 <pre class="r hljs remark-code">
-ui <- fluidPage(
-    titlePanel("Applicación ejercicio 1"),
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("numerouno", "#1", min = 10, max = 500, value = 100),
-            textInput("numerodos", "#2", value = 3)
-        ),
-        mainPanel(
-           textOutput("resultado1"),
-           textOutput("resultado2"),
-           textOutput("resultado3")
-        )
-    )
+library(shiny)
+library(bslib)
+                                      
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("numerouno", "numero 1", min = 50, max = 100, value = 70),             
+    textInput("numerodos", "#2", value = 3)
+  ),
+  textOutput("resultado1"),
+  textOutput("resultado2"),
+  textOutput("resultado3")
 )
 
 server <- function(input, output) {
-
+  
   output$resultado1 <- renderText({
     x <- input$numerouno
     x
@@ -847,6 +868,8 @@ server <- function(input, output) {
   })
   
 }
+
+shinyApp(ui, server)
 </pre>
 ]
 
@@ -856,23 +879,22 @@ server <- function(input, output) {
 
 .code60[
 <pre class="r hljs remark-code">
-ui <- fluidPage(
-    titlePanel("Applicación ejercicio 1"),
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("numerouno", "#1", min = 10, max = 500, value = 100),
-            numericInput("numerodos", "#2", value = 3)
-        ),
-        mainPanel(
-           textOutput("resultado1"),
-           textOutput("resultado2"),
-           textOutput("resultado3")
-        )
-    )
+library(shiny)
+library(bslib)
+                                      
+ui <- page_sidebar(
+  title = "Mi primer app",
+  sidebar = sidebar(
+    sliderInput("numerouno", "numero 1", min = 50, max = 100, value = 70),             
+    numericInput("numerodos", "#2", value = 3)
+  ),
+  textOutput("resultado1"),
+  textOutput("resultado2"),
+  textOutput("resultado3")
 )
 
 server <- function(input, output) {
-
+  
   output$resultado1 <- renderText({
     x <- input$numerouno
     x
@@ -887,6 +909,8 @@ server <- function(input, output) {
   })
   
 }
+
+shinyApp(ui, server)
 </pre>
 ]
 
