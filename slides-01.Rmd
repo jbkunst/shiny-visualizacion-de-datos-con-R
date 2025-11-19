@@ -139,15 +139,16 @@ Algunos simples.
 
 * https://jjallaire.shinyapps.io/shiny-kmeans/
 * https://jbkunst.shinyapps.io/bias-variance/
-(https://github.com/jbkunst/shiny-apps-educational)
+(https://github.com/jbkunst/shiny-apps-educational apps para la educación)
 <br/>
 
 Otros con más detalle en la parte visual.
 
-* https://indice.nudos.cl/
-* https://odes-chile.org/app/unidades/
-* https://jbkunst.shinyapps.io/shiny-sidebot-demo-school/
-* https://jbkunst.shinyapps.io/trd-sttstcs/ (https://github.com/jbkunst/trd-sttstcs)
+* Índice de Digitalización Comunal https://www.nudos.cl/ https://indice.nudos.cl/
+* Observatorio de Sequía https://odes-chile.org/ https://odes-chile.org/app/unidades/
+* Chatbot demo https://jbkunst.shinyapps.io/shiny-sidebot-demo-school/ https://jbkunst.shinyapps.io/shiny-sidebot-demo/
+* Sustainability Science Metrics Viewer https://sna-ses.shinyapps.io/SSMviewer
+* Trade Statistics https://jbkunst.shinyapps.io/trd-sttstcs/ (https://github.com/jbkunst/trd-sttstcs)
 * https://jorgehcas1998.shinyapps.io/Dataton-app/ (https://github.com/socapal/dataton-tudinero)
 * https://nz-stefan.shinyapps.io/commute-explorer-2
 
