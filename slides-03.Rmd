@@ -434,9 +434,8 @@ tema_cencosud <- bs_theme(
 # Temas: Aplicando estilos a gráficos con {thematic} 
 
 Como vimos, {shiny} cambia la tipografía de la UI, pero los gráficos no cambian solos.
-Para solucionar eso, existe {thematic} (+ {ragg}).
 
-Con {thematic} los gráficos incorporarán las mismas reglas de estilo y colores que la aplicación.
+Para solucionar eso, existe {thematic} (+ {ragg}). Con {thematic} los gráficos incorporarán las mismas reglas de estilo y colores que la aplicación.
 
 ```r
 library(shiny)
@@ -501,27 +500,22 @@ con una url pública. Ejemplo https://usuario.shinyapps.io/nombreapp.
 Básicamente se obtiene la IP (_dirección de nuesto pc_) a través de una instrucción y luego se especifica correr la aplicación con dicha IP. Se deberá cambiar:
 
 ```r
+# antes
 shinyApp(ui = ui, server = server)
-```
 
-Por:
-
-```r
+# despues
 shinyApp(ui = ui, server = server, options = list(host = ip))
 ```
-
-Donde:
+Donde `ip` es la IP del tu pc obtenida desde `ipconfig`:
 
 ```r
-# esto es en windows
 library(stringr)
-ip <-str_extract(str_subset(system("ipconfig", intern=T), "IPv4"), "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b")
+ip <- str_extract(str_subset(system("ipconfig", intern=T), "IPv4"), "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b")
 
-# o "a mano"
 ip <- "192.168.1.46"
 ```
 
-✔️ Es simple de usar, amigable para principiantes.
+✔️ Es simple de usar.
 
 ⚠️ Requiere que _nuestro_ pc esté encendido para que la app corra. Solamente funciona para redes locales (casa/trabajo) o tambien VPN.
 
@@ -602,9 +596,10 @@ class: center, middle, inverse
 * https://shinylive.io/r/examples/
 
 
-En CMD/Terminal (Usé para testear con Python 3.12.10):
+En Terminal/CMD:
 
 ```
+# Python 3.12.10
 pip install shiny numpy matplotlib pandas Jinja2
 python -m shiny run --reload app.py
 ```
