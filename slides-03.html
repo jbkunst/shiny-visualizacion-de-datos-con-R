@@ -503,21 +503,6 @@ Más info en https://rstudio.github.io/thematic/.
 
 ---
 
-# Temas: Más y más templates y diseños
-
-Existen muchos paquetes para cambiar estilos/css.
-
-- shinydashboardPlus: https://rinterface.com/shiny/shinydashboardPlus/
-
-- bs4Dash: https://rinterface.com/shiny/bs4Dash/classic/
-
-- miniUI2Demo: https://dgranjon.shinyapps.io/miniUI2Demo
-
-- tablerDash: https://rinterface.com/shiny/tablerDash/
-
-Notar que estos paquetes cambian solos el diseño de la interfaz, como textos.
----
-
 class: center, middle, inverse
 
 # Publicar tu app
@@ -556,7 +541,7 @@ con una url pública. Ejemplo https://usuario.shinyapps.io/nombreapp.
 
 ---
 
-# Vía IP local
+# Publicar tu app: Vía IP local
 
 Básicamente se obtiene la IP (_dirección de nuesto pc_) a través de una instrucción y luego se especifica correr la aplicación con dicha IP. Se deberá cambiar:
 
@@ -586,11 +571,9 @@ ip &lt;- "192.168.1.46"
 ⚠️ Requiere que _nuestro_ pc esté encendido para que la app corra. Solamente funciona para redes locales (casa/trabajo) o tambien VPN.
 
 
-
-
 ---
 
-# Servicio shinyapps.io
+# Publicar tu app: shinyapps.io
 
 .pull-left[
 - Básicamente sube todo lo que está en la carpeta de la aplicación archivos R y otros 
@@ -619,7 +602,7 @@ Primero se debe una cuenta en https://www.shinyapps.io/ (puedes asociar tu corre
 
 ---
 
-# {shinylive}
+# Publicar tu app: {shinylive}
 
 El paquete shinylive ayuda a exportar tus aplicaciones Shiny desde archivos locales a un directorio que puede alojarse en un servidor web estático.
 
@@ -627,14 +610,14 @@ El paquete shinylive ayuda a exportar tus aplicaciones Shiny desde archivos loca
 --
 
 ```r
-# remotes::install_github("posit-dev/r-shinylive")
+# pak::pkg_install("posit-dev/r-shinylive")
 library(shinylive)
 
-# Crear un directorio
+# Crear un directorio de destino con el paquete {fs}
 fs::dir_create("exported")
 
-# Exportar la aplicación Shiny a un directorio
-shinylive::export("apps/ejemplo/", "exported/")
+# Exportar la aplicación Shiny a un directorio con un html
+shinylive::export("directorio_app/", "exported/")
 
 # Para testear
 httpuv::runStaticServer("exported/")
@@ -644,35 +627,8 @@ httpuv::runStaticServer("exported/")
 
 ✔️ No requiere de un servido que aloje y sirva la aplicación.
 
-⚠️ Cada vez que se accede se realiza la instalación de R en la pestaña del navegador.
+⚠️ Cada vez que se accede se realiza la instalación de R en la pestaña del navegador. Y no siempre funciona por que no todos los paquetes están soportados. Pero sigue en desarrollo!
 
-
----
-
-# Ejercicio: Intentado usar todo
-
-- Cree un **proyecto** en RStudio y seleccione crear una Shiny App.
-
-- Descargue:
-  - Puntos bip! http://datos.gob.cl/dataset/28198 
-  - GTFS (?) del transantiago https://www.dtpm.cl/index.php/noticias/gtfs-vigente
-  
-- Importe los datos de puntos bips en R. Limpiarlos si es necesario.
-
-- Cree una aplicación que tenga un selector de comunas, y que su 
-aplicación retorne un mapa con las ubicaciones de los lugares de cargasbip
-de la comuna seleccionada.
-
-- Agregar un thema shinythemes/thematic.
-
-- Evaluar agregar más outputs, o enriquecer el mapa.
-
-- Subir la aplicación a shinyapps.io
-
-
----
-
-# Solución
 
 ---
 
@@ -685,7 +641,24 @@ class: center, middle, inverse
 # Shiny en Python
 
 .pull-left[
+* https://shiny.posit.co/py/
+* https://shiny.posit.co/py/gallery/
+* https://shinylive.io/py/examples/#app-with-plot
+* https://shinylive.io/r/examples/
+
+
+En CMD/Terminal (Usé para testear con Python 3.12.10):
+
+```
+pip install shiny numpy matplotlib pandas Jinja2
+python -m shiny run --reload app.py
+```
+
+]
+
+.pull-right[
 ```python
+# app.py
 from shiny import App, ui, render
 import matplotlib.pyplot as plt
 import numpy as np
@@ -708,15 +681,6 @@ def server(input, output, session):
 
 app = App(app_ui, server)
 ```
-]
-
-.pull-right[
-
-* https://shiny.posit.co/py/
-* https://shiny.posit.co/py/gallery/
-* https://shinylive.io/py/examples/#app-with-plot
-* https://shinylive.io/r/examples/
-
 ]
 
 

@@ -35,7 +35,7 @@ class: center, middle, inverse
 
 # Antes de Partir
 
-La prestación podrá acceder desde https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-01.html y el código fuente, apps, ejemplos en https://github.com/jbkunst/shiny-visualizacion-de-datos-con-R
+La prestación podrá acceder desde https://jkunst.com/shiny-visualizacion-de-datos-con-R/clase-01.html y el código fuente, apps, ejemplos en https://github.com/jbkunst/shiny-visualizacion-de-datos-con-R/tree/main/apps
 
 <br>
 

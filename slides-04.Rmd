@@ -25,98 +25,13 @@ source("R/setup-xaringan.R")
 
 ---
 
-# Ejercicio: Juntando inputs, laytous, htmlwidgets, {bslib}
+# Ejercicio: Revisar applicación
 
-Recuerde el ejercicio de la clase pasada: Generar una aplicación que considere/tenga:
+Revise la aplicación del ejercicio "inputs + laytous + htmlwidgets" que utilizaba la función `descargar_data`.
 
-- El app debe ser generada con un `navbarPage` (con una única sección `tabPanel`)
-- En la única sección considere un `sidebarPanel`.
-- La aplicación debe poseer un selector de fecha.
-- Dada una fecha, la aplicación muestre una tabla con la información
-de sismos de la fecha asociada y un mapa. Ayúdese generando una función 
-para descargar la información dada una fecha.
-- Adicionalmente un _leaflet_ con la ubicación de los sismos.
-- Incorpore texto con información de la fecha seleccionada.
-
-Adicionalmente:
-
-- Incorpore la tabla de sismos a la aplicación con {DT}.
-- Seleccione un retail, banco u otra marca de su preferencia y realice
-el ejercicio de incorporar los colores y tipografías. Utilizando
-`bs_theme(..., primary = color, "navbar-light-bg" = otrocolor)`
-
----
-
-# Solución
-
-.pull-left[.code40[
-```r
-library(shiny);library(leaflet);library(rvest);library(dplyr);library(janitor)
-library(tidyverse);library(lubridate);library(DT);library(bslib)
-
-descarga_sismos_por_dia <- function(fecha_string){
-  message(fecha_string)
-  fecha <- ymd(fecha_string)
-  y <- year(fecha)
-  m <- format(fecha, "%m")  
-  d <- format(fecha, "%Y%m%d")  
-  url <- str_glue("https://www.sismologia.cl/sismicidad/catalogo/{y}/{m}/{d}.html")
-  datos <- read_html(url) |>
-    html_table() |>
-    dplyr::nth(2) |>
-    janitor::clean_names() |>
-    tidyr::separate(latitud_longitud, into = c("latitud", "longitud"), sep = " ", convert = TRUE)
-  datos
-}
-
-ui <- navbarPage(
-  theme = bs_theme("navbar-light-bg"  = "#002884", primary = "#5583ff", base_font = font_google("Nunito")),
-  tags$span("Sismos en ", tags$img(src = "https://portales.bancochile.cl/uploads/000/035/565/2ca8e2c5-606c-47f4-80ef-03bec528775d/original/bch-inverse.svg"),  
-  ),
-  tabPanel("Sismos",
-    sidebarLayout(
-      sidebarPanel(
-        dateInput("fecha", label = h5("Seleccione fecha por favor"), max = Sys.Date()),
-        actionButton("primary", "Primary", icon("r-project"), class = "btn-primary")
-      ),
-      mainPanel(
-        fluidRow(
-          column(width = 4, leafletOutput("mapa")),
-          column(width = 8, DTOutput("tabla"))
-        )
-      )
-    )
-  )
-)
-
-```
-]]
-.pull-right[.code60[
-```r
-server <- function(input, output){
-  
-  output$mapa <- renderLeaflet({
-    datos <- descarga_sismos_por_dia(input$fecha)
-    leaflet(datos) |>
-      addTiles() |>
-      addMarkers(
-        lng = ~longitud,
-        lat = ~latitud,
-        popup = ~as.character(magnitud_2),
-        label = ~as.character(`fecha_local_lugar`)
-      )
-  })
-  
-  output$tabla <- renderDataTable({
-    datos <- descarga_sismos_por_dia(input$fecha)
-    datatable(datos)
-  })
-  
-}
-
-shinyApp(ui, server)
-```
-]]
+- Que sucede en cada bloque `render`?
+- Que pasa si tuviera más outputs (y por tanto renders) que utilicen estos datos?
+- Modifique la función `descargar_data` agregnado al inicio del cuerpo de la funcion `Sys.sleep(5)` y pruebe la aplicación con esta modificación.
 
 
 ---
@@ -200,95 +115,11 @@ server <- function(input, output) {
 
 # Ejercicio: Creando una expresión reactiva
 
-Para el ejercicio anterior:
+Para el ejercicio "inputs + laytous + htmlwidgets":
 
 - Cree la expresión reactiva necesaria para reducir la cantidad de descargas.
 
-- Incluya un `sliderInput` para filtrar los registros de la tabla (no así los registros/markers del mapa).
-
----
-
-# Solución
-
-.pull-left[.code40[
-```r
-library(shiny);library(leaflet);library(rvest);library(dplyr);library(janitor)
-library(tidyverse);library(lubridate);library(DT);library(bslib)
-
-descarga_sismos_por_dia <- function(fecha_string){
-  message(fecha_string)
-  fecha <- ymd(fecha_string)
-  y <- year(fecha)
-  m <- format(fecha, "%m")  
-  d <- format(fecha, "%Y%m%d")  
-  url <- str_glue("https://www.sismologia.cl/sismicidad/catalogo/{y}/{m}/{d}.html")
-  datos <- read_html(url) |>
-    html_table() |>
-    dplyr::nth(2) |>
-    janitor::clean_names() |>
-    tidyr::separate(latitud_longitud, into = c("latitud", "longitud"), sep = " ", convert = TRUE) |> 
-    mutate(magnitud_3 = as.numeric(str_remove(magnitud_2, " Ml")))
-  datos
-}
-
-ui <- navbarPage(
-  theme = bs_theme("navbar-light-bg"  = "#002884", primary = "#5583ff", base_font = font_google("Nunito")),
-  tags$span("Sismos en ", tags$img(src = "https://portales.bancochile.cl/uploads/000/035/565/2ca8e2c5-606c-47f4-80ef-03bec528775d/original/bch-inverse.svg"),  
-  ),
-  tabPanel("Sismos",
-    sidebarLayout(
-      sidebarPanel(
-        dateInput("fecha", label = h5("Seleccione fecha por favor"), max = Sys.Date()),
-        sliderInput("filtro_magnitud", label = "filtrar magnitud", min = 3, max = 10, value = 10),
-        actionButton("primary", "Primary", icon("r-project"), class = "btn-primary")
-      ),
-      mainPanel(
-        fluidRow(
-          column(width = 4, leafletOutput("mapa")),
-          column(width = 8, DTOutput("tabla"))
-        )
-      )
-    )
-  )
-)
-
-```
-]]
-.pull-right[.code60[
-```r
-server <- function(input, output){
-  
-  dataSismos <- reactive({
-    datos <- descarga_sismos_por_dia(input$fecha)
-    datos
-  })
-  
-  output$mapa <- renderLeaflet({
-    datos <- dataSismos()
-    leaflet(datos) |>
-      addTiles() |>
-      addMarkers(
-        lng = ~longitud,
-        lat = ~latitud,
-        popup = ~as.character(magnitud_2),
-        label = ~as.character(`fecha_local_lugar`)
-      )
-  })
-  
-  output$tabla <- renderDataTable({
-    datos <- dataSismos()
-    mmax <- input$filtro_magnitud
-    datos_filtrados <- datos |> 
-      filter(magnitud_3 <= mmax) |> 
-      select(-magnitud_3)
-    datatable(datos_filtrados)
-  })
-  
-}
-
-shinyApp(ui, server)
-```
-]]
+- Se puede mejorar? (`bindCache`)
 
 ---
 
@@ -343,28 +174,15 @@ https://github.com/nanxstats/awesome-shiny-extensions
 
 Menciones honrosas (_en mi opinión_):
 
-- https://rinterface.github.io/shinydashboardPlus/
-
-- https://fullpage.rinterface.com/
-
 - https://waiter.john-coene.com/
 
 - https://cicerone.john-coene.com/
 
+Buen ejercicio es incorporar las funcionalidades de {waiter} y {ciceroene} en la aplicación.
 
 ---
 
-# Ejercicio: Incorporando extensiones
-
-Para el ejercicio incluya las características de {waiter} y {ciceroene}
-
----
-
-# Solución
-
----
-
-# Cosas que no vimos...
+# Cosas que no vimos 😞... Pero que existen! 😃
 
 ... Que ni tan necesarias, pero que en futuro podrían ayudar!
 
@@ -375,4 +193,4 @@ https://shiny.rstudio.com/articles/caching.html
 - Bookmarking: La posibilidad de registrar la aplicación con ciertos inputs seleccionados.
 Como cuando comparter una aplicación de un retail con ciertos filtros. https://mastering-shiny.org/action-bookmark.html
 
-- HTMLWidgets Proxys: Características de algunos HTMLWidgets para no _recontruir_ el gráfico sino que actualizarlo. 
+- HTMLWidgets Proxys: Características de algunos HTMLWidgets para no _recontruir_ el gráfico sino que actualizarlo. https://jbkunst.shinyapps.io/bias-variance/ 

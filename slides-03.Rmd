@@ -595,15 +595,24 @@ class: center, middle, inverse
 
 # Shiny en Python
 
-(Usé para testear con Python 3.12.10)
+.pull-left[
+* https://shiny.posit.co/py/
+* https://shiny.posit.co/py/gallery/
+* https://shinylive.io/py/examples/#app-with-plot
+* https://shinylive.io/r/examples/
+
+
+En CMD/Terminal (Usé para testear con Python 3.12.10):
 
 ```
 pip install shiny numpy matplotlib pandas Jinja2
 python -m shiny run --reload app.py
 ```
+]
 
-.pull-left[
+.pull-right[
 ```python
+# app.py
 from shiny import App, ui, render
 import matplotlib.pyplot as plt
 import numpy as np
@@ -626,15 +635,6 @@ def server(input, output, session):
 
 app = App(app_ui, server)
 ```
-]
-
-.pull-right[
-
-* https://shiny.posit.co/py/
-* https://shiny.posit.co/py/gallery/
-* https://shinylive.io/py/examples/#app-with-plot
-* https://shinylive.io/r/examples/
-
 ]
 
 
