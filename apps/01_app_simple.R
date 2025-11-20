@@ -1,7 +1,8 @@
 library(shiny)
 library(bslib)
+
 ui <- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
   sidebar = sidebar(
     sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
     selectInput("col", "Color", c("red", "blue", "black")),
@@ -9,6 +10,7 @@ ui <- page_sidebar(
   ),
   plotOutput("grafico")
 )
+
 server <- function(input, output) {
   output$grafico <- renderPlot({
     set.seed(123)
@@ -17,4 +19,5 @@ server <- function(input, output) {
     plot(x, type = t, col = input$col)
   })
 }
+
 shinyApp(ui, server)

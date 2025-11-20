@@ -6,3 +6,4 @@ xaringanExtra::use_webcam()                         # press W
 xaringanExtra::use_animate_all("fade")
 xaringanExtra::use_freezeframe() # for GIFs!
 xaringanExtra::use_progress_bar(color = "red", location = "bottom", height = "10px")
+xaringanExtra::use_panelset()

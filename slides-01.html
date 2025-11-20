@@ -906,7 +906,7 @@ library(shiny)
 library(bslib)
 
 ui &lt;- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
   sidebar = sidebar(
     sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
     selectInput("col", "Color", c("red", "blue", "black")),
@@ -1004,7 +1004,7 @@ class: center, middle, inverse
 
 ``` r
 ui &lt;- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
   sidebar = sidebar(
     sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
     selectInput("col", "Color", c("red", "blue", "black")),
@@ -1032,7 +1032,7 @@ server &lt;- function(input, output) {
 
 ``` r
 *ui &lt;- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
 * sidebar = sidebar(
     sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
     selectInput("col", "Color", c("red", "blue", "black")),
@@ -1066,7 +1066,7 @@ con navegación. Más detalles http://shiny.rstudio.com/articles/layout-guide.ht
 
 ``` r
 ui &lt;- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
   sidebar = sidebar(
 *   sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
 *   selectInput("col", "Color", c("red", "blue", "black")),
@@ -1100,7 +1100,41 @@ valores de estos inputs sean usados como valores usuales en R en la parte del se
 
 ``` r
 ui &lt;- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
+  sidebar = sidebar(
+*   sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
+*   selectInput("col", "Color", c("red", "blue", "black")),
+*   checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+  plotOutput("grafico")           
+  )
+
+server &lt;- function(input, output) {
+   output$grafico &lt;- renderPlot({
+     set.seed(123)                                              
+     x &lt;- rnorm(input$nrand) 
+     t &lt;- ifelse(input$punto, "b", "l")
+     plot(x, type = t, col = input$col)
+   })
+}
+```
+]
+
+- `sliderInput` se usa para seleccionar un valor numérico entre un rango 
+- `selectInput` otorga la posibildad que el usuario escoge entre un conjunto de valores
+- `checkboxInput` en el server es un valor lógico `TRUE`/`FALSE`
+- ¿Necesitas más? https://gallery.shinyapps.io/065-update-input-demo/ y http://shinyapps.dreamrs.fr/shinyWidgets/ 
+
+
+---
+
+# El funcionamiento de una ShinyApp
+
+.code60[
+
+``` r
+ui &lt;- page_sidebar(
+  title = "Mi primera app",
   sidebar = sidebar(
     sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
     selectInput("col", "Color", c("red", "blue", "black")),   
@@ -1132,7 +1166,7 @@ server &lt;- function(input, output) {
 
 ``` r
 ui &lt;- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
   sidebar = sidebar(
     sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
     selectInput("col", "Color", c("red", "blue", "black")),   
@@ -1165,7 +1199,73 @@ server &lt;- function(input, output) {
 
 ``` r
 ui &lt;- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+* plotOutput("grafico")
+  )
+
+server &lt;- function(input, output) {
+*  output$grafico &lt;- renderPlot({
+     set.seed(123)                                              
+     x &lt;- rnorm(input$nrand)
+     t &lt;- ifelse(input$punto, "b", "l")
+     plot(x, type = t, col = input$col)
+   })
+}
+```
+]
+
+- Las funciones `*Output()` y `render*()`  trabajan juntas para agregar salidas de R a la
+interfaz de usuario
+- En este caso `renderPlot` esta asociado con `plotOutput` (¿cómo?)
+- Hay muchas parejas como `renderText`/`textOutput` o `renderTable`/`tableOutput` entre
+otras (revisar la sección de outputs en el cheat sheet)
+
+---
+
+# El funcionamiento de una ShinyApp
+
+.code60[
+
+``` r
+ui &lt;- page_sidebar(
+  title = "Mi primera app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+    ),
+* plotOutput("grafico")
+  )
+
+server &lt;- function(input, output) {
+*  output$grafico &lt;- renderPlot({
+     set.seed(123)                                              
+     x &lt;- rnorm(input$nrand)
+     t &lt;- ifelse(input$punto, "b", "l")
+     plot(x, type = t, col = input$col)
+   })
+}
+```
+]
+
+- Cada `*Output()` y `render*()` se asocian con un **id** definido por nosotros
+- Este **id** debe ser único en la applicación. En el ejemplo `renderPlot` esta asociado con `plotOutput` vía el id `grafico`
+
+
+---
+
+# El funcionamiento de una ShinyApp
+
+.code60[
+
+``` r
+ui &lt;- page_sidebar(
+  title = "Mi primera app",
   sidebar = sidebar(
     sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
     selectInput("col", "Color", c("red", "blue", "black")),   
@@ -1186,18 +1286,18 @@ server &lt;- function(input, output) {
 ]
 
 - Este espacio determina la lógica de nuestra salida.
-- Acá haremos uso de los inputs para entregar lo que deseamos.
 
 ---
 
 # El funcionamiento de una ShinyApp
 
 .code60[
-&lt;pre class="r hljs remark-code"&gt;
+
+``` r
 ui &lt;- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
   sidebar = sidebar(
-    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
+*   sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),
     selectInput("col", "Color", c("red", "blue", "black")),   
     checkboxInput("punto", "Puntos:", value = FALSE)
     ),
@@ -1205,79 +1305,14 @@ ui &lt;- page_sidebar(
   )
 
 server &lt;- function(input, output) {
-   output$grafico &lt;- &lt;b&gt;renderPlot&lt;/b&gt;({                               
+   output$grafico &lt;- renderPlot({
      set.seed(123)                                              
-     x &lt;- rnorm(input$nrand)                                    
-     t &lt;- ifelse(input$punto, "b", "l")                         
-     plot(x, type = t, col = input$col)                         
+*    x &lt;- rnorm(input$nrand)
+     t &lt;- ifelse(input$punto, "b", "l")
+     plot(x, type = t, col = input$col)
    })
 }
-&lt;/pre&gt;
-]
-
-- Las funciones `*Output()` y `render*()`  trabajan juntas para agregar salidas de R a la
-interfaz de usuario
-- En este caso `renderPlot` esta asociado con `plotOutput` (¿cómo?)
-- Hay muchas parejas como `renderText`/`textOutput` o `renderTable`/`tableOutput` entre
-otras (revisar la sección de outputs en el cheat sheet)
- 
- 
----
-
-# El funcionamiento de una ShinyApp
-
-.code60[
-&lt;pre class="r hljs remark-code"&gt;
-ui &lt;- page_sidebar(
-  title = "Mi primer app",
-  sidebar = sidebar(
-    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
-    selectInput("col", "Color", c("red", "blue", "black")),   
-    checkboxInput("punto", "Puntos:", value = FALSE)
-    ),
-  plotOutput("grafico")
-  )
-
-server &lt;- function(input, output) {
-   output$&lt;b&gt;grafico&lt;/b&gt; &lt;- renderPlot({                               
-     set.seed(123)                                              
-     x &lt;- rnorm(input$nrand)                                    
-     t &lt;- ifelse(input$punto, "b", "l")                         
-     plot(x, type = t, col = input$col)                         
-   })
-}
-&lt;/pre&gt;
-]
-
-- Cada `*Output()` y `render*()` se asocian con un **id** definido por nosotros
-- Este **id** debe ser único en la applicación
-- En el ejemplo `renderPlot` esta asociado con `plotOutput` vía el id `grafico`
-
----
-
-# El funcionamiento de una ShinyApp
-
-.code60[
-&lt;pre class="r hljs remark-code"&gt;
-ui &lt;- page_sidebar(
-  title = "Mi primer app",
-  sidebar = sidebar(
-    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
-    selectInput("col", "Color", c("red", "blue", "black")),   
-    checkboxInput("punto", "Puntos:", value = FALSE)
-    ),
-  plotOutput("grafico")
-  )
-
-server &lt;- function(input, output) {
-   output$grafico &lt;- renderPlot({                               
-     set.seed(123)                                              
-     x &lt;- rnorm(input$&lt;b&gt;nrand&lt;/b&gt;)                                    
-     t &lt;- ifelse(input$punto, "b", "l")                         
-     plot(x, type = t, col = input$col)                         
-   })
-}
-&lt;/pre&gt;
+```
 ]
 
 - Cada functión `*Input` requiere un **id** para ser identificado en el server
@@ -1286,38 +1321,6 @@ etiquetas, opciones, rangos, etc
 - Acá, el valor númerico ingresado/modifcado por el usuario se puede 
 acceder en el server bajo `input$nrand`
 
-
----
-
-# El funcionamiento de una ShinyApp
-
-.code60[
-&lt;pre class="r hljs remark-code"&gt;
-ui &lt;- page_sidebar(
-  title = "Mi primer app",
-  sidebar = sidebar(
-    sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
-    selectInput("col", "Color", c("red", "blue", "black")),   
-    checkboxInput("punto", "Puntos:", value = FALSE)
-    ),
-  plotOutput("grafico")
-  )
-
-server &lt;- function(input, output) {
-   output$grafico &lt;- renderPlot({                               
-     set.seed(123)                                              
-     x &lt;- rnorm(input$&lt;b&gt;nrand&lt;/b&gt;)                                    
-     t &lt;- ifelse(input$&lt;b&gt;punto&lt;/b&gt;, "b", "l")                         
-     plot(x, type = t, col = input$&lt;b&gt;col&lt;/b&gt;)                         
-   })
-}
-&lt;/pre&gt;
-]
-
-- `sliderInput` se usa para seleccionar un valor numérico entre un rango 
-- `selectInput` otorga la posibildad que el usuario escoge entre un conjunto de valores
-- `checkboxInput` en el server es un valor lógico `TRUE`/`FALSE`
-- ¿Necesitas más? https://gallery.shinyapps.io/065-update-input-demo/ y http://shinyapps.dreamrs.fr/shinyWidgets/ 
 
 ---
 
@@ -1332,7 +1335,7 @@ library(bslib)
 *datos &lt;- rnorm(100)
 
 ui &lt;- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
   sidebar = sidebar(
     sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
     selectInput("col", "Color", c("red", "blue", "black")),   
@@ -1367,7 +1370,7 @@ library(bslib)
 datos &lt;- rnorm(100)
 
 ui &lt;- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
   sidebar = sidebar(
     sliderInput("nrand", "Simulaciones", min = 50, max = 100, value = 70),             
     selectInput("col", "Color", c("red", "blue", "black")),   
@@ -1433,7 +1436,7 @@ library(shiny)
 library(bslib)
                                       
 ui &lt;- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
   sidebar = sidebar(
     sliderInput("numerouno", "numero 1", min = 50, max = 100, value = 70),             
     textInput("numerodos", "#2", value = 3)
@@ -1474,7 +1477,7 @@ library(shiny)
 library(bslib)
                                       
 ui &lt;- page_sidebar(
-  title = "Mi primer app",
+  title = "Mi primera app",
   sidebar = sidebar(
     sliderInput("numerouno", "numero 1", min = 50, max = 100, value = 70),             
     numericInput("numerodos", "#2", value = 3)

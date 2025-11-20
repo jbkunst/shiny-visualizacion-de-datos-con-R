@@ -5,11 +5,10 @@
     url("htmltools.png"), 
     url("rsconnect.png"), 
     url("shiny.png"),
+    url("thematic.png"),
     url("background2.png");
-  background-size:  10%, 10%, 10%, 10%, 10%, 
-    cover;
-  background-position: 80% 0%, 91% 0%, 85.5% 23%, 74.5% 23%, 69% 0%,
-    10% 0;
+  background-size:  10%, 10%, 10%, 10%, 10%, 10%, cover;
+  background-position: 80% 0%, 91% 0%, 85.5% 23%, 74.5% 23%, 69% 0%, 80% 46%, 10% 0;
   background-repeat: no-repeat;
 }
 

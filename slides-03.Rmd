@@ -11,6 +11,7 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
+      beforeInit: "panelset"
 editor_options: 
   chunk_output_type: console
 ---
@@ -27,25 +28,28 @@ source("R/setup-xaringan.R")
 
 class: center, middle, inverse
 
-# Repaso resumido
+# Repaso
 
 ---
 
-# Repaso resumido
+# Repaso
 
 - Una shiny app consta de dos partes:
   - `ui` (**u**ser **i**nterface) donde definiremos el lugar de los los `input`s que 
-  el usuario podrá controlar, como también el lugar de donte estarán los `output`s que retornemos.
-  - `server` (**server** XD), donde definiremos que retornaremos en cada output dependiendo de los inputs.
+  el usuario podrá controlar, como también el lugar de donte estarán los `output`s que definamos.
+  - `server` es donde definiremos la lógica de cada output que dependerán de los inputs.
 
-<hr>
+--
+
+<br>
 
 - Los inputs de forma general son de la forma `tipoInput("nombreinput", parametros_del_input)`, por ejemplo
 `sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1)`.
 - En el server accedo al valor del input como `input$nombreinput`. 
 
+--
 
-<hr>
+<br>
 
 - Un output se define en la interfaz (gráfico, tabla, mapa, texto) con la forma `tipoOutput("nombreoutput")`, por ejemplo si quiero una salida/output tipo gráfico se usa `plotOutput("grafico")`
 - Para enviar un grafico en el server se usa: `output$nombreoutput <- renderTipo({ codigo })`, por ejemplo:
@@ -54,18 +58,16 @@ class: center, middle, inverse
 
 ---
 
-# Repaso resumido
+# Repaso
 
-Así nuestra app de repaso quedaría:
+Así una app sería:
 
 ```r
 library(shiny)
+library(bslib)
+library(tidyverse)
 
-# Antes del ui y server podemos cargar paquetes
-# o datos que nuestra app usará. No tiene por que ser todo
-# tan simple
-
-ui <- fluidPage(
+ui <- page_fillable(
   sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1),
   plotOutput("grafico"),
   ...
@@ -83,215 +85,118 @@ shinyApp(ui, server)
 
 ---
 
-# Ejercicio: Juntando inputs, laytous, htmlwidgets
+# Ejercicio: inputs + laytous + htmlwidgets
 
-Generar una aplicación que considere/tenga:
 
-- El app debe ser generada con un `navbarPage` (con una única sección `tabPanel`)
+.pull-left[
+Con la función `descargar_data` hacer una aplicación shiny que: 
 
-- En la única sección considere un `sidebarPanel`.
+- Use sidebar para para el layout general (`page_sidebar`) y mixto para los output (`layout_columns` + `card`).
+- Incorpore un input para seleccionar una fecha (`dateInput`).
+- Despliegue un mapa con los datos ({leaflet}).
+- Muestre una tabla ({DT}).
 
-- La aplicación debe poseer un selector de fecha.
+]
 
-- Dada una fecha, la aplicación muestre una tabla con la información
-de sismos de la fecha asociada y un mapa. Ayúdese generando una función 
-para descargar la información dada una fecha.
+.pull-right[
+.code70[
+```{r, eval=FALSE}
+library(rvest)  
+library(stringr)
+library(lubridate)
 
-- Adicionalmente un _leaflet_ con la ubicación de los sismos.
-
-- Incorpore texto con información de la fecha seleccionada.
+descargar_data <- function(fecha = "20251118") {
+  print(str_glue("descargando datos de {fecha}"))
+  url <- format(
+    ymd(fecha),
+    "https://www.sismologia.cl/sismicidad/catalogo/%Y/%m/%Y%m%d.html"
+  )
+  datos <- read_html(url) |>
+    html_table() |>
+    dplyr::nth(2) |>
+    janitor::clean_names() |>
+    tidyr::separate(
+      latitud_longitud,
+      into = c("latitud", "longitud"),
+      sep = " ",
+      convert = TRUE
+    ) 
+  datos
+} 
+```
+]]
 
 ---
 
-# Solución
+# Ejercicio: inputs + laytous + htmlwidgets (solución)
 
-.pull-left[.code60[
-```r
+.pull-left[.code70[
+```{r, eval=FALSE}
 library(shiny)
+library(bslib)
+library(highcharter)
 library(leaflet)
-library(rvest)
-library(dplyr)
+library(DT)
+
+library(rvest)  
 library(janitor)
 library(tidyverse)
-library(lubridate)
 
-ui <- navbarPage(
-  "VerSismos", 
-  tabPanel(
-    "Sismos",
-    sidebarLayout(
-      sidebarPanel(
-        dateInput(
-          "fecha",
-          label = h3("Seleccione fecha por favor"),
-          max = Sys.Date()
-          )
-      ),
-      mainPanel(leafletOutput("mapa"))
-      )
+descargar_data <- function(fecha = "20251118") {
+ ...
+}
+
+ui <- page_sidebar(
+  title = "Sismos",
+  sidebar = sidebar(
+    dateInput("fecha", "Seleccione fecha")
+  ),
+  layout_columns(
+    card(leafletOutput("mapa")),
+    card(DTOutput("tabla")),
+    col_widths = 12
     )
   )
 
 ```
 ]]
 
-.pull-right[.code60[
-```r
-server <- function(input, output){
+.pull-right[.code70[
+```{r, eval=FALSE}
+server <-  function(input, output){
   
   output$mapa <- renderLeaflet({
-    
-    fecha <- ymd(input$fecha)
-    
-    url <- format(fecha, "https://www.sismologia.cl/sismicidad/catalogo/%Y/%m/%Y%m%d.html")
-    
-    datos <- read_html(url) |>
-      html_table() |>
-      dplyr::nth(2) |>
-      janitor::clean_names() |>
-      tidyr::separate(latitud_longitud, into = c("latitud", "longitud"),
-        sep = " ", convert = TRUE
-      )
-    
+    datos <- descargar_data(input$fecha)
     leaflet(datos) |>
       addTiles() |>
       addMarkers(
-        lng = ~longitud,
-        lat = ~latitud,
+        lng = ~longitud, lat = ~latitud,
         popup = ~as.character(magnitud_2),
         label = ~as.character(`fecha_local_lugar`)
-      )
-    
+      ) |>
+      addProviderTiles("Esri.WorldImagery")
   })
-  
+    
+  output$tabla <- renderDataTable({
+    descargar_data(input$fecha)
+  })
+
 }
 
 shinyApp(ui, server)
 ```
 ]]
 
----
-
-# Ejercicio: Transformando script R en una App
-
-Muy común es que dado un código o proceso que hemos programado, lo necesitaremos
-migrar a una shiny app o documento rmarkdown. Entonces:
-
-- Inspeccionar, ejecutar y modificar el script de la siguiente slide.
-
-- Generar una app que tenga como input una lista de países y
-muestre el forecast de las exportaciones de dicho país.
-
-- _Encapsule_ la lógica de la aplicación en una función.
-
-- Luego utilizar algn HTMLWidget para complementar la aplicación.
-
-Posible solución en https://github.com/jbkunst/shiny-visualizacion-de-datos-con-R/blob/main/apps/exportaciones/app.R
-
----
-
-# Código
-
-.code60[
-```{r, eval=FALSE}
-if(!require(forecast)) install.packages("forecast")
-if(!require(xts))      install.packages("xts")
-if(!require(ggplot2))  install.packages("ggplot2")
-if(!require(dplyr))    install.packages("dplyr")
-if(!require(remotes))  install.packages("remotes")
-if(!require(tradestatistics))  remotes::install_github("ropensci/tradestatistics")
-
-library(forecast) # forecast autoplot
-library(xts) # xts
-library(tradestatistics) # ots_create_tidy_data 
-library(ggplot2) # autoplot
-library(dplyr) # glimpse |> group_by summarise
-
-pais <- "can"  # seteo pais, usa, can
-
-data <- ots_create_tidy_data(years = 2002:2019, reporters = pais, table = "yrp")
-
-glimpse(data)
-
-data <- data |> 
-  group_by(year, reporter_iso) |> 
-  summarise(exportaciones = sum(trade_value_usd_exp))
-
-valores <- data$exportaciones
-
-fechas <- as.Date(paste0(data$year, "0101"), format = "%Y%m%d")
-
-serie <- xts(valores, order.by = fechas) # creo la serie de tiempo para la fucion forecast
-
-prediccion <- forecast(serie, h = 5) # realizo automágicamente una predicción
-
-autoplot(prediccion)
-```
-]
-
-
----
-
-# Solución
-
-De tarea!
 
 ---
 
 class: center, middle, inverse
 
-# Temas & Estilos
+# Temas
 
 ---
 
-# Temas & Estilos
-
-- Al principio todas nuestras app son similares.
-- Existen extensiones/paquetes que permiten cambiar el estilo/look de la aplicación.
-
-.center[
-![](imgs/shinyapps.gif)
-]
-
----
-
-# App para ejemplos
-
-Utilizaremos la siguiente app para ver cada uno de los ejemplos:
-
-```r
-library(shiny)
-library(ggplot2)
-
-ui <- fluidPage(
-  titlePanel("Old Faithful Geyser Data"),
-  sidebarLayout(
-    sidebarPanel(
-      sliderInput("bins","Number of bins:", min = 1, max = 50, value = 30),
-      textInput("titulo", "Ingrese titulo"),
-      actionButton("boton", "No hago nada", class = "btn-primary")
-    ),
-    mainPanel(plotOutput("distPlot"))
-  )
-)
-
-server <- function(input, output) {
-  output$distPlot <- renderPlot({
-    qplot(faithful[, 2], geom = "histogram", bins = input$bins + 1) + ggtitle(input$titulo)
-  })
-}
-
-shinyApp(ui = ui, server = server)
-```
-
----
-
-# Paquete {bslib} + bootswatch
-
-Los más fácil de implementar, sin tan alto impacto en código ni imagen. Opciones en http://bootswatch.com/.
-
-Esto se implementa con `theme = bs_theme(bootswatch = "cerulean")`, como veremos en 
-la siguiente slide.    
+# Temas
 
 .center[
 ![](imgs/shinythemes.png)
@@ -299,38 +204,134 @@ la siguiente slide.
 
 ---
 
-# Usando temas de bootswatch
+# Temas
+
+
+- Al principio todas nuestras app son similares, pues nos preocupamos en la funcionalidad.
+- Existen paquetes y funciones que permiten cambiar el estilo de la aplicación.
+
+<small>https://rstudio.github.io/bslib/articles/theming/index.html</small>
+
+.center[
+![](imgs/shinythemes.png)
+]
+
+---
+
+# Temas: aplicación para los ejemplos
+
+Utilizaremos la aplicación que utilizamos para ejemplificar los _layouts_ (la distribución del contenido) con un pequeño cambio, utilizaremos ggplot para los gráficos:
+
+.pull-left[
+.code60[
+```{r, eval=FALSE}
+library(shiny)
+library(bslib)
+library(ggplot2)
+
+datos <- rnorm(100)
+
+ui <- page_sidebar(
+  title = "Mi primera app",
+  sidebar = sidebar(
+    sliderInput("nrand", "Simulaciones", 
+                min = 50, max = 100, value = 70),             
+    selectInput("col", "Color", c("red", "blue", "black")),   
+    checkboxInput("punto", "Puntos:", value = FALSE)
+  ),
+  navset_card_underline(
+    title = "Resultados",
+    nav_panel("Lineas", plotOutput("grafico")),
+    nav_panel("Histograma", plotOutput("grafico2")),
+    nav_panel("Tabla", tableOutput("tabla"))
+  )
+)
+``` 
+]
+]
+
+
+.pull-right[
+.code60[
+```{r, eval=FALSE}
+server <- function(input, output) {
+  output$grafico <- renderPlot({
+    d <- data.frame(x = 1:input$nrand, y = head(datos, input$nrand))
+    p <- ggplot(d, aes(x, y)) +
+      geom_line(color = input$col)
+    if(input$punto)
+      p <- p + geom_point(color = input$col)
+    p
+  })
+  
+  output$grafico2 <- renderPlot({
+    d <- data.frame(y = head(datos, input$nrand))
+    ggplot(d, aes(y)) +
+      geom_histogram(fill = input$col, color = "gray80")
+  })
+  
+  output$tabla <- renderTable({
+    x <- head(datos, input$nrand)
+    data.frame(mean(x), sd(x), length(x))
+  })
+  
+}
+
+shinyApp(ui, server)
+``` 
+]
+]
+
+---
+
+# Temas: bootswatch
+
+Es los más fácil de implementar, sin impacto en código. Opciones en http://bootswatch.com/.
+
+Esto se implementa con `theme = bs_theme(bootswatch = "cerulean")` dentro de la funcion `page_sidebar` o `page_fillable` por ejemplo.
+
+.center[
+![](imgs/bootswatch.png)
+]
+
+---
+
+# Temas: bootswatch (cont.)
 
 Antes:
 
-```r
+```{r, eval=FALSE}
 library(shiny)
+library(bslib)
 
-ui <- fluidPage(
-   sidebarLayout(...
+ui <- page_sidebar(
+  title = "Mi primera app",
+  sidebar = sidebar(...
 ```
 
 Ahora:
 
-```r
+```{r, eval=FALSE}
 library(shiny)
 library(bslib)
 
-ui <- fluidPage(
-  theme = bs_theme(bootswatch = "paper"),
-  titlePanel("Old Faithful Geyser Data"),
-  sidebarLayout(...
+ui <- page_sidebar(
+  title = "Mi primera app", 
+  theme = bs_theme(bootswatch = "minty") #<<
+  sidebar = sidebar(...
 ```
 
-Intentemos ahora con Darkyl, Flatly, Cosmos, Cerulean
+Probar con temas como sketchy, simplex, etc. 
 
-**NOTAR** que este cambio es solo en la parte ui. La parte del server no cambia.
+Notar que este cambio es solo en la parte `ui`, la parte del `server` no cambia.
 
 ---
 
-# Incorporando propios estilos
+# Temas: Incorporando propios estilos *bs_theme*
 
-Con `bs_theme` un puede cambiar varios elementos estéticos de la aplicación. En un principio, a modo de ejemplo, utilizaremos color de fondo, fuente, y tipografías de google para los _header_ y la aplicación.
+Con `bs_theme` un puede cambiar varios elementos estéticos de la aplicación.
+
+En un principio, a modo de ejemplo, utilizaremos color de fondo, fuente, y tipografías de google para los _header_ y la aplicación. Pero se puede tener control de todos los elementos (`bs_theme_preview()`) 
 
 
 ```r
@@ -338,90 +339,126 @@ library(shiny)
 library(ggplot2)
 library(bslib)
 
-ui <- fluidPage(
+ui <- page_sidebar(
+  title = "Mi primera app", 
   theme = bs_theme(
     bg = "#FFFDD0",  # background: color de fondo
     fg = "#202A44",  # foreground: color de letra
     heading_font = font_google("Mouse Memoirs"),
     base_font = font_google("Uchen")
     ),
-  titlePanel("Old Faithful Geyser Data"),
-  sidebarLayout(...
+  sidebar = sidebar(...
 ```
+
+---
+
+
+# Temas: Incorporando propios estilos *bs_theme* (cont.)
+
+
+.pull-left[
+.code60[
+```{r, eval=FALSE}
+tema_nes <- bs_theme(
+  bg = "#e5e5e5", fg = "#0d0c0c", primary = "#dd2020",
+  base_font = font_google("Press Start 2P"),
+  code_font = font_google("Press Start 2P"),
+  "font-size-base" = "0.75rem", "enable-rounded" = FALSE
+)
+
+tema_santander <- bs_theme(
+  version = 5,
+  primary     = "#EC0000",   # Rojo Santander
+  secondary   = "#F5F5F5",   # Gris claro
+  bg          = "white",
+  fg          = "#333333",
+  base_font   = font_google("Roboto"),
+  heading_font = font_google("Montserrat"),
+
+  # Navbar del color primario
+  navbar_bg   = "#EC0000",
+  navbar_fg   = "white"
+)
+``` 
+]
+]
+
+
+.pull-right[
+.code60[
+```{r, eval=FALSE}
+tema_falabella <- bs_theme(
+  version = 5,
+  primary     = "#78BE20",   # Verde Falabella
+  secondary   = "#4A4A4A",   # Gris oscuro
+  bg          = "white",
+  fg          = "#333333",
+  base_font   = font_google("Lato"),
+  heading_font = font_google("Nunito Sans"),
+
+  # Navbar del color primario
+  navbar_bg   = "#78BE20",
+  navbar_fg   = "white"
+)
+
+tema_cencosud <- bs_theme(
+  version = 5,
+  primary     = "#005EB8",    # Azul Cencosud
+  secondary   = "#F28C00",    # Naranjo corporativo
+  bg          = "white",
+  fg          = "#222222",
+  base_font   = font_google("Inter"),
+  heading_font = font_google("Poppins"),
+  
+  # Navbar del color primario
+  navbar_bg   = "#005EB8",
+  navbar_fg   = "white"
+)
+
+``` 
+]
+]
+
+
+---
+
+# Temas: Otros recuros
 
 - https://unleash-shiny.rinterface.com/beautify-with-bootstraplib.html
 - https://fonts.google.com/specimen/Mouse+Memoirs?query=Mouse+Memoirs
 - https://www.colorhexa.com/FFFDD0
 
+
 ---
 
-# Incorporando propios estilos + {thematic} 
+# Temas: Aplicando estilos a gráficos con {thematic} 
 
-Adicionalmene, con {thematic} los gráficos incorporarán las mismas reglas de estilo -colores- que la aplicación.
+Como vimos, {shiny} cambia la tipografía de la UI, pero los gráficos no cambian solos.
+Para solucionar eso, existe {thematic} (+ {ragg}).
+
+Con {thematic} los gráficos incorporarán las mismas reglas de estilo y colores que la aplicación.
 
 ```r
 library(shiny)
-library(ggplot2)
 library(bslib)
+library(ggplot2)
+library(ragg) # Activa renderizado moderno
 library(thematic)
 
-thematic_shiny(font = "Press Start 2P")
+options(shiny.useragg = TRUE) # Obliga a Shiny a usar ragg para plotear
+thematic_shiny(font = "auto") # Hace funcionar a thematic
 
-ui <- fluidPage(
-  theme = bs_theme(
-    bg = "#f5f5f5",       
-    fg = "#202A44",      
-    primary = "#8B0000", # color primario, acentos.
-    heading_font = font_google("Mouse Memoirs"),
-    base_font = font_google("Press Start 2P")
-  ),
-  titlePanel("Old Faithful Geyser Data"),
-  sidebarLayout(...
+ui <- page_sidebar(
+  title = "Mi primera app", 
+  theme = tema_custom,
+  sidebar = sidebar(...)
 ```
 
 Más info en https://rstudio.github.io/thematic/.
 
 ---
 
-# {shinydashboard} 
-
-El paquete {shinydashboard} nos ayuda a generar una app con estilo de  __dashboards__ demás de incorporar otros elementos para incorporar
-información.
-
-.center[
-![](https://rstudio.github.io/shinydashboard/images/crandash.png)
-]
-
----
-
-# {shinydashboard} 
-
-El paquete nos provee de funciones/contenedores para generar la estructura
-que los dashboard poseen: `dashboardPage`, `dashboardHeader`, `dashboardSidebar`, 
-`dashboardBody`.
-
-```r
-library(shinydashboard)
-
-ui <- dashboardPage(
-  dashboardHeader(),
-  dashboardSidebar(
-     sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1)
-  ),
-  dashboardBody(
-    fluidRow(box(width = 12, plotOutput("grafico")))
-  )
-)
-```
-
-Adicionalmente provee de otros elementos como `valueBox`, `box`, `infoBox`. 
-
-Documentación en https://rstudio.github.io/shinydashboard/structure.html.
-
-
----
-
-# Más y más templates y diseños
+# Temas: Más y más templates y diseños
 
 Existen muchos paquetes para cambiar estilos/css.
 
@@ -434,53 +471,15 @@ Existen muchos paquetes para cambiar estilos/css.
 - tablerDash: https://rinterface.com/shiny/tablerDash/
 
 Notar que estos paquetes cambian solos el diseño de la interfaz, como textos.
-
----
-
-# Ejercicio: Aplicar temas
-
-Tomar la siguiente aplicación:
-- Modifcar el tema con un tema bootswatch.
-- Aplicar un tema utilizando `bs_theme` + {thematic} + {showtext}.
-- Modifcar el ui utilizando el ejemplo de `shinydashboard` (copy+paste).
-
-
-```r
-library(shiny)
-ui <- fluidPage(
-  titlePanel("Titulo de la aplicación"),
-  sliderInput("valor", label = "Valor", min = 1, max = 10, value = 1),
-  plotOutput("grafico")
-  )
-server <- function(input, output) {
-  output$grafico <- renderPlot({ 
-    plot(rnorm(input$valor), type = "l")
-  })
-}
-shinyApp(ui, server)
-```
-
----
-
-# Solución 1
-
----
-
-# Solución 2
-
----
-
-# Solución 3
-
 ---
 
 class: center, middle, inverse
 
-# Publicar/Compartir tu app
+# Publicar tu app
 
 ---
 
-# Publicar/Compartir tu app
+# Publicar tu app
 
 Existen varias formas simples/sencillas para compartir una aplicación. Es decir
 que sea visible en otros dispositivos pc/móviles. Luego existen otras 
