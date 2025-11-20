@@ -595,6 +595,13 @@ class: center, middle, inverse
 
 # Shiny en Python
 
+(Usé para testear con Python 3.12.10)
+
+```
+pip install shiny numpy matplotlib pandas Jinja2
+python -m shiny run --reload app.py
+```
+
 .pull-left[
 ```python
 from shiny import App, ui, render
