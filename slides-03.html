@@ -139,7 +139,7 @@ Con la función `descargar_data` hacer una aplicación shiny que:
 .pull-right[
 .code70[
 
-``` r
+```r
 library(rvest)  
 library(stringr)
 library(lubridate)
@@ -171,7 +171,7 @@ descargar_data &lt;- function(fecha = "20251118") {
 
 .pull-left[.code70[
 
-``` r
+```r
 library(shiny)
 library(bslib)
 library(highcharter)
@@ -202,7 +202,7 @@ ui &lt;- page_sidebar(
 
 .pull-right[.code70[
 
-``` r
+```r
 server &lt;-  function(input, output){
   
   output$mapa &lt;- renderLeaflet({
@@ -265,7 +265,7 @@ Utilizaremos la aplicación que utilizamos para ejemplificar los _layouts_ (la d
 .pull-left[
 .code60[
 
-``` r
+```r
 library(shiny)
 library(bslib)
 library(ggplot2)
@@ -295,7 +295,7 @@ ui &lt;- page_sidebar(
 .pull-right[
 .code60[
 
-``` r
+```r
 server &lt;- function(input, output) {
   output$grafico &lt;- renderPlot({
     d &lt;- data.frame(x = 1:input$nrand, y = head(datos, input$nrand))
@@ -343,7 +343,7 @@ Esto se implementa con `theme = bs_theme(bootswatch = "cerulean")` dentro de la 
 Antes:
 
 
-``` r
+```r
 library(shiny)
 library(bslib)
 
@@ -355,7 +355,7 @@ ui &lt;- page_sidebar(
 Ahora:
 
 
-``` r
+```r
 library(shiny)
 library(bslib)
 
@@ -403,7 +403,7 @@ ui &lt;- page_sidebar(
 .pull-left[
 .code60[
 
-``` r
+```r
 tema_nes &lt;- bs_theme(
   bg = "#e5e5e5", fg = "#0d0c0c", primary = "#dd2020",
   base_font = font_google("Press Start 2P"),
@@ -432,7 +432,7 @@ tema_santander &lt;- bs_theme(
 .pull-right[
 .code60[
 
-``` r
+```r
 tema_falabella &lt;- bs_theme(
   version = 5,
   primary     = "#78BE20",   # Verde Falabella
@@ -684,10 +684,10 @@ app = App(app_ui, server)
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script src="panelset"></script>
 <script>var slideshow = remark.create({
-  "ratio": "16:9",
-  "highlightStyle": "github",
-  "highlightLines": true,
-  "countIncrementalSlides": false
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
